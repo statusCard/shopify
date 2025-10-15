@@ -1,0 +1,81 @@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const containers = document.querySelectorAll('.review-container');
+
+  containers.forEach(container => {
+    let isDragging = false;
+    let startX;
+    let scrollStart;
+    let velocity = 0;
+    let lastX = 0;
+
+    container.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      container.classList.add('dragging');
+      startX = e.clientX;
+      scrollStart = container.scrollLeft;
+      lastX = e.clientX;
+      velocity = 0;
+      e.preventDefault();
+    });
+
+    container.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const delta = e.clientX - startX;
+      container.scrollLeft = scrollStart - delta;
+
+      // Calculate velocity for inertia
+      velocity = e.clientX - lastX;
+      lastX = e.clientX;
+    });
+
+    container.addEventListener('mouseup', () => {
+      isDragging = false;
+      container.classList.remove('dragging');
+      applyInertia(container, velocity);
+    });
+
+    container.addEventListener('mouseleave', () => {
+      if (isDragging) {
+        isDragging = false;
+        container.classList.remove('dragging');
+        applyInertia(container, velocity);
+      }
+    });
+
+    // Touch events
+    container.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      startX = e.touches[0].clientX;
+      scrollStart = container.scrollLeft;
+      lastX = startX;
+      velocity = 0;
+    });
+
+    container.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      const delta = e.touches[0].clientX - startX;
+      container.scrollLeft = scrollStart - delta;
+
+      velocity = e.touches[0].clientX - lastX;
+      lastX = e.touches[0].clientX;
+    });
+
+    container.addEventListener('touchend', () => {
+      isDragging = false;
+      applyInertia(container, velocity);
+    });
+
+    function applyInertia(element, initialVelocity) {
+      let vel = initialVelocity;
+      function animate() {
+        if (Math.abs(vel) < 0.1) return; // stop when almost zero
+        element.scrollLeft -= vel;
+        vel *= 0.95; // friction
+        requestAnimationFrame(animate);
+      }
+      animate();
+    }
+  });
+});
+</script>
