@@ -1,0 +1,871 @@
+{%- capture sh_highlight_slider_css -%}
+  <style>
+    #sh-{{ section.id }}.sh-highlight-slider {
+      padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px 0; 
+      overflow:hidden;
+      position: relative;
+    }
+    #sh-{{ section.id }} .sh-page-width{max-width: 100%;width: 100%;margin: 0 auto;padding: 0 ;}
+    #sh-{{ section.id }} .sh-highlight-slider-title {margin: 0 auto 30px; position: relative; z-index: 1;max-width: 1140px;padding: 0 20px;}   
+    #sh-{{ section.id }} .sh-highlight-slider-title h2 {font-size: {{section.settings.title_font_size}}px;font-weight: 500;margin:0 0 20px;color: {{section.settings.title_color}};} 
+    #sh-{{ section.id }} .sh-highlight-slider-desc p {margin: 0;font-size: {{ section.settings.content_font_size }}px;line-height: 1.4;color: {{section.settings.content_color}};}  
+    #sh-{{ section.id }} .swiper-button-next.sh-slider-arrow-next, 
+    #sh-{{ section.id }} .swiper-button-prev.sh-slider-arrow-prev {width: {{ section.settings.arrow_size | plus:20 }}px;height: {{ section.settings.arrow_size | plus:20 }}px;background: {{section.settings.arrow_bg_color}};border: 1px solid {{section.settings.arrow_border_color}};}
+    #sh-{{ section.id }} .swiper-button-next.sh-slider-arrow-next svg, 
+    #sh-{{ section.id }} .swiper-button-prev.sh-slider-arrow-prev svg {fill: {{section.settings.arrow_color}};width: {{ section.settings.arrow_size }}px;height: {{ section.settings.arrow_size }}px;}
+    
+    /* MAIN WRAPPER WITH PROPER POSITIONING */
+    #sh-{{ section.id }} .sh-highlight-slider-wrap { 
+      position: relative;
+      padding: 80px 0;
+      height: auto;
+      min-height: 500px;
+    }
+    
+    /* BOTTOM FADE EFFECT */
+    #sh-{{ section.id }}:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 120px;
+      background: linear-gradient(180deg, transparent 0%, var(--current-focus-color, rgba(0,0,0,0.1)) 100%);
+      pointer-events: none;
+      z-index: 10;
+      opacity: 0.6;
+    }
+    
+    #sh-{{ section.id }} .sh-highlight-slider-swiper {overflow: visible; position: relative; z-index: 3;} 
+    #sh-{{ section.id }} .sh-highlight-slider-swiper .swiper-wrapper{align-items: center;}
+    #sh-{{ section.id }} .sh-product_title {color: {{ section.settings.slider_heading_color }};font-size: {{ section.settings.slider_title_font_size }}px;font-weight: 500;line-height: 1.3;margin: 0 0 15px 0;} 
+    #sh-{{ section.id }} .sh-product-des p {color: {{ section.settings.slider_content_color }};font-size: {{ section.settings.slider_content_font_size }}px;line-height: 1.5;margin: 0 0 15px 0;text-overflow: ellipsis;overflow: hidden;display: -webkit-box;-webkit-line-clamp: 6;-webkit-box-orient: vertical;}
+    #sh-{{ section.id }} .sh-product-des p a{text-decoration: underline;}
+    #sh-{{ section.id }} .sh-product-content .sh-button {background: {{section.settings.btn_bg_color}};color: {{section.settings.btn_text_color}};border: 1px solid {{section.settings.btn_border_color}};font-size: 16px;padding: 6px 20px;min-width: 100px;display: inline-block;transition: 0.3s ease;border-radius: {{ section.settings.border_radius }}px;text-align: center;cursor: pointer;line-height: 1.65;}
+    #sh-{{ section.id }} .sh-product-content .sh-button:hover {background: {{section.settings.btn_hover_bg_color}};color: {{section.settings.btn_hover_text_color}};border: 1px solid {{section.settings.btn_hover_border_color}};box-shadow: 0 0 5px 0px {{section.settings.outline_btn_shadow_color}};}
+    #sh-{{ section.id }} .sh-product-content .sh-button.sh-button-outline {color: {{section.settings.outline_btn_text_color}};border-color: {{section.settings.outline_btn_text_color}};background: transparent;} 
+    #sh-{{ section.id }} .sh-highlight-slider-swiper .sh-highlight-slider-grid .sh-product-content {display: none;padding-left: 30px;-webkit-animation-name: fadeIn;animation-name: fadeIn; -webkit-animation-duration: 1.5s;animation-duration: 1.5s; -webkit-animation-fill-mode: both; animation-fill-mode: both;}
+    #sh-{{ section.id }} .sh-highlight-slider-swiper .sh-highlight-slider-grid.swiper-slide-active .sh-product-content {display: block; -webkit-animation-name: fadeIn;animation-name: fadeIn; -webkit-animation-duration: 1.5s;animation-duration: 1.5s; -webkit-animation-fill-mode: both; animation-fill-mode: both;}    
+    @-webkit-keyframes fadeIn {0% {opacity: 0;}100% {opacity: 1;}}
+    @keyframes fadeIn {0% {opacity: 0;}100% {opacity: 1;} }     
+    
+    /* Modified spacing effects with modern feel - NO BLUR */
+    #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid img {
+      opacity: 0.3;
+      transform: scale(0.8) translateX(0);
+      max-height: 800px;
+      max-width: 440px;
+      transition: all 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 1;
+    } 
+    #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid.swiper-slide-active img {
+      opacity: 1; 
+      transform: scale(1.3) translateX(0);
+    } 
+    /* Push next slide to the right */
+    #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid.swiper-slide-next img {
+      transform: scale(0.3) translateX(35px);
+    } 
+    /* Push previous slide to the left */
+    #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid.swiper-slide-prev img {
+      transform: scale(0.3) translateX(-35px);
+    }
+    
+    #sh-{{ section.id }} .sh-highlight-slider-item {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+    #sh-{{ section.id }} .sh-highlight-slider-grid.swiper-slide-active .sh-highlight-slider-item{padding:0;}   
+    
+    /* FIXED SVG POSITIONING - BEHIND EVERYTHING AND PROPERLY CONTAINED */
+    #sh-{{ section.id }} .sh-highlight-slider-svg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: transform 0.7s ease, opacity 0.3s ease;
+      z-index: 0;
+      width: 60vw;
+      max-width: 400px;
+      height: auto;
+      pointer-events: none;
+      opacity: 0.6;
+    }   
+    #sh-{{ section.id }} .sh-highlight-slider-svg svg{
+      max-width: 100%; 
+      width: 100%; 
+      height: auto;
+      display: block;
+    }
+
+    /* IMAGE BOX POSITIONING */
+    #sh-{{ section.id }} .sh-highlight-slider-image-box {
+      position: relative;
+      z-index: 2;
+    }
+
+    #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid {width: 33.33%;}
+    #sh-{{ section.id }} .swiper-initialized .swiper-slide.sh-highlight-slider-grid {width: auto;}
+    #sh-{{ section.id }} .sh-highlight-slider-swiper:not(.swiper-initialized) .sh-highlight-slider-grid:nth-child(2) .sh-product-content {display: block;}
+        
+    @media only screen and (min-width: 768px){ 
+      /* DESKTOP: Move all content down by 1 inch (96px) */
+      #sh-{{ section.id }} .sh-highlight-slider-title {
+        margin: 96px auto 30px;
+      }
+      
+      #sh-{{ section.id }} .sh-highlight-slider-wrap {
+        padding: 176px 0 80px 0; /* 80px + 96px = 176px */
+      }
+      
+      /* Enhanced bottom fade for desktop */
+      #sh-{{ section.id }}:after {
+        height: 150px;
+        opacity: 0.8;
+      }
+      
+      /* DESKTOP: Scale active image to 1.5x instead of 1.3x */
+      #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid.swiper-slide-active img {
+        transform: scale(1.5) translateX(0);
+      }
+    }
+        
+    @media only screen and (min-width: 991px){ 
+      #sh-{{ section.id }} .swiper-button-next.sh-slider-arrow-next{right:100px;} 
+      #sh-{{ section.id }} .swiper-button-prev.sh-slider-arrow-prev {left:100px;} 
+      
+      /* Enhanced desktop spacing with modern animation - ADDED 5PX */
+      #sh-{{ section.id }} .sh-highlight-slider-grid.swiper-slide-prev .sh-highlight-slider-item{
+        justify-content: flex-start;
+        transform: translateX(-65px);
+        transition: transform 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+      } 
+      #sh-{{ section.id }} .sh-highlight-slider-grid.swiper-slide-next .sh-highlight-slider-item{
+        justify-content: flex-end;
+        transform: translateX(65px);
+        transition: transform 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      /* Adjusted separation on desktop - NO BLUR */
+      #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid.swiper-slide-next img {
+        transform: scale(0.65) translateX(80px);
+      } 
+      #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid.swiper-slide-prev img {
+        transform: scale(0.65) translateX(-80px);
+      }
+      
+      /* Desktop SVG sizing */
+      #sh-{{ section.id }} .sh-highlight-slider-svg {
+        width: 25vw;
+        max-width: 300px;
+      } 
+    } 
+    @media only screen and (min-width: 1261px){
+      #sh-{{ section.id }} .sh-highlight-slider-item{padding:0 20px;}
+      
+      /* Larger screens SVG */
+      #sh-{{ section.id }} .sh-highlight-slider-svg {
+        width: 20vw;
+        max-width: 350px;
+      }
+      
+      /* Moderate spacing on larger screens - ADDED 5PX */
+      #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid.swiper-slide-next img {
+        transform: scale(0.6) translateX(95px);
+      } 
+      #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid.swiper-slide-prev img {
+        transform: scale(0.6) translateX(-95px);
+      }
+    }
+    @media only screen and (min-width: 1601px){
+      #sh-{{ section.id }} .sh-highlight-slider-item{padding:0 40px;} 
+      
+      /* Very large screens - ADDED 5PX */
+      #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid.swiper-slide-next img {
+        transform: scale(0.55) translateX(117px);
+      } 
+      #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid.swiper-slide-prev img {
+        transform: scale(0.55) translateX(-117px);
+      }
+    }
+    @media only screen and (max-width: 767px){
+      #sh-{{ section.id }}.sh-highlight-slider {padding: {{ section.settings.mob_padding_top }}px 0 {{ section.settings.mob_padding_bottom }}px 0;}
+      
+      /* Mobile bottom fade - smaller and more subtle */
+      #sh-{{ section.id }}:after {
+        height: 80px;
+        opacity: 0.4;
+      }
+      
+      /* FIXED: Mobile item layout - no flex-direction column to prevent pushing up */
+      #sh-{{ section.id }} .sh-highlight-slider-item{
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        height: auto;
+        min-height: 350px;
+        padding: 20px 0;
+      }
+      
+      /* FIXED: Mobile content positioning */
+      #sh-{{ section.id }} .sh-highlight-slider-swiper .sh-highlight-slider-grid .sh-product-content {
+        padding: 20px 15px 0 15px;
+        text-align: center;
+        position: relative;
+        z-index: 4;
+        margin-top: auto;
+      } 
+      
+      /* FIXED: Mobile wrapper height with proper containment */
+      #sh-{{ section.id }} .sh-highlight-slider-wrap {
+        padding: 40px 0;
+        min-height: 450px;
+        position: relative;
+        overflow: hidden;
+      } 
+      
+      /* FIXED: Mobile SVG - Proper positioning and scaling */
+      #sh-{{ section.id }} .sh-highlight-slider-svg{
+        width: 160px;
+        height: 160px;
+        max-width: 160px;
+        max-height: 160px;
+        top: 45%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0.3;
+        z-index: 0;
+        position: absolute;
+      } 
+      
+      /* FIXED: Mobile SVG elements sizing */
+      #sh-{{ section.id }} .sh-highlight-slider-svg svg {
+        width: 100%;
+        height: 100%;
+        max-width: 160px;
+        max-height: 160px;
+      }
+      
+      #sh-{{ section.id }} .sh-highlight-slider-title h2 {font-size: 26px;margin:0 0 10px 0;}   
+      #sh-{{ section.id }} .sh-highlight-slider-desc p {font-size: 14px;}  
+      #sh-{{ section.id }} .sh-product_title{font-size: 22px; margin: 0 0 10px 0;}
+      #sh-{{ section.id }} .sh-product-des p{font-size: 14px;}
+      #sh-{{ section.id }} .sh-product-content .sh-button {font-size: 15px;} 
+      
+      /* FIXED: Mobile image scaling - 25% larger (350px instead of 280px) with proper positioning */
+      #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid img {
+        max-height: 350px;
+        max-width: 350px;
+        position: relative;
+        z-index: 2;
+        opacity: 0.4;
+        transform: scale(0.7) translateY(0);
+        brightness: 0.8;
+        transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        margin-bottom: 0;
+        flex-shrink: 0;
+        filter: brightness(0.8);
+      }
+      
+      #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid.swiper-slide-active img {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+        filter: brightness(1);
+        z-index: 3;
+      }    
+      
+      /* Mobile adjacent slides - using brightness and opacity instead of blur for smooth transitions */
+      #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid.swiper-slide-next img,
+      #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid.swiper-slide-prev img {
+        transform: scale(0.6) translateY(10px);
+        opacity: 0.2;
+        filter: brightness(0.5);
+        transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+      
+      /* Mobile slide transitions - smoother positioning */
+      #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid.swiper-slide-next .sh-highlight-slider-item {
+        transform: translateX(15px);
+        transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+      
+      #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid.swiper-slide-prev .sh-highlight-slider-item {
+        transform: translateX(-15px);
+        transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+      
+      #sh-{{ section.id }} .swiper-slide.sh-highlight-slider-grid.swiper-slide-active .sh-highlight-slider-item {
+        transform: translateX(0);
+        transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+    }
+  </style> 
+{% endcapture %}
+{{ sh_highlight_slider_css | strip_newlines }}
+
+{% assign bg_opacity = section.settings.opacity | divided_by: 100.0 %}
+{% for block in section.blocks limit: 1 %}
+  {% assign svg_color = block.settings.focus_color %}
+  {%-  liquid
+    assign rgb = block.settings.focus_color | color_to_rgb
+    assign tail = bg_opacity | prepend: ', ' | append: ')' 
+  -%}
+{% endfor %}
+
+{% comment %} Define new shape variations with mobile-specific shapes {% endcomment %}
+{% assign mobile_shapes = 'mobile1,mobile2,mobile3,mobile4,mobile5' | split: ',' %}
+{% assign desktop_shapes = 'desktop1,desktop2,desktop3,desktop4,desktop5' | split: ',' %}
+        
+<div id="sh-{{ section.id }}" class="sh-highlight-slider" style="background-color: {{ rgb | replace: 'rgb', 'rgba' | replace: ')', tail }};"> 
+  <div class="sh-page-width">
+    {% if section.settings.title != blank or section.settings.content != blank %}
+      <div class="sh-highlight-slider-title sh-title-align-{{ section.settings.text_align }}">
+        {% if section.settings.title != blank %}
+          <h2>{{ section.settings.title }}</h2>
+        {% endif %}
+        {% if section.settings.content != blank %}
+          <div class="sh-highlight-slider-desc sh-section-desc">  
+            {{ section.settings.content }}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <div class="sh-highlight-slider-wrap">
+        <div class="sh-highlight-slider-svg">
+          <!-- Mobile shapes with smaller viewBox for better scaling -->
+          <svg class="sh-mobile-show" data-shape="mobile" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" style="fill: {{ svg_color }};">
+            <path class="tw-transition tw-duration-200" d="M200 50 150 0 100 50 50 0 0 50l50 50-50 50 50 50 50-50 50 50 50-50-50-50 50-50z"></path>
+          </svg>
+          <!-- Desktop shapes with original viewBox -->
+          <svg class="sh-desk-show" data-shape="desktop" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" style="touch-action: pan-y;fill: {{ svg_color }}">
+            <path class="tw-transition tw-duration-200" d="M480 120 360 0 240 120 120 0 0 120l120 120L0 360l120 120 120-120 120 120 120-120-120-120 120-120z" style="touch-action: pan-y; fill: inherit;"></path>
+          </svg> 
+        </div>
+        <div class="sh-highlight-slider-image-box {% unless section.settings.image != blank %} sh-empty-img{% endunless %}">
+          <div class="swiper sh-highlight-slider-swiper">
+            <div class="swiper-wrapper">
+              
+              {% if section.blocks.size == 2 %}
+                {% assign limit = 3 %}
+              {% elsif section.blocks.size == 3 or section.blocks.size == 4 or section.blocks.size == 5 %}
+                {% assign limit = 2 %}
+              {% elsif section.blocks.size > 5 or section.blocks.size == 1 %}
+                {% assign limit = 1 %}
+              {% endif %}
+  
+              {% for i in (1..limit) %}
+                {% for block in section.blocks %}
+                  {%-  liquid
+                    assign rgb = block.settings.focus_color | color_to_rgb
+                    assign tail = bg_opacity | prepend: ', ' | append: ')' 
+                    assign random_mobile = mobile_shapes[forloop.index0] | default: 'mobile1'
+                    assign random_desktop = desktop_shapes[forloop.index0] | default: 'desktop1'
+                  -%}
+                  <div class="swiper-slide sh-highlight-slider-grid" data-index="{{ forloop.index }}" data-color="{{ rgb | replace: 'rgb', 'rgba' | replace: ')', tail }}" data-focus="{{ block.settings.focus_color }}" data-mobile-shape="{{ random_mobile }}" data-desktop-shape="{{ random_desktop }}">
+                    <div class="sh-highlight-slider-item">
+                      {% if block.settings.image != blank %}
+                        <img src="{{ block.settings.image | image_url }}" alt="{{ block.settings.title }}" class="sh-inter-tabs-card-img" height="" width="" loading="lazy">
+                      {% else %}
+                        <img src="data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg version='1.1' viewBox='0 0 500 500' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Crect x='2' y='2' width='496' height='496' fill='%23D8D8D8' stroke='%23D8D8D8' stroke-width='4'/%3E%3C/g%3E%3C/svg%3E" class="sh-inter-tabs-card-img" width="" height="" loading="lazy" alt="bg-image">
+                      {% endif %}
+                      <div class="sh-product-content">
+                        {% if block.settings.pro_title != blank %}
+                          <h2 class="sh-product_title">{{ block.settings.pro_title }}</h2>
+                        {% endif %} 
+                        {% if block.settings.product_content != blank %}
+                          <div class="sh-product-des">{{ block.settings.product_content }}</div>
+                        {% endif %}
+                        {% if block.settings.btn_txt != blank and block.settings.btn_link != blank %}
+                          <a href="{{ block.settings.btn_link }}" class="sh-button{% if section.settings.btn_outline %} sh-button-outline{% endif %}">{{ block.settings.btn_txt }}</a>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              {% endfor %}
+            </div>
+            <div class="swiper-button-next sh-slider-arrow-next">{% render 'sh-arrows', arrow:'next' %}</div>
+            <div class="swiper-button-prev sh-slider-arrow-prev">{% render 'sh-arrows', arrow:'prev' %}</div>
+          </div>
+        </div> 
+      </div>
+    {% endif %}
+    
+  </div>
+</div>
+
+<script>
+  function productScrolling() {
+    let swiperInitialized = false;
+    
+    // Mobile-optimized shapes with smaller coordinate system
+    const shapeVariations = {
+      mobile: {
+        mobile1: 'M200 50 150 0 100 50 50 0 0 50l50 50-50 50 50 50 50-50 50 50 50-50-50-50 50-50z',
+        mobile2: 'M100 0c-18.2 0-35.3 4.9-50 13.4a100 100 0 0 1 0 173.2A100 100 0 1 0 100 0Z',
+        mobile3: 'M133 0v67a67 67 0 1 0-133 0v133h67V133a67 67 0 1 0 133 0V0h-67Z',
+        mobile4: 'M67 133v67h133V133h-66V67H67V0H0v133h67z',
+        mobile5: 'M200 100c0-28.7-11.6-54.7-30.4-73.6C150.7 7.6 126.3 0 100 0s-50.7 7.6-69.6 26.4C11.6 45.3 0 71.3 0 100s11.6 54.7 30.4 73.6C49.3 192.4 73.7 200 100 200s50.7-7.6 69.6-26.4C188.4 154.7 200 128.7 200 100Zm-100 25a25 25 0 1 1 0-50 25 25 0 0 1 0 50Z'
+      },
+      desktop: {
+        desktop1: 'M480 120 360 0 240 120 120 0 0 120l120 120L0 360l120 120 120-120 120 120 120-120-120-120 120-120z',
+        desktop2: 'M480 240a169.2 169.2 0 0 0-120-49.7 169.2 169.2 0 0 0 49.7-120c-46.9 0-89.3 19-120 49.7 0-43.4-16.6-86.9-49.7-120a169.2 169.2 0 0 0-49.7 120 169.2 169.2 0 0 0-120-49.7c0 46.8 19 89.3 49.7 120-43.4 0-86.9 16.6-120 49.7a169.2 169.2 0 0 0 120 49.7 169.2 169.2 0 0 0-49.7 120c46.8 0 89.3-19 120-49.7 0 43.4 16.6 86.9 49.7 120a169.2 169.2 0 0 0 49.7-120 169.2 169.2 0 0 0 120 49.7c0-46.9-19-89.3-49.7-120 43.4 0 86.9-16.6 120-49.7Zm-240 60a60 60 0 1 1 0-120 60 60 0 0 1 0 120Z',
+        desktop3: 'M240 0c-43.7 0-84.7 11.7-120 32.1a240 240 0 0 1 0 415.8A240 240 0 1 0 240 0Z',
+        desktop4: 'M320 0v160a160 160 0 1 0-320 0v320h160V320a160 160 0 1 0 320 0V0H320Z',
+        desktop5: 'M160 320v160h320V320H320V160H160V0H0v320h160z'
+      }
+    };
+
+    function getRandomShape(shapes) {
+      const shapeKeys = Object.keys(shapes);
+      return shapeKeys[Math.floor(Math.random() * shapeKeys.length)];
+    }
+    
+    function updateShape(slide, slideIndex) {
+      const svgContainer = slide.closest('.sh-highlight-slider-wrap').querySelector('.sh-highlight-slider-svg');
+      const mobileShape = slide.dataset.mobileShape || getRandomShape(shapeVariations.mobile);
+      const desktopShape = slide.dataset.desktopShape || getRandomShape(shapeVariations.desktop);
+      
+      // Update mobile SVG with mobile-optimized shapes
+      const mobileSvg = svgContainer.querySelector('svg[data-shape="mobile"] path');
+      if (mobileSvg && shapeVariations.mobile[mobileShape]) {
+        mobileSvg.setAttribute('d', shapeVariations.mobile[mobileShape]);
+      }
+      
+      // Update desktop SVG with desktop shapes
+      const desktopSvg = svgContainer.querySelector('svg[data-shape="desktop"] path');
+      if (desktopSvg && shapeVariations.desktop[desktopShape]) {
+        desktopSvg.setAttribute('d', shapeVariations.desktop[desktopShape]);
+      }
+    }
+    
+    new Swiper ('#sh-{{ section.id }} .sh-highlight-slider-swiper', {
+      slidesPerView: '1.2',  
+      spaceBetween: 0,    
+      centeredSlides: true,
+      loop:true,
+      navigation: {
+        nextEl: '#sh-{{ section.id }} .swiper-button-next',
+        prevEl: '#sh-{{ section.id }} .swiper-button-prev',
+      },
+      on: {
+        init: function(){
+          swiperInitialized = true;
+          const currentSlide = this.slides[this.activeIndex];
+          updateShape(currentSlide, this.activeIndex);
+        },
+        slideChange: function () {
+          if (!swiperInitialized) return;
+          const currentSlideIndex = this.activeIndex;
+          const currentSlide = this.slides[currentSlideIndex];
+          
+          // Update background color
+          currentSlide.closest(".sh-highlight-slider").style.backgroundColor = currentSlide.dataset.color;
+          
+          // Update shape
+          updateShape(currentSlide, currentSlideIndex);
+          
+          // Shape animation with consistent centering - IMPROVED MOBILE SCALING
+          const svgElement = currentSlide.closest(".sh-highlight-slider-wrap").querySelector(".sh-highlight-slider-svg");
+          const isMobile = window.innerWidth <= 767;
+          const scaleValue = isMobile ? 1.15 : 1.2;
+          
+          svgElement.style.transform = `translate(-50%, -50%) scale(${scaleValue})`;
+          svgElement.classList.add("sh-transform-animation");
+          svgElement.querySelectorAll("svg").forEach(shSVG => shSVG.style.fill = currentSlide.dataset.focus);
+          
+          setTimeout(() => {
+            svgElement.style.transform = 'translate(-50%, -50%) scale(1)';
+          }, 200)  
+        } 
+      },
+      breakpoints: {
+        767: {
+          slidesPerView: 2, 
+        },
+        1024: {
+          slidesPerView: 3,
+        },
+        1261: { 
+          slidesPerView: 4,
+        },
+        1601: {
+          slidesPerView: 4.5, 
+        },
+      },
+    }) ;
+  }
+  productScrolling(); 
+</script>
+
+{% schema %}
+  {
+    "name": "SH: Highlight slider",
+    "tag": "section",
+    "class": "sh-section-hub-main",
+    "settings": [
+      {
+        "type": "text", 
+        "id": "title",
+        "label": "Heading",
+        "default": "Best Modern Furniture"
+      },
+      {
+        "type": "richtext",
+        "id": "content",
+        "label": "Content",
+        "default": "<p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>"
+      },
+      {
+        "type":"text_alignment",
+        "id":"text_align",
+        "label": "Text alignment",
+        "default": "center"
+      },
+      {
+        "type": "range",
+        "id": "opacity",
+        "label": "Background opacity",
+        "min": 0,
+        "max": 100,
+        "step": 10,
+        "default": 40,
+        "unit": "%"
+      },
+      {
+        "type": "header",
+        "content": "Font size"
+      },
+      {
+        "type": "range",
+        "id": "title_font_size",
+        "min": 5,
+        "max": 80,
+        "step": 1,
+        "unit": "px",
+        "label": "Heading",
+        "default": 30
+      },
+      {
+        "type": "range",
+        "id": "content_font_size",
+        "min": 5,
+        "max": 40,
+        "step": 1,
+        "unit": "px",
+        "label": "Content",
+        "default": 16
+      },
+      {
+        "type": "paragraph",
+        "content": "Slider content"
+      },
+      {
+        "type": "range",
+        "id": "slider_title_font_size",
+        "min": 5,
+        "max": 30,
+        "step": 1,
+        "unit": "px",
+        "label": "Heading",
+        "default": 22
+      },
+      {
+        "type": "range",
+        "id": "slider_content_font_size",
+        "min": 5,
+        "max": 20,
+        "step": 1,
+        "unit": "px",
+        "label": "Content",
+        "default": 16
+      },
+      {
+        "type": "header",
+        "content": "Colors"
+      },
+      {
+        "type": "color",
+        "id": "title_color",
+        "label": "Heading color",
+        "default": "#000000"
+      },
+      {
+        "type": "color",
+        "id": "content_color",
+        "label": "Content color",
+        "default": "#121212"
+      },
+      {
+        "type": "paragraph",
+        "content": "Slider content"
+      },
+      {
+        "type": "color",
+        "id": "slider_heading_color",
+        "label": "Heading color",
+        "default": "#000000"
+      },
+      {
+        "type": "color",
+        "id": "slider_content_color",
+        "label": "Content color",
+        "default": "#121212"
+      },
+      {
+        "type": "paragraph",
+        "content": "Button"
+      },
+      {
+        "type": "color",
+        "id": "btn_bg_color",
+        "label": "Background color",
+        "default": "#121212"
+      },
+      {
+        "type": "color",
+        "id": "btn_text_color",
+        "label": "Text color",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "btn_border_color",
+        "label": "Border color",
+        "default": "#121212"
+      },
+      {
+        "type": "color",
+        "id": "btn_hover_bg_color",
+        "label": "Hover background color",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "btn_hover_text_color",
+        "label": "Hover text color",
+        "default": "#121212"
+      },
+      {
+        "type": "color",
+        "id": "btn_hover_border_color",
+        "label": "Hover border color",
+        "default": "#121212"
+      },
+      {
+        "type": "color",
+        "id": "outline_btn_shadow_color",
+        "label": "Shadow color",
+        "default": "#000000"
+      },
+      {
+        "type": "checkbox",
+        "id":"btn_outline",
+        "label": "Use outline button",
+        "default": false
+      },
+      {
+        "type": "color",
+        "id": "outline_btn_text_color",
+        "label": "Outline color",
+        "default": "#000000"
+      },
+      {
+        "type":"range",
+        "id":"border_radius",
+        "label": "Button border radius",
+        "min": 0,
+        "max": 20,
+        "default": 0,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "paragraph",
+        "content": "Arrow"
+      },
+      {
+        "type": "color",
+        "id": "arrow_color",
+        "label":"Color",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "arrow_bg_color",
+        "label":"Background color",
+        "default": "#121212"
+      },
+      {
+        "type": "color",
+        "id": "arrow_border_color",
+        "label":"Border color",
+        "default": "#121212"
+      },
+      {
+        "type": "number",
+        "id":"arrow_size",
+        "label": "Size",
+        "default": 14
+      },
+      {
+        "type": "header",
+        "content": "Section padding"
+      },
+      {
+        "type": "paragraph",
+        "content": "Desktop"
+      },
+      {
+        "type": "range",
+        "id": "padding_top",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Padding top",
+        "default": 40
+      },
+      {
+        "type": "range",
+        "id": "padding_bottom",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Padding bottom",
+        "default": 40
+      },
+      {
+        "type": "paragraph",
+        "content": "Mobile"
+      },
+      {
+        "type": "range",
+        "id": "mob_padding_top",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Padding top",
+        "default": 30
+      },
+      {
+        "type": "range",
+        "id": "mob_padding_bottom",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Padding bottom",
+        "default": 30
+      }
+    ],
+    "blocks": [
+      {
+        "type": "product-list",
+        "name": "Slide",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image",
+            "info": "Add a png image to show a clear background color"
+          },
+          {
+            "type": "text",
+            "id": "pro_title",
+            "label": "Heading",
+             "default": "Heading"
+          },
+          {
+            "type": "richtext",
+            "id": "product_content",
+            "label": "Content",
+            "default": "<p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>",
+            "info": "Small text recommendation"
+          },
+          {
+            "type": "text",
+            "id": "btn_txt",
+            "label": "Button label",
+            "default": "Shop now"
+          },
+          {
+            "type": "url",
+            "id": "btn_link",
+            "label": "Button link",
+            "default":"/"
+          },
+          {
+            "type": "color",
+            "id": "focus_color",
+            "label": "Focus color",
+            "default": "#e7e7e7"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "SH: Highlight slider",
+        "blocks": [
+          {
+            "type": "product-list",
+            "settings": {
+              "pro_title": "Magalie Metal Table Lamp",
+              "product_content": "<p>Night Lamps not only beautify the ambiance of your house but also provide</p>",
+              "focus_color": "#E7C286"
+            }
+          },
+          {
+            "type": "product-list",
+            "settings": {
+              "pro_title": "Pyramid Brass Table Lamp",
+              "product_content": "<p>Table lamps have been popular since the Victorian age. With the changing aesthetics from beadings.</p>",
+              "focus_color": "#7CD8D1"
+            }
+          },
+          {
+            "type": "product-list",
+            "settings": {
+              "pro_title": "Unicor Fusion Floor Lamp",
+              "product_content": "<p>A table lamp is the most convenient, affordable and energy efficient lighting option for your home.</p>",
+              "focus_color": "#A9DF71"
+            }
+          },
+          {
+            "type": "product-list",
+            "settings": {
+              "pro_title": "Provence Antique Brass Lamp",
+              "product_content": "<p>Table lamps have been popular since the Victorian age. With the changing aesthetics.</p>",
+              "focus_color": "#E3D2ED"
+            }
+          },
+          {
+            "type": "product-list",
+            "settings": {
+              "pro_title": "Ottelien Matte Floor Lamp",
+              "product_content": "<p>Table lamps have been popular since the Victorian age. With the changing aesthetics from beadings.</p>",
+              "focus_color": "#EDCC53"
+            }
+          },
+          {
+            "type": "product-list",
+            "settings": {
+              "pro_title": "Sueno Smoke Table Lamp",
+              "product_content": "<p>With the growing trends and evolving home decor designs, everyday there is a new table lamp introduced in the market.</p>",
+              "focus_color": "#FFC1D4"
+            }
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}
