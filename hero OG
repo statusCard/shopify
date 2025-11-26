@@ -1,0 +1,1045 @@
+{% stylesheet %} 
+
+.pl--hero-14-floating-content {
+  position: absolute !important;
+  right: 5% !important;
+  left: auto !important;
+  top: auto !important;
+  bottom: 5% !important;
+  z-index: 3 !important;
+}
+
+.pl--hero-14-product-image {
+  height: auto !important;
+  width: 100% !important;
+}
+
+/* Base styles */
+.pl--hero-14-static-overlay-image {
+  position: absolute !important;
+  z-index: 2 !important;
+  object-fit: cover !important;
+}
+
+/* Only show pointer if image is clickable */
+.pl--hero-14-static-overlay-image.clickable {
+  cursor: pointer !important;
+  pointer-events: auto;
+}
+
+/* No pointer / disable clicks if no link */
+.pl--hero-14-static-overlay-image.no-link {
+  cursor: default !important;
+  pointer-events: none !important;
+}
+
+
+
+@media screen and (max-width: 768px) {
+  .pl--hero-14-floating-content {
+    position: relative !important;
+    right: 0 !important;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+  }
+}
+{% endstylesheet %}
+
+{% style %}
+  /* Base styles - customize as needed */
+  .pl--hero-14-bg-{{ section.id }} {
+    position: relative;
+    {% if section.settings.background_color != blank %}
+      background-color: {{ section.settings.background_color }};
+    {% endif %}
+    {% if section.settings.height == "fill" %}
+      height: 100vh;
+      display: flex;
+      align-content: {{ section.settings.align_content }};
+      flex-wrap: wrap;
+    {% endif %}
+  }
+
+  .pl--hero-14-container-{{ section.id }} {
+    {% if section.settings.max_width > 0 %}max-width: {{ section.settings.max_width }}px;{% endif %}
+  }
+
+  /* Static Overlay Image Styles */
+  .pl--hero-14-static-overlay-image-{{ section.id }} {
+    top: {{ section.settings.static_image_position_top }}%;
+    left: {{ section.settings.static_image_position_left }}%;
+    width: {{ section.settings.static_image_width }}px;
+    height: {{ section.settings.static_image_height }}px;
+    transform: translate(-50%, -50%);
+    {% if section.settings.static_image_opacity != 100 %}
+      opacity: {{ section.settings.static_image_opacity | divided_by: 100.0 }};
+    {% endif %}
+  }
+
+  @media screen and (max-width: 768px) {
+    .pl--hero-14-static-overlay-image-{{ section.id }} {
+      top: {{ section.settings.static_image_position_top_mob }}%;
+      left: {{ section.settings.static_image_position_left_mob }}%;
+      width: {{ section.settings.static_image_width_mob }}px;
+      height: {{ section.settings.static_image_height_mob }}px;
+      {% if section.settings.static_image_hide_mobile %}
+        display: none;
+      {% endif %}
+    }
+  }
+
+  /* Background Image Styles */
+  .pl--hero-14-bg-image-{{ section.id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0
+  }
+
+  /* Blur fade effect for top and bottom */
+  {% if section.settings.enable_blur_fade %}
+  .pl--hero-14-bg-image-{{ section.id }}::before,
+  .pl--hero-14-bg-image-{{ section.id }}::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .pl--hero-14-bg-image-{{ section.id }}::before {
+    top: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.8) 0%,
+      rgba(255, 255, 255, 0.4) 30%,
+      rgba(255, 255, 255, 0.1) 60%,
+      transparent 100%
+    );
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .pl--hero-14-bg-image-{{ section.id }}::after {
+    bottom: 0;
+    background: linear-gradient(
+      to top,
+      rgba(255, 255, 255, 0.8) 0%,
+      rgba(255, 255, 255, 0.4) 30%,
+      rgba(255, 255, 255, 0.1) 60%,
+      transparent 100%
+    );
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  {% endif %}
+
+  .pl--hero-14-bg-overlay-{{ section.id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, {{ section.settings.overlay | divided_by: 100.0 }});
+    z-index: 0;
+  }
+
+  /* Mobile background overlay */
+  @media screen and (max-width: 768px) {
+    .pl--hero-14-bg-overlay-{{ section.id }} {
+      background-color: rgba(0, 0, 0, {{ section.settings.overlay_mob | divided_by: 100.0 }});
+    }
+  }
+
+  /* Padding styles */
+  .pl--hero-14-inline-padding-{{ section.id }} {
+    {% if section.settings.padding_left != 0 and section.settings.padding_left != blank %}
+      padding-left: {{ section.settings.padding_left }}px;
+    {% endif %}
+    {% if section.settings.padding_right != 0 and section.settings.padding_right != blank %}
+      padding-right: {{ section.settings.padding_right }}px;
+    {% endif %}
+  }
+
+  .pl--hero-14-custom-padding-{{ section.id }} {
+    {% if section.settings.padding_top != 0 and section.settings.padding_top != blank %}
+      padding-top: {{ section.settings.padding_top }}px;
+    {% endif %}
+    {% if section.settings.padding_bottom != 0 and section.settings.padding_bottom != blank %}
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    {% endif %}
+
+    display: flex;
+    justify-content: {{ section.settings.justify_content }};
+  }
+
+  /* Layout styles - customize based on your design */
+  .pl--hero-14-layout-{{ section.id }} {
+    display: grid;
+    gap: {{ section.settings.gap }}px;
+    grid-auto-columns: 1fr;
+    grid-template-columns: minmax(0px, 1fr);
+    grid-template-rows: auto;
+    align-items: left;
+    z-index: 1;
+
+    max-width: {{ section.settings.content_width | abs | at_least: 350 | append: 'px' }};
+  }
+
+  /* Mobile styles */
+  @media screen and (max-width: 768px) {
+    .pl--hero-14-bg-{{ section.id }} {
+      {% if section.settings.height_mob == "fill" %}
+        min-height: 100vh;
+        height: auto;
+        display: flex;
+        align-content: {{ section.settings.align_content_mob }};
+        flex-wrap: wrap;
+      {% endif %}
+    }
+    .pl--hero-14-inline-padding-{{ section.id }} {
+      {% if section.settings.padding_left_mob != 0 and section.settings.padding_left_mob != blank %}
+        padding-left: {{ section.settings.padding_left_mob }}px;
+      {% endif %}
+      {% if section.settings.padding_right_mob != 0 and section.settings.padding_right_mob != blank %}
+        padding-right: {{ section.settings.padding_right_mob }}px;
+      {% endif %}
+    }
+
+    .pl--hero-14-custom-padding-{{ section.id }} {
+      {% if section.settings.padding_top_mob != 0 and section.settings.padding_top_mob != blank %}
+        padding-top: {{ section.settings.padding_top_mob }}px;
+      {% endif %}
+      {% if section.settings.padding_bottom_mob != 0 and section.settings.padding_bottom_mob != blank %}
+        padding-bottom: {{ section.settings.padding_bottom_mob }}px;
+      {% endif %}
+
+      justify-content: {{ section.settings.justify_content_mob }};
+    }
+
+    .pl--hero-14-layout-{{ section.id }} {
+      grid-template-columns: 1fr;
+      gap: {{ section.settings.gap_mob | abs | append: 'px' }};
+    }
+  }
+{% endstyle %}
+
+<div class="--pl--section-wrapper pl--hero-14-bg-{{ section.id }} {{ section.settings.custom_class }}">
+  <div class="--pl--page-width-global" style="width: 100%;">
+    <div class="--pl--padding-global pl--hero-14-inline-padding-{{ section.id }}">
+      <div class="pl--hero-14-container-{{ section.id }}">
+        <div class="--pl--padding-section-medium pl--hero-14-custom-padding-{{ section.id }}">
+          <div class="pl--hero-14-layout-{{ section.id }}">
+            {% content_for 'blocks' %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% comment %} Static Overlay Image with Link {% endcomment %}
+  {% if section.settings.static_overlay_image != blank %}
+    {% if section.settings.static_image_link != blank %}
+      <a href="{{ section.settings.static_image_link }}" target="{{ section.settings.static_image_link_target }}" aria-label="{{ section.settings.static_overlay_image.alt | default: section.settings.static_overlay_alt | default: 'Clickable overlay image' }}">
+    {% endif %}
+      <img 
+        class="pl--hero-14-static-overlay-image pl--hero-14-static-overlay-image-{{ section.id }}"
+        src="{{ section.settings.static_overlay_image | img_url: '800x800' }}"
+        alt="{{ section.settings.static_overlay_image.alt | default: section.settings.static_overlay_alt }}"
+        loading="lazy"
+      >
+    {% if section.settings.static_image_link != blank %}
+      </a>
+    {% endif %}
+  {% endif %}
+
+  {% comment %} Background Video - only if video is selected and no background image is set {% endcomment %}
+  {% if section.settings.video != blank or section.settings.video_mob != blank %}
+    {% unless section.settings.background_image != blank or section.settings.background_image_mob != blank %}
+      {% render 'pl--background-video', 
+        video: section.settings.video,
+        video_mob: section.settings.video_mob,
+        autoplay: section.settings.autoplay,
+        autoplay_mob: section.settings.autoplay_mob,
+        loop: section.settings.loop,
+        loop_mob: section.settings.loop_mob,
+        mute: true,
+        overlay_opacity: section.settings.overlay,
+        overlay_opacity_mob: section.settings.overlay_mob,
+        alt: section.settings.alt,
+        section: section
+      %}
+    {% endunless %}
+  {% endif %}
+
+  {% comment %} Background Image - only if no background video is set {% endcomment %}
+  {% unless section.settings.video != blank or section.settings.video_mob != blank %}
+    {% if section.settings.background_image != blank %}
+      <img 
+        class="pl--hero-14-bg-image-{{ section.id }}"
+        src="{{ section.settings.background_image | img_url: '1920x1080' }}"
+        alt="{{ section.settings.background_image.alt | default: section.settings.alt }}"
+        loading="{{ section.settings.image_loading }}"
+        {% if section.settings.background_image_mob != blank %}
+          style="display: block;"
+        {% endif %}
+      >
+    {% endif %}
+
+    {% comment %} Mobile Background Image {% endcomment %}
+    {% if section.settings.background_image_mob != blank %}
+      <img 
+        class="pl--hero-14-bg-image-{{ section.id }}"
+        src="{{ section.settings.background_image_mob | img_url: '768x1024' }}"
+        alt="{{ section.settings.background_image_mob.alt | default: section.settings.alt }}"
+        loading="{{ section.settings.image_loading }}"
+        style="display: none;"
+      >
+      <style>
+        @media screen and (max-width: 768px) {
+          .pl--hero-14-bg-{{ section.id }} img:first-of-type {
+            display: none !important;
+          }
+          .pl--hero-14-bg-{{ section.id }} img:last-of-type {
+            display: block !important;
+          }
+        }
+      </style>
+    {% endif %}
+
+    {% comment %} Overlay for background images {% endcomment %}
+    {% if section.settings.background_image != blank or section.settings.background_image_mob != blank %}
+      <div class="pl--hero-14-bg-overlay-{{ section.id }}"></div>
+    {% endif %}
+  {% endunless %}
+</div>
+
+{% schema %}
+{
+  "name": "Hero 14",
+  "tag": "section",
+  "blocks": [{ "type": "@theme" }, { "type": "@app" }],
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Customize the section to your liking. Need help? Check our [documentation](https://www.pentlibrary.com/docs)."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Section Height",
+      "default": "fill",
+      "options": [
+        { "value": "hug", "label": "Hug" },
+        { "value": "fill", "label": "Fill ↕" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "select",
+      "id": "align_content",
+      "label": "Position ↕",
+      "default": "center",
+      "options": [
+        { "value": "flex-start", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Bottom" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "justify_content",
+      "label": "Position ↔",
+      "default": "flex-start",
+      "options": [
+        { "value": "flex-start", "label": "Start" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "End" }
+      ]
+    },
+    {
+      "type": "number",
+      "id": "content_width",
+      "label": "Max Width",
+      "placeholder": "Enter a value in pixels",
+      "default": 560
+    },
+    {
+      "type": "header",
+      "content": "Static Overlay Image"
+    },
+    {
+      "type": "paragraph",
+      "content": "Add an image that sits on top of everything and stays in a fixed position while text can be moved around."
+    },
+    {
+      "type": "image_picker",
+      "id": "static_overlay_image",
+      "label": "Overlay Image"
+    },
+    {
+      "type": "text",
+      "id": "static_overlay_alt",
+      "label": "Alt Text",
+      "placeholder": "Describe the overlay image"
+    },
+    {
+      "type": "url",
+      "id": "static_image_link",
+      "label": "Image Link",
+      "info": "Add a URL to make the overlay image clickable"
+    },
+    {
+      "type": "select",
+      "id": "static_image_link_target",
+      "label": "Link Target",
+      "options": [
+        { "value": "_blank", "label": "New Tab" },
+        { "value": "_self", "label": "Same Tab" }
+      ],
+      "default": "_blank"
+    },
+    {
+      "type": "range",
+      "id": "static_image_position_top",
+      "label": "Vertical Position",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "static_image_position_left",
+      "label": "Horizontal Position",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 75,
+      "unit": "%"
+    },
+    {
+      "type": "number",
+      "id": "static_image_width",
+      "label": "Width",
+      "default": 400,
+      "placeholder": "Enter width in pixels"
+    },
+    {
+      "type": "number",
+      "id": "static_image_height",
+      "label": "Height",
+      "default": 300,
+      "placeholder": "Enter height in pixels"
+    },
+    {
+      "type": "range",
+      "id": "static_image_opacity",
+      "label": "Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "📱 Mobile Overlay Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "static_image_hide_mobile",
+      "label": "Hide on Mobile",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "static_image_position_top_mob",
+      "label": "Mobile Vertical Position",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "static_image_position_left_mob",
+      "label": "Mobile Horizontal Position",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50,
+      "unit": "%"
+    },
+    {
+      "type": "number",
+      "id": "static_image_width_mob",
+      "label": "Mobile Width",
+      "default": 250,
+      "placeholder": "Enter mobile width in pixels"
+    },
+    {
+      "type": "number",
+      "id": "static_image_height_mob",
+      "label": "Mobile Height",
+      "default": 200,
+      "placeholder": "Enter mobile height in pixels"
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Background Image"
+    },
+    {
+      "type": "paragraph",
+      "content": "⚠️ Note: If you add a background image, the background video will not display. Choose either image OR video, not both."
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_blur_fade",
+      "label": "Enable Blur Fade",
+      "info": "Adds a subtle blur fade effect to the top and bottom edges of the background image",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Background Video"
+    },
+    {
+      "type": "paragraph",
+      "content": "⚠️ Note: If you add a background video, the background image will not display. Choose either image OR video, not both."
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Loop",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "controls",
+      "label": "Controls",
+      "default": "none",
+      "options": [
+        {
+          "label": "Play/Pause",
+          "value": "light"
+        },
+        {
+          "label": "None",
+          "value": "none"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "overlay",
+      "label": "Overlay Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "number",
+      "id": "padding_top",
+      "label": "Top",
+      "placeholder": "Enter a value in pixels"
+    },
+    {
+      "type": "number",
+      "id": "padding_bottom",
+      "label": "Bottom",
+      "placeholder": "Enter a value in pixels"
+    },
+    {
+      "type": "number",
+      "id": "padding_left",
+      "label": "Left",
+      "placeholder": "Enter a value in pixels"
+    },
+    {
+      "type": "number",
+      "id": "padding_right",
+      "label": "Right",
+      "placeholder": "Enter a value in pixels"
+    },
+    {
+      "type": "header",
+      "content": "📱 Mobile Layout"
+    },
+    {
+      "type": "select",
+      "id": "height_mob",
+      "label": "Section Height",
+      "default": "fill",
+      "options": [
+        { "value": "hug", "label": "Hug" },
+        { "value": "fill", "label": "Fill ↕" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "📱 Content"
+    },
+    {
+      "type": "select",
+      "id": "align_content_mob",
+      "label": "Position ↕",
+      "default": "center",
+      "options": [
+        { "value": "flex-start", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Bottom" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "justify_content_mob",
+      "label": "Position ↔",
+      "default": "flex-start",
+      "options": [
+        { "value": "flex-start", "label": "Start" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "End" }
+      ]
+    },
+    {
+      "type": "number",
+      "id": "gap_mob",
+      "label": "Gap to card",
+      "placeholder": "Enter a value in pixels"
+    },
+    {
+      "type": "header",
+      "content": "📱 Background Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image_mob",
+      "label": "Mobile Background Image",
+      "info": "Optional: Use a different image for mobile devices"
+    },
+    {
+      "type": "header",
+      "content": "📱 Background Video"
+    },
+    {
+      "type": "video",
+      "id": "video_mob",
+      "label": "Video"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay_mob",
+      "label": "Autoplay",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "loop_mob",
+      "label": "Loop",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "controls_mob",
+      "label": "Controls",
+      "default": "none",
+      "options": [
+        {
+          "label": "Play/Pause",
+          "value": "light"
+        },
+        {
+          "label": "None",
+          "value": "none"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "overlay_mob",
+      "label": "Overlay Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "📱 Padding"
+    },
+    {
+      "type": "number",
+      "id": "padding_top_mob",
+      "label": "Top",
+      "placeholder": "Enter a value in pixels"
+    },
+    {
+      "type": "number",
+      "id": "padding_bottom_mob",
+      "label": "Bottom",
+      "placeholder": "Enter a value in pixels"
+    },
+    {
+      "type": "number",
+      "id": "padding_left_mob",
+      "label": "Left",
+      "placeholder": "Enter a value in pixels"
+    },
+    {
+      "type": "number",
+      "id": "padding_right_mob",
+      "label": "Right",
+      "placeholder": "Enter a value in pixels"
+    },
+    {
+      "type": "header",
+      "content": "⚙️ Advanced"
+    },
+    {
+      "type": "select",
+      "id": "image_loading",
+      "label": "Image Loading",
+      "default": "lazy",
+      "options": [
+        { "value": "lazy", "label": "Lazy" },
+        { "value": "eager", "label": "Eager" },
+        { "value": "auto", "label": "Auto" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "alt",
+      "label": "Alt Text",
+      "placeholder": "Stainless steel water bottle with matte black finish"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Class",
+      "info": "For developers: Add space-separated CSS classes."
+    },
+    {
+      "type": "paragraph",
+      "content": "hero-14 section (v.1.2.0)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero 14 (PL)",
+      "settings": {
+        "gap_mob": 32,
+        "background_color": "#ffffff",
+        "static_image_position_top": 50,
+        "static_image_position_left": 60,
+        "static_image_width": 400,
+        "static_image_height": 300,
+        "static_image_position_top_mob": 50,
+        "static_image_position_left_mob": 50,
+        "static_image_width_mob": 250,
+        "static_image_height_mob": 200,
+        "static_image_opacity": 100,
+        "static_image_link_target": "_blank"
+      },
+      "blocks": [
+        {
+          "type": "pl--group",
+          "settings": {
+            "gap": 24,
+            "gap_mob": 16,
+            "flex_direction": "column",
+            "flex_direction_mob": "column",
+            "align_items": "flex-start",
+            "align_items_mob": "flex-start",
+            "justify_content": "flex-start",
+            "justify_content_mob": "flex-start",
+            "width": "100%",
+            "width_mob": "100%",
+            "padding_top": 0,
+            "padding_top_mob": 0,
+            "padding_bottom": 0,
+            "padding_bottom_mob": 0,
+            "padding_left": 0,
+            "padding_left_mob": 0,
+            "padding_right": 0,
+            "padding_right_mob": 0
+          },
+          "blocks": [
+            {
+              "type": "pl--text",
+              "settings": {
+                "text": "<p>Tagline</p>",
+                "font_size": 16,
+                "font": "inter_n6",
+                "custom_class": "-pl-mb-n2",
+                "color": "#FFFFFF"
+              }
+            },
+            {
+              "type": "pl--heading",
+              "settings": {
+                "tag": "h1",
+                "text_alignment": "left",
+                "color": "#FFFFFF"
+              }
+            },
+            {
+              "type": "pl--text",
+              "settings": {
+                "color": "#FFFFFF",
+                "text": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.</p>"
+              }
+            },
+            {
+              "type": "pl--group",
+              "settings": {
+                "flex_direction": "row",
+                "flex_direction_mob": "row",
+                "align_items": "flex-start",
+                "align_items_mob": "flex-start",
+                "justify_content": "flex-start",
+                "justify_content_mob": "flex-start",
+                "gap": 16,
+                "gap_mob": 16,
+                "padding_top": 16,
+                "padding_top_mob": 16,
+                "width": "100%",
+                "width_mob": "100%"
+              },
+              "blocks": [
+                {
+                  "type": "pl--button",
+                  "settings": {
+                    "full_width": "false",
+                    "full_width_mob": "false",
+                    "padding_top": 12,
+                    "padding_bottom": 12,
+                    "padding_left": 16,
+                    "padding_right": 16,
+                    "border_radius": 8,
+                    "border_style": "solid",
+                    "border_width": 1,
+                    "border_color": "#f3f3f3",
+                    "background_color": "#f3f3f3",
+                    "color": "#000000"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "pl--product-card",
+          "settings": {
+            "custom_class": "pl--hero-14-floating-content",
+            "gap": 0,
+            "gap_mob": 0,
+            "padding_right": 0,
+            "padding_left": 0,
+            "padding_top": 0,
+            "padding_bottom": 0,
+            "padding_top_mob": 0,
+            "padding_right_mob": 0,
+            "padding_left_mob": 0,
+            "padding_bottom_mob": 0,
+            "flex_wrap": "nowrap",
+            "flex_wrap_mob": "nowrap",
+            "flex_direction": "row",
+            "flex_direction_mob": "row",
+            "max_width": 520,
+            "background_color": "#FFFFFF",
+            "align_items": "stretch",
+            "align_items_mob": "stretch"
+          },
+          "blocks": [
+            {
+              "type": "pl--image",
+              "settings": {
+                "aspect_ratio": "fill",
+                "aspect_ratio_mob": "fill",
+                "custom_class": "pl--hero-14-product-image",
+                "image": "{{ closest.product.featured_image }}",
+                "image_loading": "eager"
+              }
+            },
+            {
+              "type": "pl--group",
+              "settings": {
+                "flex_direction": "column",
+                "flex_direction_mob": "column",
+                "align_items": "flex-start",
+                "align_items_mob": "flex-start",
+                "justify_content": "center",
+                "justify_content_mob": "space-evenly",
+                "flex_wrap": "nowrap",
+                "flex_wrap_mob": "nowrap",
+                "width": "100%",
+                "width_mob": "100%",
+                "gap": 16,
+                "gap_mob": 8,
+                "padding_right": 16,
+                "padding_left": 16,
+                "padding_top": 16,
+                "padding_bottom": 16,
+                "padding_top_mob": 16,
+                "padding_right_mob": 16,
+                "padding_left_mob": 16,
+                "padding_bottom_mob": 16
+              },
+              "blocks": [
+                {
+                  "type": "pl--text",
+                  "settings": {
+                    "text": "<p>{{ closest.product.vendor }}</p>",
+                    "placeholder_text": "<p>Vendor</p>",
+                    "font_size": 14,
+                    "font": "inter_n4",
+                    "custom_class": "-pl-mb-n1"
+                  }
+                },
+                {
+                  "type": "pl--group",
+                  "settings": {
+                    "flex_direction": "row",
+                    "flex_direction_mob": "column",
+                    "align_items": "center",
+                    "align_items_mob": "flex-start",
+                    "justify_content": "space-between",
+                    "justify_content_mob": "space-between",
+                    "gap": 12,
+                    "gap_mob": 10,
+                    "flex_wrap": "nowrap",
+                    "flex_wrap_mob": "nowrap",
+                    "width": "100%",
+                    "width_mob": "100%"
+                  },
+                  "blocks": [
+                    {
+                      "type": "pl--heading",
+                      "settings": {
+                        "tag": "h3",
+                        "text_alignment": "left",
+                        "font_size": 20,
+                        "font_size_mob": 18,
+                        "heading": "{{ closest.product.title }}",
+                        "placeholder_text": "Product Name"
+                      }
+                    },
+                    {
+                      "type": "pl--product-price",
+                      "settings": {
+                        "font_size": 14,
+                        "font_size_mob": 14,
+                        "product": "{{ closest.product }}"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "pl--text",
+                  "settings": {
+                    "text": "<p>{{ closest.product.description }}</p>",
+                    "placeholder_text": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristiqu.</p>",
+                    "font_size": 14,
+                    "font_size_mob": 14,
+                    "custom_class": "--pl--truncate-3lines"
+                  }
+                },
+                {
+                  "type": "pl--group",
+                  "settings": {
+                    "flex_direction": "row",
+                    "flex_wrap": "wrap",
+                    "align_items": "flex-start",
+                    "justify_content": "flex-start",
+                    "width": "100%",
+                    "gap": 12,
+                    "padding_top": 8,
+                    "flex_direction_mob": "column",
+                    "flex_wrap_mob": "nowrap",
+                    "align_items_mob": "flex-start",
+                    "justify_content_mob": "flex-start",
+                    "width_mob": "100%",
+                    "gap_mob": 10,
+                    "padding_top_mob": 8
+                  },
+                  "blocks": [
+                    {
+                      "type": "pl--button",
+                      "settings": {
+                        "full_width": "false",
+                        "full_width_mob": "true",
+                        "padding_top": 10,
+                        "padding_bottom": 10,
+                        "padding_left": 12,
+                        "padding_right": 12,
+                        "border_radius": 8,
+                        "border_style": "solid",
+                        "border_width": 1,
+                        "border_color": "#000000",
+                        "background_color": "#000000",
+                        "color": "#ffffff",
+                        "font_size": 14,
+                        "label": "View Product",
+                        "link": "{{ closest.product.url }}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
