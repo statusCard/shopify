@@ -1,0 +1,458 @@
+{% doc %}
+  @prompt
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-glass-badge-grid-{{ ai_gen_id }} {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: {{ block.settings.badge_spacing }}px;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: {{ block.settings.padding }}px;
+    top: {{ block.settings.position_y_desktop }}%;
+    left: {{ block.settings.position_x_desktop }}%;
+    transform: translate(-50%, -50%);
+  }
+
+  .ai-glass-badge-single-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: {{ block.settings.icon_text_spacing }}px;
+    padding: {{ block.settings.badge_padding }}px;
+    background: {{ block.settings.glass_background }};
+    backdrop-filter: blur({{ block.settings.blur_amount }}px);
+    -webkit-backdrop-filter: blur({{ block.settings.blur_amount }}px);
+    border: {{ block.settings.border_thickness }}px solid {{ block.settings.border_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    box-shadow: {{ block.settings.glow_horizontal }}px {{ block.settings.glow_vertical }}px {{ block.settings.glow_blur }}px {{ block.settings.glow_color }};
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.font_size }}px;
+    font-weight: {{ block.settings.font_weight }};
+    white-space: nowrap;
+    transition: transform 0.3s ease;
+    width: auto;
+  }
+
+  .ai-glass-badge-single-{{ ai_gen_id }}:hover {
+    transform: scale(1);
+  }
+
+  .ai-glass-badge-icon-{{ ai_gen_id }} {
+    width: {{ block.settings.icon_size }}px;
+    height: {{ block.settings.icon_size }}px;
+    flex-shrink: 0;
+    order: 1;
+  }
+
+  .ai-glass-badge-icon-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .ai-glass-badge-text-{{ ai_gen_id }} {
+    order: 2;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-glass-badge-grid-{{ ai_gen_id }} {
+      top: {{ block.settings.position_y_mobile }}%;
+      left: {{ block.settings.position_x_mobile }}%;
+      gap: {{ block.settings.badge_spacing_mobile }}px;
+      padding: {{ block.settings.padding_mobile }}px;
+    }
+
+    .ai-glass-badge-single-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.font_size }}px * 0.8);
+      padding: calc({{ block.settings.badge_padding }}px * 0.8);
+    }
+  }
+{% endstyle %}
+
+<div
+  class="ai-glass-badge-grid-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-glass-badge-single-{{ ai_gen_id }}">
+    <span class="ai-glass-badge-text-{{ ai_gen_id }}">{{ block.settings.badge_text_1 }}</span>
+    {% if block.settings.icon_image_1 %}
+      <span class="ai-glass-badge-icon-{{ ai_gen_id }}">
+        <img
+          src="{{ block.settings.icon_image_1 | image_url: width: 100 }}"
+          alt="{{ block.settings.badge_text_1 | escape }}"
+          loading="lazy"
+          width="100"
+          height="100"
+        >
+      </span>
+    {% endif %}
+  </div>
+
+  <div class="ai-glass-badge-single-{{ ai_gen_id }}">
+    <span class="ai-glass-badge-text-{{ ai_gen_id }}">{{ block.settings.badge_text_2 }}</span>
+    {% if block.settings.icon_image_2 %}
+      <span class="ai-glass-badge-icon-{{ ai_gen_id }}">
+        <img
+          src="{{ block.settings.icon_image_2 | image_url: width: 100 }}"
+          alt="{{ block.settings.badge_text_2 | escape }}"
+          loading="lazy"
+          width="100"
+          height="100"
+        >
+      </span>
+    {% endif %}
+  </div>
+
+  <div class="ai-glass-badge-single-{{ ai_gen_id }}">
+    <span class="ai-glass-badge-text-{{ ai_gen_id }}">{{ block.settings.badge_text_3 }}</span>
+    {% if block.settings.icon_image_3 %}
+      <span class="ai-glass-badge-icon-{{ ai_gen_id }}">
+        <img
+          src="{{ block.settings.icon_image_3 | image_url: width: 100 }}"
+          alt="{{ block.settings.badge_text_3 | escape }}"
+          loading="lazy"
+          width="100"
+          height="100"
+        >
+      </span>
+    {% endif %}
+  </div>
+
+  <div class="ai-glass-badge-single-{{ ai_gen_id }}">
+    <span class="ai-glass-badge-text-{{ ai_gen_id }}">{{ block.settings.badge_text_4 }}</span>
+    {% if block.settings.icon_image_4 %}
+      <span class="ai-glass-badge-icon-{{ ai_gen_id }}">
+        <img
+          src="{{ block.settings.icon_image_4 | image_url: width: 100 }}"
+          alt="{{ block.settings.badge_text_4 | escape }}"
+          loading="lazy"
+          width="100"
+          height="100"
+        >
+      </span>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Glass badge grid",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Badge content"
+    },
+    {
+      "type": "text",
+      "id": "badge_text_1",
+      "label": "Badge 1 text",
+      "default": "Premium"
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_image_1",
+      "label": "Badge 1 icon"
+    },
+    {
+      "type": "text",
+      "id": "badge_text_2",
+      "label": "Badge 2 text",
+      "default": "Natural"
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_image_2",
+      "label": "Badge 2 icon"
+    },
+    {
+      "type": "text",
+      "id": "badge_text_3",
+      "label": "Badge 3 text",
+      "default": "Eco-Friendly"
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_image_3",
+      "label": "Badge 3 icon"
+    },
+    {
+      "type": "text",
+      "id": "badge_text_4",
+      "label": "Badge 4 text",
+      "default": "Handcrafted"
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_image_4",
+      "label": "Badge 4 icon"
+    },
+    {
+      "type": "header",
+      "content": "Desktop positioning"
+    },
+    {
+      "type": "range",
+      "id": "position_x_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "X position",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "position_y_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Y position",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Mobile positioning"
+    },
+    {
+      "type": "range",
+      "id": "position_x_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "X position",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "position_y_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Y position",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "badge_spacing",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Spacing (desktop)",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "badge_spacing_mobile",
+      "min": 4,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Spacing (mobile)",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "badge_padding",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Badge padding",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Container padding (desktop)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_mobile",
+      "min": 0,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "label": "Container padding (mobile)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "min": 8,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Icon size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "icon_text_spacing",
+      "min": 2,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "label": "Icon spacing",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Glass effect"
+    },
+    {
+      "type": "color",
+      "id": "glass_background",
+      "label": "Background",
+      "default": "rgba(255, 255, 255, 0.15)"
+    },
+    {
+      "type": "range",
+      "id": "blur_amount",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Blur",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "border_thickness",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Border thickness",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "rgba(255, 255, 255, 0.25)"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Glow effect"
+    },
+    {
+      "type": "color",
+      "id": "glow_color",
+      "label": "Glow color",
+      "default": "rgba(255, 255, 255, 0.3)"
+    },
+    {
+      "type": "range",
+      "id": "glow_horizontal",
+      "min": -10,
+      "max": 10,
+      "step": 2,
+      "unit": "px",
+      "label": "Horizontal offset",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "glow_vertical",
+      "min": -10,
+      "max": 10,
+      "step": 2,
+      "unit": "px",
+      "label": "Vertical offset",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "glow_blur",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Blur",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 8,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 11
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "600"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Glass badge grid"
+    }
+  ]
+}
+{% endschema %}
