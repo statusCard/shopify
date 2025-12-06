@@ -1,0 +1,696 @@
+{% schema %}
+{
+  "name": "Peachy Pick-Me-Up Hero",
+  "settings": [
+    {
+      "type": "header",
+      "content": "A. Layout & Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background Image (Overrides Gradient)"
+    },
+    {
+      "type": "color",
+      "id": "bg_top_color",
+      "label": "Background Top Color",
+      "default": "#200000"
+    },
+    {
+      "type": "color",
+      "id": "bg_bottom_color",
+      "label": "Background Bottom Color",
+      "default": "#F16263"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Hero Text Color (Top)",
+      "default": "#FFF7DF"
+    },
+    {
+      "type": "color",
+      "id": "ing_heading_color",
+      "label": "Ingredient Text & Border Color",
+      "default": "#200000"
+    },
+    {
+      "type": "color",
+      "id": "ingredient_bg_color",
+      "label": "Ingredient Container Background",
+      "default": "#F1C5A6"
+    },
+    {
+      "type": "header",
+      "content": "B. Hero Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Main Heading",
+      "default": "A PEACHY PICK-ME-UP"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading Text",
+      "default": "The whole itchy skin, and 'no days off' grindset energy isn't us. We're here for the people who love a sweet, but don't live at the gym—the ones who work out, then gtfo."
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Central Hero Image (Woman/Product)"
+    },
+    {
+      "type": "image_picker",
+      "id": "gummy_left",
+      "label": "Floating Image Left (Gummy 1)"
+    },
+    {
+      "type": "image_picker",
+      "id": "gummy_right",
+      "label": "Floating Image Right (Gummy 2)"
+    },
+    {
+      "type": "header",
+      "content": "C. Slanted Bar Images & Text"
+    },
+    {
+      "type": "color",
+      "id": "bar_text_color",
+      "label": "Bar Text Color",
+      "default": "#200000"
+    },
+    {
+      "type": "image_picker",
+      "id": "bar_image_left",
+      "label": "1. Bar Graphic - Left (The Slanted Stripe/SVG)"
+    },
+    {
+      "type": "text",
+      "id": "bar_text_1",
+      "label": "1. Bar Text - Left Content",
+      "default": "95MG NATURAL CAFFEINE"
+    },
+    {
+      "type": "image_picker",
+      "id": "bar_image_center",
+      "label": "2. Bar Graphic - Center (The Slanted Stripe/SVG)"
+    },
+    {
+      "type": "text",
+      "id": "bar_text_2",
+      "label": "2. Bar Text - Center Content",
+      "default": "ELECTRIC PEACH FLAVOR"
+    },
+    {
+      "type": "image_picker",
+      "id": "bar_image_right",
+      "label": "3. Bar Graphic - Right (The Slanted Stripe/SVG)"
+    },
+    {
+      "type": "text",
+      "id": "bar_text_3",
+      "label": "3. Bar Text - Right Content",
+      "default": "FITS IN YOUR POCKET"
+    },
+    {
+      "type": "text",
+      "id": "bar_max_width",
+      "label": "Total Bars Max Width (e.g., 600px)",
+      "default": "600px"
+    },
+    {
+      "type": "header",
+      "content": "D. Ingredient Breakdown"
+    },
+    {
+      "type": "text",
+      "id": "ingredient_heading",
+      "label": "Ingredient Main Heading",
+      "default": "INTENTIONAL, SIMPLE, EFFECTIVE ENERGY"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "View Nutrition Label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "ingredient",
+      "name": "Ingredient Item",
+      "limit": 5,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Ingredient Icon/Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "CAFFEINE"
+        },
+        {
+          "type": "text",
+          "id": "amount",
+          "label": "Amount Overlay",
+          "default": "95mg"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>Natural stimulant derived from green tea. Just like your BTS timeline.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Peachy Pick-Me-Up",
+      "blocks": [
+        { "type": "ingredient" },
+        { "type": "ingredient", "settings": { "title": "L-CARNITINE", "amount": "2000mg" } },
+        { "type": "ingredient", "settings": { "title": "DURABEET® BETAINE", "amount": "2000mg" } },
+        { "type": "ingredient", "settings": { "title": "RHODIOLA ROSEA", "amount": "200mg" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  /* FONT LOADING */
+  @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700;900&display=swap');
+
+  /* BASE STYLES */
+  .pmu-section {
+    /* BACKGROUND LOGIC: Image overrides Gradient */
+    {% if section.settings.bg_image != blank %}
+      background-image: url({{ section.settings.bg_image | image_url: width: 2000 }});
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: {{ section.settings.bg_top_color }}; /* Fallback color */
+    {% else %}
+      background-image: linear-gradient(to bottom, {{ section.settings.bg_top_color }} 49.92%, {{ section.settings.bg_bottom_color }} 100%);
+    {% endif %}
+    
+    color: {{ section.settings.text_color }}F2; 
+    font-family: "Work Sans", sans-serif;
+    text-align: center;
+    padding: 95.25px 20px 140px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: hidden; 
+  }
+
+  .pmu-container {
+    max-width: 1200px;
+    width: 100%;
+  }
+
+  /* HEADER STYLES */
+  .pmu-header h1 {
+    color: {{ section.settings.text_color }}F2;
+    font-family: "Work Sans", sans-serif;
+    font-size: 96px;
+    font-weight: 900;
+    line-height: 0.75; 
+    letter-spacing: -0.44px;
+    margin-bottom: 24px;
+  }
+
+  .pmu-header p {
+    color: {{ section.settings.text_color }}F2;
+    font-size: 18px;
+    line-height: 1.46; 
+    margin: 0 auto;
+    max-width: 700px;
+    font-weight: 400;
+  }
+
+  /* HERO IMAGE & OVERLAYS */
+  .pmu-hero-media {
+    position: relative;
+    max-width: 600px;
+    margin: 40px auto 0;
+    padding-bottom: 60px; 
+  }
+
+  .pmu-hero-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+  }
+
+  .pmu-floating-gummy {
+    position: absolute;
+    width: 150px;
+    height: auto;
+    object-fit: contain;
+    z-index: 2;
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.3));
+  }
+
+  .pmu-gummy-left {
+    top: -50px;
+    left: -120px;
+    transform: rotate(-10deg);
+  }
+
+  .pmu-gummy-right {
+    top: 50px;
+    right: -80px;
+    width: 120px;
+    transform: rotate(15deg);
+  }
+  
+  /* SLANTED BAR IMAGE & TEXT GROUP STYLES */
+  .pmu-bar-group-wrapper {
+      position: absolute; 
+      /* INCREASED POSITIONING UPWARD (40px -> 50px) */
+      bottom: 50px; 
+      left: 50%;
+      /* DESLANTED (10.0deg -> 5.0deg) */
+      transform: translateX(-50%) rotateZ(-5.0deg); 
+      width: 100%;
+      max-width: {{ section.settings.bar_max_width }}; 
+      z-index: 5; 
+  }
+  
+  .pmu-bar-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 0; 
+      align-items: center;
+      padding: 0;
+      width: 100%;
+      /* REDUCED HEIGHT (35px -> 28px) */
+      height: 28px; 
+  }
+
+  .pmu-bar-unit {
+      flex: 1 1 33.33%; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px; 
+      height: 100%;
+      padding: 0 10px;
+      background: transparent; 
+  }
+  
+  .pmu-bar-text {
+      transform: none; 
+      flex-grow: 1; 
+      color: {{ section.settings.bar_text_color }};
+      font-family: "Work Sans", sans-serif;
+      font-weight: 700;
+      /* REDUCED FONT SIZE (13px -> 11px) */
+      font-size: 11px; 
+      line-height: 1.1;
+      margin: 0;
+      padding: 0;
+      text-align: center; 
+      white-space: nowrap; 
+      z-index: 10; 
+  }
+
+  .pmu-bar-image {
+      flex-shrink: 0; 
+      /* REDUCED WIDTH (30px -> 25px) */
+      width: 25px; 
+      height: 100%;
+      display: flex; 
+      align-items: center;
+  }
+  
+  .pmu-bar-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: none; 
+  }
+
+
+  /* INGREDIENT SECTION */
+  .pmu-ingredient-header h1 {
+    color: {{ section.settings.ing_heading_color }}F2;
+    font-family: "Work Sans", sans-serif;
+    font-size: 72px;
+    font-weight: 900;
+    line-height: 0.75; 
+    margin-bottom: 80px;
+    margin-top: 100px; 
+  }
+
+  .pmu-ingredient-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    max-width: 900px;
+    margin: 0 auto 50px;
+  }
+
+  .pmu-ingredient-item {
+    display: flex;
+    gap: 15px;
+    text-align: left;
+    position: relative;
+  }
+
+  .pmu-ingredient-item.item-2,
+  .pmu-ingredient-item.item-4 {
+    text-align: right;
+    flex-direction: row-reverse;
+  }
+
+  .pmu-ing-content {
+    flex: 1;
+    background-color: {{ section.settings.ingredient_bg_color }}; 
+    border: 2px solid {{ section.settings.ing_heading_color }};
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .pmu-ing-content h2 {
+    font-size: 24px;
+    font-weight: 900;
+    color: {{ section.settings.ing_heading_color }}F2;
+    line-height: 1;
+    margin: 0 0 5px;
+    font-family: "Work Sans", sans-serif;
+  }
+
+  .pmu-ing-content p {
+    font-size: 14px;
+    color: {{ section.settings.ing_heading_color }}F2;
+    line-height: 1.8;
+    margin: 0;
+    font-weight: 400;
+    font-family: "Work Sans", sans-serif;
+    text-align: left;
+  }
+
+  .pmu-ingredient-item.item-2 .pmu-ing-content p,
+  .pmu-ingredient-item.item-4 .pmu-ing-content p {
+      text-align: right; 
+  }
+  
+  .pmu-ing-icon {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 5;
+    margin-top: 50px;
+  }
+  
+  /* Amount Overlay (simulating the star/bubble) */
+  .pmu-ing-amount {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-10deg);
+    background-color: {{ section.settings.ingredient_bg_color }};
+    border: 2px solid {{ section.settings.ing_heading_color }};
+    border-radius: 999px;
+    padding: 5px 15px;
+    font-size: 16px;
+    font-weight: 900;
+    color: {{ section.settings.ing_heading_color }}F2;
+    z-index: 6;
+    white-space: nowrap;
+  }
+  
+  .pmu-ingredient-item.item-2 .pmu-ing-amount,
+  .pmu-ingredient-item.item-4 .pmu-ing-amount {
+    left: auto;
+    right: 50%;
+    transform: translateX(50%) rotate(10deg);
+  }
+
+  /* Footer Button */
+  .pmu-button-wrapper {
+    margin-top: 50px;
+    text-align: center;
+  }
+  
+  .pmu-button {
+    font-family: "Work Sans", sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    color: {{ section.settings.ing_heading_color }}F2;
+    text-decoration: none;
+    padding: 12px 25px;
+    border: 2px solid {{ section.settings.ing_heading_color }};
+    display: inline-block;
+    background-color: #ffffff;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+  
+
+/* MOBILE ADJUSTMENTS */
+/* MOBILE ADJUSTMENTS */
+@media (max-width: 990px) {
+  .pmu-section {
+    padding: 50px 15px;
+  }
+
+  /* --- GUMMY BEAR OVERLAY (mobile sizing/positioning) --- */
+  .pmu-floating-gummy {
+      width: 90px;     /* smaller on mobile */
+      height: auto;
+      filter: drop-shadow(0 0 6px rgba(0,0,0,0.25));
+  }
+
+  .pmu-gummy-left {
+      top: -20px;
+      left: -10px;
+      transform: rotate(-8deg);
+  }
+
+  .pmu-gummy-right {
+      top: 120px;
+      right: -10px;
+      transform: rotate(12deg);
+  }
+
+  /* --- FIXED: Bars stay horizontal + no right-side cutoff --- */
+  .pmu-bar-group-wrapper {
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%) rotateZ(0deg);
+      width: 100%;
+      max-width: calc(100% - 20px);
+      padding: 0 10px;
+      overflow: visible;
+  }
+
+  .pmu-bar-group {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+  }
+
+  .pmu-bar-unit {
+      flex: 1;
+      min-width: 0;
+      height: 22px;
+      padding: 0 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+  }
+
+  .pmu-bar-image {
+      width: 18px;
+      flex-shrink: 0;
+  }
+
+  .pmu-bar-text {
+      font-size: 10px;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+  }
+.pmu-header h1 {
+    font-size: 36px;
+}
+.pmu-header p {
+    font-size: 13px;
+}
+  /* Ingredient heading */
+  .pmu-ingredient-header h1 {
+    font-size: 10px;
+  line-height: 1.2;
+  margin-top: 50px;
+  }
+
+  /* Ingredient grid */
+  .pmu-ingredient-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pmu-ingredient-item,
+  .pmu-ingredient-item.item-2,
+  .pmu-ingredient-item.item-4 {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+  }
+
+  .pmu-ing-content {
+      text-align: center;
+      width: 100%;
+  }
+
+  .pmu-ing-content p {
+      text-align: center !important;
+  }
+
+  .pmu-ing-icon {
+      margin-top: 0;
+  }
+
+  .pmu-ing-amount {
+      top: 0;
+      transform: none;
+      position: static;
+      margin-bottom: 15px;
+  }
+}
+
+</style>
+
+<div class="pmu-section">
+  <div class="pmu-container">
+    
+    <div class="pmu-header">
+      {% if section.settings.heading != blank %}
+        <h1>{{ section.settings.heading | escape }}</h1>
+      {% endif %}
+      {% if section.settings.subheading != blank %}
+        <p>{{ section.settings.subheading }}</p>
+      {% endif %}
+    </div>
+
+    <div class="pmu-hero-media">
+      {% if section.settings.gummy_left != blank %}
+        {{ section.settings.gummy_left | image_url: width: 300 | image_tag: loading: 'lazy', class: 'pmu-floating-gummy pmu-gummy-left' }}
+      {% endif %}
+
+      {% if section.settings.gummy_right != blank %}
+        {{ section.settings.gummy_right | image_url: width: 300 | image_tag: loading: 'lazy', class: 'pmu-floating-gummy pmu-gummy-right' }}
+      {% endif %}
+
+      {% if section.settings.hero_image != blank %}
+        {{ section.settings.hero_image | image_url: width: 800 | image_tag: loading: 'lazy', class: 'pmu-hero-img' }}
+      {% else %}
+        <div style="width: 100%; height: 400px; background: #c08080; display: flex; align-items: center; justify-content: center;">
+          Upload Hero Image
+        </div>
+      {% endif %}
+
+        <div class="pmu-bar-group-wrapper">
+            <div class="pmu-bar-group">
+                
+                {% if section.settings.bar_image_left != blank and section.settings.bar_text_1 != blank %}
+                    <div class="pmu-bar-unit">
+                        <div class="pmu-bar-image">
+                            {{ section.settings.bar_image_left | image_url: width: 60 | image_tag: loading: 'lazy' }}
+                        </div>
+                        <p class="pmu-bar-text" style="color: {{ section.settings.bar_text_color }};">{{ section.settings.bar_text_1 | escape }}</p>
+                    </div>
+                {% endif %}
+
+                {% if section.settings.bar_image_center != blank and section.settings.bar_text_2 != blank %}
+                    <div class="pmu-bar-unit">
+                        <div class="pmu-bar-image">
+                            {{ section.settings.bar_image_center | image_url: width: 60 | image_tag: loading: 'lazy' }}
+                        </div>
+                        <p class="pmu-bar-text" style="color: {{ section.settings.bar_text_color }};">{{ section.settings.bar_text_2 | escape }}</p>
+                    </div>
+                {% endif %}
+
+                {% if section.settings.bar_image_right != blank and section.settings.bar_text_3 != blank %}
+                    <div class="pmu-bar-unit">
+                        <div class="pmu-bar-image">
+                            {{ section.settings.bar_image_right | image_url: width: 60 | image_tag: loading: 'lazy' }}
+                        </div>
+                        <p class="pmu-bar-text" style="color: {{ section.settings.bar_text_color }};">{{ section.settings.bar_text_3 | escape }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="pmu-ingredient-header">
+      {% if section.settings.ingredient_heading != blank %}
+        <h1 style="color: {{ section.settings.ing_heading_color }}F2;">{{ section.settings.ingredient_heading | escape }}</h1>
+      {% endif %}
+    </div>
+
+    {% if section.blocks.size > 0 %}
+      <div class="pmu-ingredient-grid">
+        {% for block in section.blocks %}
+          <div class="pmu-ingredient-item item-{{ forloop.index }}" {{ block.shopify_attributes }}>
+            
+            <div class="pmu-ing-icon">
+                {% if block.settings.amount != blank %}
+                    <span class="pmu-ing-amount">{{ block.settings.amount | escape }}</span>
+                {% endif %}
+                {% if block.settings.icon != blank %}
+                    {{ block.settings.icon | image_url: width: 200 | image_tag: loading: 'lazy' }}
+                {% else %}
+                    <div style="width: 100px; height: 100px; border: 1px dashed #200000; background: #fff;"></div>
+                {% endif %}
+            </div>
+
+            <div class="pmu-ing-content">
+              {% if block.settings.title != blank %}
+                <h2 style="color: {{ section.settings.ing_heading_color }}F2;">{{ block.settings.title | escape }}</h2>
+              {% endif %}
+              {% if block.settings.description != blank %}
+                <div style="color: {{ section.settings.ing_heading_color }}F2;">
+                    {{ block.settings.description }}
+                </div>
+              {% endif %}
+            </div>
+
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if section.settings.button_label != blank and section.settings.button_link != blank %}
+        <div class="pmu-button-wrapper">
+            <a href="{{ section.settings.button_link }}" class="pmu-button">{{ section.settings.button_label | escape }}</a>
+        </div>
+    {% endif %}
+
+  </div>
+</div>
