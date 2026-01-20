@@ -6,18 +6,6 @@
     overflow: hidden;
   }
 
-  .custom-collection::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-    pointer-events: none;
-    {% unless section.settings.enable_glass_effect %}display: none;{% endunless %}
-  }
-
   .collection-container {
     max-width: {{ section.settings.container_width | default: 1200 }}px;
     margin: 0 auto;
@@ -27,12 +15,10 @@
 
   .collection-heading {
     text-align: center;
-    margin-bottom: 50px;
+    margin-bottom: 40px;
     color: {{ section.settings.text_color | default: '#333' }};
     font-size: clamp(2rem, 4vw, 3.5rem);
     font-weight: 300;
-    letter-spacing: 0.02em;
-    text-shadow: none;
     font-style: italic;
   }
 
@@ -40,26 +26,31 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
-    padding: 0;
   }
 
   .product-card {
-    background: transparent; /* Made transparent */
+    background: transparent;
     border-radius: {{ section.settings.card_border_radius | default: 25 }}px;
-    padding: {{ section.settings.card_padding | default: 30 }}px 20px 25px;
+    /* Reduced padding to shorten card */
+    padding: 20px 15px 20px; 
     text-align: center;
     position: relative;
     transition: {% if section.settings.enable_hover_effects %}all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94){% else %}none{% endif %};
     border: {{ section.settings.card_stroke_width | default: 2 }}px solid {{ section.settings.card_stroke_color | default: '#e0e0e0' }};
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
     overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 500px;
+    /* Shortened min-height significantly */
+    min-height: 360px; 
   }
 
-  /* Individual glow effects for each product position */
+  /* GLOW UPDATES:
+     1. Size reduced to 50% (was 80%) to avoid clipping/padding issues.
+     2. Blur increased to 30px for softness.
+     3. Opacity logic changed in hover section below.
+  */
   .product-card:nth-child(1) .product-image-container::before,
   .product-card:nth-child(5) .product-image-container::before,
   .product-card:nth-child(9) .product-image-container::before {
@@ -68,14 +59,14 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 80%;
-    height: 80%;
+    width: 50%; 
+    height: 50%;
     background: {{ section.settings.glow_gradient_1 | default: 'radial-gradient(circle, rgba(74, 144, 226, 0.3) 0%, rgba(144, 19, 254, 0.2) 50%, rgba(255, 100, 100, 0.1) 100%)' }};
     border-radius: 50%;
     opacity: 0;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.5s ease;
     z-index: -1;
-    filter: blur(15px);
+    filter: blur(30px);
     {% unless section.settings.enable_hover_effects %}display: none;{% endunless %}
   }
 
@@ -87,14 +78,14 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 80%;
-    height: 80%;
+    width: 50%;
+    height: 50%;
     background: {{ section.settings.glow_gradient_2 | default: 'radial-gradient(circle, rgba(255, 105, 180, 0.3) 0%, rgba(255, 20, 147, 0.2) 50%, rgba(138, 43, 226, 0.1) 100%)' }};
     border-radius: 50%;
     opacity: 0;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.5s ease;
     z-index: -1;
-    filter: blur(15px);
+    filter: blur(30px);
     {% unless section.settings.enable_hover_effects %}display: none;{% endunless %}
   }
 
@@ -106,14 +97,14 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 80%;
-    height: 80%;
+    width: 50%;
+    height: 50%;
     background: {{ section.settings.glow_gradient_3 | default: 'radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, rgba(255, 165, 0, 0.2) 50%, rgba(255, 69, 0, 0.1) 100%)' }};
     border-radius: 50%;
     opacity: 0;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.5s ease;
     z-index: -1;
-    filter: blur(15px);
+    filter: blur(30px);
     {% unless section.settings.enable_hover_effects %}display: none;{% endunless %}
   }
 
@@ -125,38 +116,46 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 80%;
-    height: 80%;
+    width: 50%;
+    height: 50%;
     background: {{ section.settings.glow_gradient_4 | default: 'radial-gradient(circle, rgba(50, 205, 50, 0.3) 0%, rgba(34, 139, 34, 0.2) 50%, rgba(0, 128, 0, 0.1) 100%)' }};
     border-radius: 50%;
     opacity: 0;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.5s ease;
     z-index: -1;
-    filter: blur(15px);
+    filter: blur(30px);
     {% unless section.settings.enable_hover_effects %}display: none;{% endunless %}
   }
 
+  /* GLOW INTENSITY REDUCTION:
+     Changed opacity from 1 to 0.3
+  */
   .product-card:hover .product-image-container::before {
-    opacity: {% if section.settings.enable_hover_effects %}1{% else %}0{% endif %};
+    opacity: {% if section.settings.enable_hover_effects %}0.3{% else %}0{% endif %};
   }
 
+  /* HOVER MOVEMENT REDUCTION:
+     TranslateY: -8px -> -4px
+     Scale: 1.02 -> 1.01
+  */
   .product-card:hover {
     {% if section.settings.enable_hover_effects %}
-    transform: translateY(-8px) scale(1.02);
+    transform: translateY(-4px) scale(1.01);
     box-shadow:
-      0 20px 60px rgba(0, 0, 0, 0.15),
-      0 0 0 2px {{ section.settings.card_stroke_color | default: '#e0e0e0' }};
+      0 15px 40px rgba(0, 0, 0, 0.1),
+      0 0 0 1px {{ section.settings.card_stroke_color | default: '#e0e0e0' }};
     border: {{ section.settings.card_stroke_width | default: 2 }}px solid {{ section.settings.card_stroke_color | default: '#e0e0e0' }};
     {% endif %}
   }
 
   .product-image-container {
     position: relative;
-    margin-bottom: 25px;
+    margin-bottom: 15px; /* Reduced margin */
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: {{ section.settings.image_height | default: 400 }}px;
+    /* Reduced height slightly to accommodate shorter card */
+    min-height: {{ section.settings.image_height | default: 300 }}px; 
     z-index: 1;
     flex: 1;
   }
@@ -168,23 +167,55 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative; /* Needed for absolute positioning of second image */
   }
 
+  /* IMAGE STYLING */
   .product-image {
-    max-width: 300%; /* Scaled up by 2x from 150% */
+    max-width: 280%; /* Slightly reduced from 300% */
     width: auto;
     height: auto;
-    max-height: calc({{ section.settings.image_height | default: 400 }}px - 40px);
+    max-height: calc({{ section.settings.image_height | default: 300 }}px - 20px);
     object-fit: contain;
-    transition: {% if section.settings.enable_hover_effects %}transform 0.3s ease{% else %}none{% endif %};
+    transition: opacity 0.4s ease, transform 0.4s ease;
     background: transparent;
     mix-blend-mode: multiply;
   }
 
-  .product-card:hover .product-image {
-    transform: {% if section.settings.enable_hover_effects %}scale(1.1){% else %}none{% endif %};
+  /* Second Image Styles */
+  .product-image.primary {
+    opacity: 1;
+    position: relative;
+    z-index: 1;
   }
 
+  .product-image.secondary {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    z-index: 2;
+  }
+
+  /* Hover Effects for Images */
+  .product-card:hover .product-image.primary {
+    opacity: 0;
+  }
+
+  .product-card:hover .product-image.secondary {
+    opacity: 1;
+  }
+
+  /* If there is no secondary image, we can just do a very subtle scale on the primary */
+  .product-image.single-image {
+     transition: transform 0.4s ease;
+  }
+  .product-card:hover .product-image.single-image {
+    transform: scale(1.03);
+  }
+
+  /* Fallback Jars styling (retaining existing logic) */
   .product-jar {
     width: 60px;
     height: 80px;
@@ -192,65 +223,23 @@
     position: relative;
     transition: transform 0.3s ease;
   }
-
   .product-jar.teal { background: linear-gradient(145deg, #4ecdc4, #44a08d); }
   .product-jar.purple { background: linear-gradient(145deg, #a8caba, #5d4e75); }
   .product-jar.gold { background: linear-gradient(145deg, #f7931e, #ffd200); }
   .product-jar.brown { background: linear-gradient(145deg, #8b4513, #cd853f); }
 
   .product-jar::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 45px;
-    height: 12px;
-    background: #ccc;
-    border-radius: 8px;
+    content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+    width: 45px; height: 12px; background: #ccc; border-radius: 8px;
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
   }
-
   .product-jar::after {
-    content: '';
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 50px;
+    content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    width: 40px; height: 50px;
     background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%);
     border-radius: 40% 40% 50% 50% / 50% 50% 40% 40%;
   }
-
-  .product-card:hover .product-jar {
-    transform: rotate(-5deg) scale(1.1);
-  }
-
-  .product-package {
-    width: 45px;
-    height: 90px;
-    background: linear-gradient(180deg, #f0f0f0, #d0d0d0);
-    border-radius: 4px;
-    position: relative;
-    transition: transform 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  }
-
-  .product-package::before {
-    content: '';
-    position: absolute;
-    top: 15px;
-    left: 5px;
-    right: 5px;
-    height: 50px;
-    background: linear-gradient(180deg, #333, #666);
-    border-radius: 2px;
-  }
-
-  .product-card:hover .product-package {
-    transform: rotate(5deg) scale(1.1);
-  }
+  .product-card:hover .product-jar { transform: rotate(-5deg) scale(1.05); }
 
   .product-info {
     position: relative;
@@ -259,16 +248,16 @@
   }
 
   .product-title {
-    font-size: {{ section.settings.title_size | default: 18 }}px;
+    font-size: {{ section.settings.title_size | default: 16 }}px; /* Slightly smaller default */
     font-weight: 500;
     color: {{ section.settings.text_color | default: '#333' }};
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     text-shadow: none;
     letter-spacing: 0.5px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 15px;
+    gap: 10px;
   }
 
   .product-title-link {
@@ -282,18 +271,19 @@
   }
 
   .product-price {
-    font-size: {{ section.settings.price_size | default: 16 }}px;
+    font-size: {{ section.settings.price_size | default: 15 }}px;
     color: {{ section.settings.price_color | default: '#666' }};
     font-weight: 600;
+    white-space: nowrap;
   }
 
   .add-to-cart-btn {
     background: {{ section.settings.button_color | default: '#333333' }};
     border: 1px solid {{ section.settings.button_color | default: '#333333' }};
     color: {{ section.settings.button_text_color | default: '#ffffff' }};
-    padding: 12px 24px;
+    padding: 10px 20px;
     border-radius: 25px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 500;
     letter-spacing: 0.5px;
     cursor: pointer;
@@ -301,151 +291,52 @@
     text-transform: uppercase;
     position: relative;
     overflow: hidden;
-    margin-top: 15px;
+    margin-top: 10px;
     width: 100%;
-  }
-
-  .add-to-cart-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.5s ease;
   }
 
   .add-to-cart-btn:hover {
     background: rgba(51, 51, 51, 1);
-    border-color: rgba(51, 51, 51, 0.5);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-  }
-
-  .add-to-cart-btn:hover::before {
-    left: 100%;
-  }
-
-  .add-to-cart-btn:active {
-    transform: translateY(0);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   }
 
   /* Responsive Design */
   @media (max-width: 768px) {
-    .custom-collection {
-      padding: 30px 15px 30px;
+    .custom-collection { padding: 30px 15px 30px; }
+    .products-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+    
+    .product-card { 
+      padding: 15px 10px 15px; 
+      min-height: 280px; /* Shorter for mobile */
     }
-
-    .products-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-    }
-
-    .product-card {
-      padding: 15px 10px 15px;
-      min-height: 400px;
-    }
-
-    .collection-heading {
-      margin-bottom: 25px;
-      font-size: 1.8rem;
-    }
-
+    
+    .collection-heading { margin-bottom: 25px; font-size: 1.8rem; }
+    
     .product-title {
       font-size: 14px;
       flex-direction: column;
       align-items: center;
       gap: 5px;
-      margin-bottom: 8px;
+      margin-bottom: 5px;
     }
+    
+    .product-image-container { min-height: 180px; margin-bottom: 10px; }
+    .product-image { max-width: 220%; max-height: 160px; }
+    
+    .add-to-cart-btn { padding: 8px 16px; font-size: 0.75rem; margin-top: 8px; }
 
-    .product-price {
-      font-size: 13px;
-    }
-
-    .product-image-container {
-      min-height: 200px;
-      margin-bottom: 15px;
-    }
-
-    .product-image {
-      max-width: 240%; /* Scaled for mobile */
-      max-height: 180px;
-    }
-
-    .add-to-cart-btn {
-      padding: 10px 16px;
-      font-size: 0.8rem;
-      margin-top: 10px;
-    }
-
-    /* Disable hover effects on mobile for cleaner experience */
-    .product-card:hover {
-      transform: none;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-
-    .product-card:hover .product-image {
-      transform: none;
-    }
-
-    .product-card:hover .product-image-container::before {
-      opacity: 0;
-    }
-
-    .product-card:hover .product-jar,
-    .product-card:hover .product-package {
-      transform: none;
-    }
-
-    .add-to-cart-btn:hover {
-      transform: none;
-    }
+    /* Disable hover logic on mobile */
+    .product-card:hover { transform: none; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05); }
+    .product-card:hover .product-image-container::before { opacity: 0; }
+    .product-image.secondary { display: none; }
+    .product-card:hover .product-image.primary { opacity: 1; }
   }
 
   @media (max-width: 480px) {
-    .custom-collection {
-      padding: 20px 10px 20px;
-    }
-
-    .products-grid {
-      gap: 10px;
-    }
-
-    .product-card {
-      padding: 12px 8px 12px;
-      min-height: 350px;
-    }
-
-    .collection-heading {
-      font-size: 1.5rem;
-      margin-bottom: 20px;
-    }
-
-    .product-title {
-      font-size: 12px;
-    }
-
-    .product-price {
-      font-size: 12px;
-    }
-
-    .product-image-container {
-      min-height: 150px;
-      margin-bottom: 10px;
-    }
-
-    .product-image {
-      max-width: 200%; /* Scaled for smaller mobile */
-      max-height: 130px;
-    }
-
-    .add-to-cart-btn {
-      padding: 8px 12px;
-      font-size: 0.75rem;
-      margin-top: 8px;
-    }
+    .product-card { min-height: 250px; }
+    .product-image-container { min-height: 140px; }
+    .product-image { max-height: 120px; }
   }
 </style>
 
@@ -468,8 +359,15 @@
                   <img
                     src="{{ product.featured_image | img_url: '600x600' }}"
                     alt="{{ product.title }}"
-                    class="product-image"
+                    class="product-image primary {% unless product.images[1] %}single-image{% endunless %}"
                   >
+                  {% if product.images[1] %}
+                    <img
+                      src="{{ product.images[1] | img_url: '600x600' }}"
+                      alt="{{ product.title }}"
+                      class="product-image secondary"
+                    >
+                  {% endif %}
                 {% else %}
                   <div
                     class="product-jar {{ forloop.index | modulo: 4 | plus: 1 | replace: '1', 'teal' | replace: '2', 'purple' | replace: '3', 'gold' | replace: '4', 'brown' }}"
@@ -494,7 +392,6 @@
           </div>
         {% endfor %}
       {% else %}
-        <!-- Fallback placeholder products -->
         {% for i in (1..4) %}
           <div class="product-card">
             <div class="product-image-container">
@@ -523,7 +420,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Handle add to cart button clicks to open drawer instead of page redirect
   const addToCartButtons = document.querySelectorAll('.add-to-cart-btn[data-product-id]');
   
   addToCartButtons.forEach(button => {
@@ -533,60 +429,23 @@ document.addEventListener('DOMContentLoaded', function() {
       const form = this.closest('form');
       const formData = new FormData(form);
       
-      // Add to cart via AJAX
       fetch('/cart/add.js', {
         method: 'POST',
         body: formData
       })
       .then(response => response.json())
       .then(data => {
-        // Open cart drawer - this will depend on your theme's cart drawer implementation
-        // Common methods include:
-        
-        // Method 1: Trigger theme's cart drawer
-        if (typeof window.theme !== 'undefined' && window.theme.cart) {
-          window.theme.cart.open();
-        }
-        
-        // Method 2: Dispatch custom event for cart drawer
+        // Trigger generic cart open event
         document.dispatchEvent(new CustomEvent('cart:open'));
-        
-        // Method 3: Common drawer selectors
-        const drawer = document.querySelector('[data-cart-drawer]') || 
-                      document.querySelector('.cart-drawer') ||
-                      document.querySelector('#cart-drawer');
-        if (drawer) {
-          drawer.classList.add('is-open', 'open', 'active');
-        }
-        
-        // Method 4: Shopify's native cart notification
-        if (typeof Shopify !== 'undefined' && Shopify.theme && Shopify.theme.cart) {
-          Shopify.theme.cart.open();
-        }
-        
-        // Update cart count if element exists
-        const cartCount = document.querySelector('[data-cart-count]') || 
-                         document.querySelector('.cart-count');
-        if (cartCount) {
-          fetch('/cart.js')
-            .then(response => response.json())
-            .then(cart => {
-              cartCount.textContent = cart.item_count;
-            });
-        }
-        
-        // Show success feedback
+        if (typeof window.theme !== 'undefined' && window.theme.cart) { window.theme.cart.open(); }
+        const drawer = document.querySelector('cart-drawer') || document.querySelector('#cart-drawer');
+        if (drawer) drawer.classList.add('active');
+
         button.textContent = 'Added!';
-        setTimeout(() => {
-          button.textContent = 'Add to Cart';
-        }, 2000);
+        setTimeout(() => { button.textContent = 'Add to Cart'; }, 2000);
       })
       .catch(error => {
-        console.error('Error adding to cart:', error);
-        button.textContent = 'Error';
-        setTimeout(() => {
-          button.textContent = 'Add to Cart';
-        }, 2000);
+        console.error('Error:', error);
       });
     });
   });
@@ -628,8 +487,7 @@ document.addEventListener('DOMContentLoaded', function() {
       "max": 1600,
       "step": 100,
       "default": 1200,
-      "label": "Container Max Width (px)",
-      "unit": "px"
+      "label": "Container Max Width (px)"
     },
     {
       "type": "range",
@@ -638,8 +496,7 @@ document.addEventListener('DOMContentLoaded', function() {
       "max": 120,
       "step": 10,
       "default": 60,
-      "label": "Section Top Padding (px)",
-      "unit": "px"
+      "label": "Section Top Padding"
     },
     {
       "type": "range",
@@ -648,22 +505,11 @@ document.addEventListener('DOMContentLoaded', function() {
       "max": 120,
       "step": 10,
       "default": 60,
-      "label": "Section Bottom Padding (px)",
-      "unit": "px"
-    },
-    {
-      "type": "range",
-      "id": "section_padding_horizontal",
-      "min": 10,
-      "max": 50,
-      "step": 5,
-      "default": 20,
-      "label": "Section Horizontal Padding (px)",
-      "unit": "px"
+      "label": "Section Bottom Padding"
     },
     {
       "type": "header",
-      "content": "Styling Options"
+      "content": "Styling"
     },
     {
       "type": "color",
@@ -686,19 +532,19 @@ document.addEventListener('DOMContentLoaded', function() {
     {
       "type": "color",
       "id": "button_color",
-      "label": "Button Background Color",
+      "label": "Button Background",
       "default": "#333333"
     },
     {
       "type": "color",
       "id": "button_text_color",
-      "label": "Button Text Color",
+      "label": "Button Text",
       "default": "#ffffff"
     },
     {
       "type": "color",
       "id": "card_stroke_color",
-      "label": "Card Stroke Color",
+      "label": "Card Stroke",
       "default": "#e0e0e0"
     },
     {
@@ -708,18 +554,7 @@ document.addEventListener('DOMContentLoaded', function() {
       "max": 5,
       "step": 1,
       "default": 2,
-      "label": "Card Stroke Width (px)",
-      "unit": "px"
-    },
-    {
-      "type": "range",
-      "id": "card_padding",
-      "min": 10,
-      "max": 50,
-      "step": 5,
-      "default": 30,
-      "label": "Card Padding (px)",
-      "unit": "px"
+      "label": "Card Stroke Width"
     },
     {
       "type": "range",
@@ -728,8 +563,7 @@ document.addEventListener('DOMContentLoaded', function() {
       "max": 50,
       "step": 5,
       "default": 25,
-      "label": "Card Border Radius (px)",
-      "unit": "px"
+      "label": "Card Border Radius"
     },
     {
       "type": "range",
@@ -737,29 +571,26 @@ document.addEventListener('DOMContentLoaded', function() {
       "min": 200,
       "max": 600,
       "step": 50,
-      "default": 400,
-      "label": "Image Container Height (px)",
-      "unit": "px"
+      "default": 300,
+      "label": "Image Container Height"
     },
     {
       "type": "range",
       "id": "title_size",
       "min": 14,
       "max": 24,
-      "step": 2,
-      "default": 18,
-      "label": "Title Font Size (px)",
-      "unit": "px"
+      "step": 1,
+      "default": 16,
+      "label": "Title Size"
     },
     {
       "type": "range",
       "id": "price_size",
       "min": 12,
       "max": 20,
-      "step": 2,
-      "default": 16,
-      "label": "Price Font Size (px)",
-      "unit": "px"
+      "step": 1,
+      "default": 15,
+      "label": "Price Size"
     },
     {
       "type": "checkbox",
@@ -768,42 +599,32 @@ document.addEventListener('DOMContentLoaded', function() {
       "default": true
     },
     {
-      "type": "checkbox",
-      "id": "enable_glass_effect",
-      "label": "Enable Glass/Blur Effects",
-      "default": true
-    },
-    {
       "type": "header",
-      "content": "Individual Glow Effects"
+      "content": "Glow Gradients"
     },
     {
       "type": "text",
       "id": "glow_gradient_1",
-      "label": "Product 1 Glow Gradient (CSS)",
-      "default": "radial-gradient(circle, rgba(74, 144, 226, 0.3) 0%, rgba(144, 19, 254, 0.2) 50%, rgba(255, 100, 100, 0.1) 100%)",
-      "info": "CSS gradient for the first product's glow effect"
+      "label": "Product 1 Glow",
+      "default": "radial-gradient(circle, rgba(74, 144, 226, 0.3) 0%, rgba(144, 19, 254, 0.2) 50%, rgba(255, 100, 100, 0.1) 100%)"
     },
     {
       "type": "text",
       "id": "glow_gradient_2",
-      "label": "Product 2 Glow Gradient (CSS)",
-      "default": "radial-gradient(circle, rgba(255, 105, 180, 0.3) 0%, rgba(255, 20, 147, 0.2) 50%, rgba(138, 43, 226, 0.1) 100%)",
-      "info": "CSS gradient for the second product's glow effect"
+      "label": "Product 2 Glow",
+      "default": "radial-gradient(circle, rgba(255, 105, 180, 0.3) 0%, rgba(255, 20, 147, 0.2) 50%, rgba(138, 43, 226, 0.1) 100%)"
     },
     {
       "type": "text",
       "id": "glow_gradient_3",
-      "label": "Product 3 Glow Gradient (CSS)",
-      "default": "radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, rgba(255, 165, 0, 0.2) 50%, rgba(255, 69, 0, 0.1) 100%)",
-      "info": "CSS gradient for the third product's glow effect"
+      "label": "Product 3 Glow",
+      "default": "radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, rgba(255, 165, 0, 0.2) 50%, rgba(255, 69, 0, 0.1) 100%)"
     },
     {
       "type": "text",
       "id": "glow_gradient_4",
-      "label": "Product 4 Glow Gradient (CSS)",
-      "default": "radial-gradient(circle, rgba(50, 205, 50, 0.3) 0%, rgba(34, 139, 34, 0.2) 50%, rgba(0, 128, 0, 0.1) 100%)",
-      "info": "CSS gradient for the fourth product's glow effect"
+      "label": "Product 4 Glow",
+      "default": "radial-gradient(circle, rgba(50, 205, 50, 0.3) 0%, rgba(34, 139, 34, 0.2) 50%, rgba(0, 128, 0, 0.1) 100%)"
     }
   ],
   "presets": [
