@@ -1,0 +1,373 @@
+{{ 'section-hero-smoke-smarter.css' | asset_url | stylesheet_tag }}
+
+<section class="hero-smoke-smarter">
+  <!-- Decorative stroke behind header and image -->
+  <img src="https://cdn.shopify.com/s/files/1/0697/1880/2532/files/stroke.svg?v=1763210522" 
+       alt="Decorative stroke" 
+       class="hero-stroke">
+
+  <div class="hero-container">
+    <div class="hero-content">
+      <div class="hero-text">
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'title' %}
+              <h1 class="hero-title" style="font-size: {{ block.settings.font_size }}px; margin-bottom: {{ block.settings.margin_bottom }}px; font-family: {{ block.settings.font_family }}; font-weight: {{ block.settings.font_weight }}; font-style: {{ block.settings.font_style }};">
+                {{ block.settings.text | default: "SMOKE SMARTER SPEND LESS." }}
+              </h1>
+
+            {% when 'description' %}
+              <div class="glass-wrap glow-pulse description-glass">
+                <p class="hero-description" style="font-size: {{ block.settings.font_size }}px; margin-bottom: {{ block.settings.margin_bottom }}px; font-family: {{ block.settings.font_family }}; font-weight: {{ block.settings.font_weight }}; font-style: {{ block.settings.font_style }};">
+                  {{ block.settings.text | default: "The average smoker spends over $4,000 a year, vapers up to $2,500. With Herbaco, one bottle can last a month, even for heavy smokers. Our herbal blends mix with cannabis, help you quit nicotine, or stand alone as a ritual worth keeping." }}
+                </p>
+              </div>
+
+            {% when 'stats' %}
+              <div class="hero-stats glow-pulse sticker-glass">
+                <div class="stat-number" style="font-size: 28px; margin-bottom: 2px; line-height: 1.1;">
+                  {{ block.settings.number | default: "1.97" }}
+                </div>
+                <div class="stat-description" style="font-size: 14px; line-height: 1.2;">
+                  {{ block.settings.description | default: "Ounces With Us." }}
+                </div>
+              </div>
+
+          {% endcase %}
+        {% endfor %}
+      </div>
+
+      <div class="hero-image">
+        {% if section.settings.hero_image %}
+          <img src="{{ section.settings.hero_image | img_url: '800x600' }}" 
+               alt="{{ section.settings.hero_image.alt | default: 'Product showcase' }}"
+               loading="lazy">
+        {% else %}
+          <div class="placeholder-image">
+            <svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="400" height="300" fill="#f5f5f5"/>
+              <circle cx="100" cy="150" r="60" fill="#d4af37" opacity="0.8"/>
+              <circle cx="150" cy="150" r="60" fill="#cd5c5c" opacity="0.8"/>
+              <circle cx="200" cy="150" r="60" fill="#708090" opacity="0.8"/>
+              <circle cx="250" cy="150" r="60" fill="#dda0dd" opacity="0.8"/>
+              <rect x="300" y="75" width="80" height="150" fill="#333" opacity="0.6"/>
+              <text x="200" y="280" text-anchor="middle" fill="#999" font-size="14">Product Image Placeholder</text>
+            </svg>
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+.hero-smoke-smarter {
+  position: relative; 
+  padding: {{ section.settings.padding_desktop | default: 60 }}px 20px;
+  background-color: {{ section.settings.background_color | default: '#f8f8f8' }};
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  overflow: visible;
+}
+
+.hero-stroke {
+  position: absolute;
+  top: 200px; /* desktop: starts under header */
+  left: 50%;
+  transform: translateX(-40%);
+  transform-origin: top center;
+  z-index: 0;
+  width: 120%;
+  max-width: 1400px;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.hero-container {
+  position: relative;
+  z-index: 3; /* content above stroke */
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hero-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.hero-text {
+  max-width: 500px;
+  text-align: center;
+}
+
+.hero-title {
+  font-weight: 900;
+  line-height: 1.1;
+  color: {{ section.settings.title_color | default: '#000000' }};
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  height: 200px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-description {
+  line-height: 1.6;
+  color: {{ section.settings.text_color | default: '#666666' }};
+  overflow: hidden;
+}
+
+.hero-stats {
+  text-align: center;
+  overflow: hidden;
+}
+
+.glass-wrap {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 20px;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.12);
+  margin: 20px auto;
+}
+
+.description-glass {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.sticker-glass {
+  display: inline-block;
+  text-align: center;
+  padding: 6px 14px;
+  border-radius: 12px;
+  margin-top: 6px;
+  transform: rotate(-6deg);
+  background: transparent;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(0,0,0,0.00); }
+  50% { box-shadow: 0 0 25px rgba(0,0,0,0.0); }
+}
+
+.glow-pulse {
+  animation: pulseGlow 2.5s infinite ease-in-out;
+}
+
+.hero-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.placeholder-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .hero-smoke-smarter {
+    padding-top: 20px; /* reduced top padding for stroke alignment */
+    padding-bottom: 40px;
+  }
+
+  .hero-content {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+
+  .hero-text {
+    max-width: 100%;
+  }
+
+  .hero-title {
+    font-size: 32px !important;
+    line-height: 1.2;
+  }
+
+  .hero-stroke {
+    top: 0;
+    left: 50%;
+    width: auto;
+    height: 100%;
+    transform: translateX(-50%) rotate(90deg);
+    transform-origin: top left;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .hero-smoke-smarter {
+    padding-top: 5px;
+    padding-bottom: 20px;
+    position: relative;
+    overflow: hidden; /* prevent stroke from spilling */
+  }
+
+  .hero-title {
+    font-size: 27px !important;
+    line-height: 1.2;
+    height: auto;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .hero-stroke {
+    position: absolute;
+    top: -75%;          /* move stroke further up */
+    left: 50%;
+    width: 190%;        /* slightly smaller (scale down 5%) */
+    height: 190%;       /* slightly smaller (scale down 5%) */
+    max-width: none;
+    transform: translateX(-50%) rotate(105deg); /* rotate more */
+    transform-origin: center center;
+    z-index: 0;
+    opacity: 0.00;
+    display: block;
+  }
+
+  .hero-content {
+    position: relative; /* keep content above stroke */
+    z-index: 3;
+    gap: 20px;
+  }
+
+  /* Make glass backgrounds more transparent on mobile so stroke shows */
+  .glass-wrap.description-glass {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .sticker-glass {
+    background: rgba(255, 255, 255, 0.02);
+  }
+}
+</style>
+{% schema %}
+{
+  "name": "Hero - Smoke Smarter",
+  "tag": "section",
+  "class": "section-hero-smoke-smarter",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero Image"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#f8f8f8"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "stat_color",
+      "label": "Statistic Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "padding_desktop",
+      "label": "Desktop Padding (px)",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_tablet",
+      "label": "Tablet Padding (px)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_mobile",
+      "label": "Mobile Padding (px)",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "default": 30
+    }
+  ],
+  "blocks": [
+    {
+      "type": "title",
+      "name": "Title",
+      "settings": [
+        {"type": "text", "id": "text", "label": "Title Text", "default": "SMOKE SMARTER SPEND LESS."},
+        {"type": "range", "id": "font_size", "label": "Font Size", "min": 20, "max": 80, "step": 2, "unit": "px", "default": 56},
+        {"type": "range", "id": "margin_bottom", "label": "Bottom Margin", "min": 0, "max": 60, "step": 5, "unit": "px", "default": 30},
+        {"type": "select", "id": "font_family", "label": "Font Family", "options": [{"value":"Arial, sans-serif","label":"Arial"},{"value":"Helvetica, Arial, sans-serif","label":"Helvetica"},{"value":"'Trebuchet MS', sans-serif","label":"Trebuchet MS"},{"value":"Verdana, sans-serif","label":"Verdana"},{"value":"'Times New Roman', serif","label":"Times New Roman"},{"value":"Georgia, serif","label":"Georgia"},{"value":"'Courier New', monospace","label":"Courier New"},{"value":"Impact, sans-serif","label":"Impact"},{"value":"'Comic Sans MS', cursive","label":"Comic Sans MS"},{"value":"inherit","label":"Theme Default"}],"default":"Arial, sans-serif"},
+        {"type": "select", "id": "font_weight", "label": "Font Weight","options":[{"value":"300","label":"Light"},{"value":"400","label":"Normal"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi Bold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra Bold"},{"value":"900","label":"Black"}],"default":"900"},
+        {"type": "select", "id": "font_style", "label": "Font Style","options":[{"value":"normal","label":"Normal"},{"value":"italic","label":"Italic"}],"default":"normal"}
+      ]
+    },
+    {
+      "type": "description",
+      "name": "Description",
+      "settings": [
+        {"type": "textarea","id": "text","label": "Description Text","default": "The average smoker spends over $4,000 a year..."},
+        {"type": "range", "id": "font_size","label": "Font Size","min": 12,"max": 24,"step": 1,"unit": "px","default": 18},
+        {"type": "range", "id": "margin_bottom","label": "Bottom Margin","min":0,"max":60,"step":5,"unit":"px","default":40},
+        {"type": "select","id":"font_family","label":"Font Family","options":[{"value":"Arial, sans-serif","label":"Arial"},{"value":"Helvetica, Arial, sans-serif","label":"Helvetica"},{"value":"'Trebuchet MS', sans-serif","label":"Trebuchet MS"},{"value":"Verdana, sans-serif","label":"Verdana"},{"value":"'Times New Roman', serif","label":"Times New Roman"},{"value":"Georgia, serif","label":"Georgia"},{"value":"'Courier New', monospace","label":"Courier New"},{"value":"inherit","label":"Theme Default"}],"default":"Arial, sans-serif"},
+        {"type":"select","id":"font_weight","label":"Font Weight","options":[{"value":"300","label":"Light"},{"value":"400","label":"Normal"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi Bold"},{"value":"700","label":"Bold"}],"default":"400"},
+        {"type":"select","id":"font_style","label":"Font Style","options":[{"value":"normal","label":"Normal"},{"value":"italic","label":"Italic"}],"default":"normal"}
+      ]
+    },
+    {
+      "type": "stats",
+      "name": "Statistics",
+      "settings": [
+        {"type":"text","id":"number","label":"Statistic Number","default":"1.97"},
+        {"type":"range","id":"number_font_size","label":"Number Font Size","min":30,"max":80,"step":2,"unit":"px","default":64},
+        {"type":"range","id":"number_margin_bottom","label":"Number Bottom Margin","min":0,"max":30,"step":2,"unit":"px","default":10},
+        {"type":"text","id":"description","label":"Statistic Description","default":"Ounces With Us."},
+        {"type":"range","id":"description_font_size","label":"Description Font Size","min":14,"max":28,"step":1,"unit":"px","default":19}
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero - Smoke Smarter",
+      "blocks":[{"type":"title"},{"type":"description"},{"type":"stats"}]
+    }
+  ]
+}
+{% endschema %}}}
