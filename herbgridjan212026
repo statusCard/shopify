@@ -578,6 +578,8 @@
     background-color: {{ section.settings.card_bg_color }}; 
     backdrop-filter: blur({{ section.settings.glass_blur_amount }}px);
     -webkit-backdrop-filter: blur({{ section.settings.glass_blur_amount }}px);
+    cursor: pointer; /* Indicates interactivity */
+    transition: box-shadow 0.3s ease;
 
     /* Glow Effect */
     box-shadow: 
@@ -585,10 +587,36 @@
       {{ section.settings.glow_color | color_modify: 'alpha', section.settings.glow_opacity }};
   }
 
+  /* --- ANIMATION LOGIC START --- */
+
   .herb-card__image-wrapper {
     right: {{ section.settings.image_offset }}px; 
     width: {{ section.settings.image_max_size | plus: section.settings.image_offset | times: -1 }}px; 
+    
+    /* Smooth Transition for the animation */
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform-origin: center center;
+    will-change: transform;
+    
+    /* Default position */
+    transform: translateY(-50%) scale(1) translateX(0);
   }
+
+  /* Desktop Hover Effect (Only on devices that support hover) */
+  @media (hover: hover) {
+    .herb-card:hover .herb-card__image-wrapper {
+      /* Scale up 1.35x and Move Left (-25px) */
+      transform: translateY(-50%) scale(1.35) translateX(-25px);
+    }
+  }
+
+  /* Mobile/Active Class Effect (Triggered via JS) */
+  .herb-card.mobile-active .herb-card__image-wrapper {
+    /* Same animation for tap */
+    transform: translateY(-50%) scale(1.35) translateX(-25px);
+  }
+
+  /* --- ANIMATION LOGIC END --- */
 
   .herb-card__image {
     max-width: {{ section.settings.image_max_size }}px; 
@@ -605,7 +633,7 @@
   .herb-card__image-wrapper {
     position: absolute; 
     top: 50%;
-    transform: translateY(-50%); 
+    /* transform handled above for animation */
     height: 100%; 
     display: flex;
     align-items: center;
@@ -621,6 +649,9 @@
   .herb-card__content {
     flex-grow: 1; 
     min-width: 0; 
+    /* Ensure content stays above image if image grows huge */
+    position: relative;
+    z-index: 2;
   }
   .herb-card__tagline {
     font-size: 0.75em; 
@@ -705,6 +736,8 @@
       border-radius: {{ section.settings.card_border_radius_mobile }}px;
       padding: 10px {{ section.settings.card_content_horizontal_padding_mobile }}px 10px 10px; 
       min-height: 90px; 
+      /* Fix tap highlight on mobile */
+      -webkit-tap-highlight-color: transparent;
     }
 
     .herb-card__image-wrapper {
@@ -891,6 +924,30 @@ document.addEventListener("DOMContentLoaded", function() {
   const btn = document.getElementById(`ShowMoreBtn-${sectionId}`);
   const grid = wrapper.querySelector('.herb-card-grid');
   
+  // --- ANIMATION LOGIC (Click/Push) ---
+  const cards = grid.querySelectorAll('.herb-card');
+  
+  cards.forEach(card => {
+    card.addEventListener('click', function(e) {
+      // Check if we are on a mobile sized screen or touch device logic
+      const isMobile = window.innerWidth <= 768; 
+      
+      if(isMobile) {
+        const wasActive = this.classList.contains('mobile-active');
+        
+        // Remove active class from ALL cards (Accordion style - one at a time)
+        cards.forEach(c => c.classList.remove('mobile-active'));
+        
+        // If it wasn't active before, make it active now.
+        // If it WAS active, we just removed it above, so it effectively toggles off.
+        if (!wasActive) {
+          this.classList.add('mobile-active');
+        }
+      }
+    });
+  });
+  // -------------------------------------
+
   let collapsedHeight = 0;
   let isExpanded = false;
 
@@ -911,7 +968,6 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   function calculateHeight() {
-    const cards = grid.querySelectorAll('.herb-card');
     const cols = parseInt(wrapper.getAttribute('data-mobile-columns'));
     
     // Show first 3 rows
@@ -942,28 +998,30 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // Handle Click Toggle
-  btn.addEventListener('click', function() {
-    const moreLabel = btn.getAttribute('data-more-label');
-    const lessLabel = btn.getAttribute('data-less-label');
-    const fullHeight = grid.scrollHeight;
+  // Handle Show More Click Toggle
+  if(btn){
+    btn.addEventListener('click', function() {
+      const moreLabel = btn.getAttribute('data-more-label');
+      const lessLabel = btn.getAttribute('data-less-label');
+      const fullHeight = grid.scrollHeight;
 
-    if (!isExpanded) {
-      // EXPANDING
-      wrapper.style.height = fullHeight + 'px';
-      wrapper.classList.add('is-expanded');
-      btn.textContent = lessLabel;
-      isExpanded = true;
-    } else {
-      // COLLAPSING
-      wrapper.style.height = collapsedHeight + 'px';
-      wrapper.classList.remove('is-expanded');
-      btn.textContent = moreLabel;
-      isExpanded = false;
-      
-      // Scroll correction if user is too far down
-      // wrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-  });
+      if (!isExpanded) {
+        // EXPANDING
+        wrapper.style.height = fullHeight + 'px';
+        wrapper.classList.add('is-expanded');
+        btn.textContent = lessLabel;
+        isExpanded = true;
+      } else {
+        // COLLAPSING
+        wrapper.style.height = collapsedHeight + 'px';
+        wrapper.classList.remove('is-expanded');
+        btn.textContent = moreLabel;
+        isExpanded = false;
+        
+        // Remove all animations on collapse to clean up
+        cards.forEach(c => c.classList.remove('mobile-active'));
+      }
+    });
+  }
 });
 </script>
