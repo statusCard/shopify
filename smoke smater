@@ -1,10 +1,13 @@
 {{ 'section-hero-smoke-smarter.css' | asset_url | stylesheet_tag }}
 
 <section class="hero-smoke-smarter">
-  <!-- Decorative stroke behind header and image -->
-  <img src="https://cdn.shopify.com/s/files/1/0697/1880/2532/files/stroke.svg?v=1763210522" 
-       alt="Decorative stroke" 
-       class="hero-stroke">
+  {% if section.settings.stroke_image != blank %}
+    {{ section.settings.stroke_image | image_url: width: 1400 | image_tag: class: 'hero-stroke', loading: 'lazy', alt: 'Decorative stroke' }}
+  {% else %}
+    <img src="https://cdn.shopify.com/s/files/1/0697/1880/2532/files/stroke.svg?v=1763210522" 
+         alt="Decorative stroke" 
+         class="hero-stroke">
+  {% endif %}
 
   <div class="hero-container">
     <div class="hero-content">
@@ -24,11 +27,13 @@
               </div>
 
             {% when 'stats' %}
-              <div class="hero-stats glow-pulse sticker-glass">
-                <div class="stat-number" style="font-size: 28px; margin-bottom: 2px; line-height: 1.1;">
+              <div class="hero-stats glow-pulse sticker-glass" 
+                   style="transform: translate({{ block.settings.stat_pos_x }}px, {{ block.settings.stat_pos_y }}px) rotate({{ block.settings.stat_rotation }}deg) scale({{ block.settings.stat_scale }});">
+                
+                <div class="stat-number" style="font-size: {{ block.settings.number_font_size }}px; margin-bottom: {{ block.settings.number_margin_bottom }}px; line-height: 1.1;">
                   {{ block.settings.number | default: "1.97" }}
                 </div>
-                <div class="stat-description" style="font-size: 14px; line-height: 1.2;">
+                <div class="stat-description" style="font-size: {{ block.settings.description_font_size }}px; line-height: 1.2;">
                   {{ block.settings.description | default: "Ounces With Us." }}
                 </div>
               </div>
@@ -150,7 +155,7 @@
   padding: 6px 14px;
   border-radius: 12px;
   margin-top: 6px;
-  transform: rotate(-6deg);
+  /* transform: rotate(-6deg); Removed from here as it is now controlled by liquid inline style */
   background: transparent;
 }
 
@@ -271,6 +276,12 @@
   "settings": [
     {
       "type": "image_picker",
+      "id": "stroke_image",
+      "label": "Background Stroke Image",
+      "info": "Replaces the default stroke. Transparent PNG or SVG recommended."
+    },
+    {
+      "type": "image_picker",
       "id": "hero_image",
       "label": "Hero Image"
     },
@@ -359,7 +370,15 @@
         {"type":"range","id":"number_font_size","label":"Number Font Size","min":30,"max":80,"step":2,"unit":"px","default":64},
         {"type":"range","id":"number_margin_bottom","label":"Number Bottom Margin","min":0,"max":30,"step":2,"unit":"px","default":10},
         {"type":"text","id":"description","label":"Statistic Description","default":"Ounces With Us."},
-        {"type":"range","id":"description_font_size","label":"Description Font Size","min":14,"max":28,"step":1,"unit":"px","default":19}
+        {"type":"range","id":"description_font_size","label":"Description Font Size","min":14,"max":28,"step":1,"unit":"px","default":19},
+        {
+            "type": "header",
+            "content": "Position & Transform"
+        },
+        {"type":"range","id":"stat_rotation","label":"Rotation","min":-180,"max":180,"step":5,"unit":"deg","default":-5},
+        {"type":"range","id":"stat_scale","label":"Scale","min":0.5,"max":2.0,"step":0.1,"default":1.0},
+        {"type":"range","id":"stat_pos_x","label":"Horizontal Offset (X)","min":-200,"max":200,"step":5,"unit":"px","default":0},
+        {"type":"range","id":"stat_pos_y","label":"Vertical Offset (Y)","min":-200,"max":200,"step":5,"unit":"px","default":0}
       ]
     }
   ],
@@ -370,4 +389,4 @@
     }
   ]
 }
-{% endschema %}}}
+{% endschema %}
