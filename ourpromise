@@ -1,0 +1,724 @@
+{{ 'section-hero-smoke-smarter.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  /* --- HERO IMAGE TRANSFORMS --- */
+  #Hero-{{ section.id }} .hero-image img {
+    transform: 
+      translate({{ section.settings.image_x_desktop }}px, {{ section.settings.image_y_desktop }}px) 
+      rotate({{ section.settings.image_rotate_desktop }}deg) 
+      scale({{ section.settings.image_scale_desktop }});
+    transition: transform 0.3s ease-out;
+  }
+
+  /* --- STROKE IMAGE TRANSFORMS (DESKTOP) --- */
+  #Hero-{{ section.id }} .hero-stroke {
+    opacity: {{ section.settings.stroke_opacity }};
+    transform: 
+      translateX(-50%) /* Center alignment base */
+      translate({{ section.settings.stroke_x_desktop }}px, {{ section.settings.stroke_y_desktop }}px) 
+      rotate({{ section.settings.stroke_rotate_desktop }}deg) 
+      scale({{ section.settings.stroke_scale_desktop }});
+  }
+
+  /* --- BLOCK SPECIFIC LOGIC --- */
+  {% for block in section.blocks %}
+    /* DESKTOP STYLES */
+    .block-{{ block.id }} {
+      font-family: {{ block.settings.font_family }};
+      font-weight: {{ block.settings.font_weight }};
+      font-style: {{ block.settings.font_style }};
+      
+      {% case block.type %}
+        {% when 'title' %}
+          font-size: {{ block.settings.font_size }}px !important;
+          margin-bottom: {{ block.settings.margin_bottom }}px !important;
+        {% when 'description' %}
+          font-size: {{ block.settings.font_size }}px !important;
+          margin-bottom: {{ block.settings.margin_bottom }}px !important;
+        {% when 'stats' %}
+           /* Statistic Block Transform (Desktop) */
+           transform: 
+             translate({{ block.settings.stat_pos_x_desktop }}px, {{ block.settings.stat_pos_y_desktop }}px) 
+             rotate({{ block.settings.stat_rotation }}deg) 
+             scale({{ block.settings.stat_scale }});
+      {% endcase %}
+    }
+
+    {% if block.type == 'stats' %}
+      .block-{{ block.id }} .stat-number {
+        font-size: {{ block.settings.number_font_size }}px !important;
+        margin-bottom: {{ block.settings.number_margin_bottom }}px !important;
+      }
+      .block-{{ block.id }} .stat-description {
+        font-size: {{ block.settings.description_font_size }}px !important;
+      }
+    {% endif %}
+
+    /* MOBILE STYLES (Blocks) */
+    @media (max-width: 768px) {
+      {% case block.type %}
+        {% when 'title' %}
+          .block-{{ block.id }} {
+            font-size: {{ block.settings.font_size_mobile }}px !important;
+            margin-bottom: {{ block.settings.margin_bottom_mobile }}px !important;
+          }
+        {% when 'description' %}
+          .block-{{ block.id }} {
+            font-size: {{ block.settings.font_size_mobile }}px !important;
+            margin-bottom: {{ block.settings.margin_bottom_mobile }}px !important;
+          }
+        {% when 'stats' %}
+          .block-{{ block.id }} {
+            transform: 
+              translate({{ block.settings.stat_pos_x_mobile }}px, {{ block.settings.stat_pos_y_mobile }}px) 
+              rotate({{ block.settings.stat_rotation }}deg) 
+              scale({{ block.settings.stat_scale }});
+          }
+
+          .block-{{ block.id }} .stat-number {
+            font-size: {{ block.settings.number_font_size_mobile }}px !important;
+            margin-bottom: {{ block.settings.number_margin_bottom_mobile }}px !important;
+          }
+          .block-{{ block.id }} .stat-description {
+            font-size: {{ block.settings.description_font_size_mobile }}px !important;
+          }
+      {% endcase %}
+    }
+  {% endfor %}
+
+  /* --- MOBILE TRANSFORMS (IMAGES) --- */
+  @media (max-width: 768px) {
+    /* Hero Image Mobile */
+    #Hero-{{ section.id }} .hero-image img {
+      transform: 
+        translate({{ section.settings.image_x_mobile }}px, {{ section.settings.image_y_mobile }}px) 
+        rotate({{ section.settings.image_rotate_mobile }}deg) 
+        scale({{ section.settings.image_scale_mobile }});
+    }
+
+    /* Stroke Image Mobile */
+    #Hero-{{ section.id }} .hero-stroke {
+      transform: 
+        translateX(-50%) 
+        translate({{ section.settings.stroke_x_mobile }}px, {{ section.settings.stroke_y_mobile }}px) 
+        rotate({{ section.settings.stroke_rotate_mobile }}deg) 
+        scale({{ section.settings.stroke_scale_mobile }});
+    }
+  }
+{%- endstyle -%}
+
+<section id="Hero-{{ section.id }}" class="hero-smoke-smarter">
+  {% if section.settings.stroke_image != blank %}
+    {{ section.settings.stroke_image | image_url: width: 1400 | image_tag: class: 'hero-stroke', loading: 'lazy', alt: 'Decorative stroke' }}
+  {% endif %}
+  <div class="hero-container">
+    <div class="hero-content">
+      <div class="hero-text">
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'title' %}
+              <h1 class="hero-title block-{{ block.id }}">
+                {{ block.settings.text | default: "SMOKE SMARTER SPEND LESS." }}
+              </h1>
+
+            {% when 'description' %}
+              <div class="glass-wrap glow-pulse description-glass">
+                <p class="hero-description block-{{ block.id }}">
+                  {{ block.settings.text | default: "The average smoker spends over $4,000 a year, vapers up to $2,500. With Herbaco, one bottle can last a month, even for heavy smokers. Our herbal blends mix with cannabis, help you quit nicotine, or stand alone as a ritual worth keeping." }}
+                </p>
+              </div>
+
+            {% when 'stats' %}
+              <div class="hero-stats glow-pulse sticker-glass block-{{ block.id }}">
+                
+                <div class="stat-number" style="line-height: 1.1;">
+                  {{ block.settings.number | default: "1.97" }}
+                </div>
+                <div class="stat-description" style="line-height: 1.2;">
+                  {{ block.settings.description | default: "Ounces With Us." }}
+                </div>
+              </div>
+
+          {% endcase %}
+        {% endfor %}
+      </div>
+
+      <div class="hero-image">
+        {% if section.settings.hero_image %}
+          <img src="{{ section.settings.hero_image | img_url: '800x600' }}" 
+               alt="{{ section.settings.hero_image.alt | default: 'Product showcase' }}"
+               loading="lazy">
+        {% else %}
+          <div class="placeholder-image">
+            <svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="400" height="300" fill="#f5f5f5"/>
+              <circle cx="100" cy="150" r="60" fill="#d4af37" opacity="0.8"/>
+              <circle cx="150" cy="150" r="60" fill="#cd5c5c" opacity="0.8"/>
+              <circle cx="200" cy="150" r="60" fill="#708090" opacity="0.8"/>
+              <circle cx="250" cy="150" r="60" fill="#dda0dd" opacity="0.8"/>
+              <rect x="300" y="75" width="80" height="150" fill="#333" opacity="0.6"/>
+              <text x="200" y="280" text-anchor="middle" fill="#999" font-size="14">Product Image Placeholder</text>
+            </svg>
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+.hero-smoke-smarter {
+  position: relative; 
+  padding: {{ section.settings.padding_desktop | default: 60 }}px 20px;
+  background-color: {{ section.settings.background_color | default: '#f8f8f8' }};
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  overflow: visible;
+}
+
+.hero-stroke {
+  position: absolute;
+  top: 200px; 
+  left: 50%;
+  /* Transform & Opacity now handled in Liquid style block */
+  transform-origin: top center;
+  z-index: 0;
+  width: 120%;
+  max-width: 1400px;
+  pointer-events: none;
+}
+
+.hero-container {
+  position: relative;
+  z-index: 3; 
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hero-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.hero-text {
+  max-width: 500px;
+  text-align: center;
+}
+
+.hero-title {
+  font-weight: 900;
+  line-height: 1.1;
+  color: {{ section.settings.title_color | default: '#000000' }};
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-description {
+  line-height: 1.6;
+  color: {{ section.settings.text_color | default: '#666666' }};
+}
+
+.hero-stats {
+  text-align: center;
+}
+
+.glass-wrap {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 20px;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.12);
+  margin: 20px auto;
+}
+
+.description-glass {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.sticker-glass {
+  display: inline-block;
+  text-align: center;
+  padding: 6px 14px;
+  border-radius: 12px;
+  margin-top: 6px;
+  background: transparent;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(0,0,0,0.00); }
+  50% { box-shadow: 0 0 25px rgba(0,0,0,0.0); }
+}
+
+.glow-pulse {
+  animation: pulseGlow 2.5s infinite ease-in-out;
+}
+
+.hero-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.placeholder-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .hero-smoke-smarter {
+    padding-top: {{ section.settings.padding_tablet | default: 20 }}px;
+    padding-bottom: 40px;
+  }
+
+  .hero-content {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+
+  .hero-text {
+    max-width: 100%;
+  }
+
+  .hero-title {
+    line-height: 1.2;
+  }
+
+  .hero-stroke {
+    top: 0;
+    width: auto;
+    height: 100%;
+    /* Transforms handled in Liquid block via Mobile settings */
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .hero-smoke-smarter {
+    /* FIX: Force height to auto so 0 padding actually works */
+    min-height: auto; 
+    
+    padding-top: {{ section.settings.padding_top_mobile | default: 5 }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile | default: 20 }}px;
+    
+    /* FIX: Enable negative margin to pull next section up */
+    margin-bottom: {{ section.settings.margin_bottom_mobile | default: 0 }}px;
+
+    position: relative;
+    overflow: hidden; 
+  }
+
+  .hero-title {
+    line-height: 1.2;
+    height: auto;
+    display: block;
+  }
+
+  .hero-stroke {
+    position: absolute;
+    top: -75%;          
+    left: 50%;
+    width: 190%;        
+    height: 190%;       
+    max-width: none;
+    transform-origin: center center;
+    z-index: 0;
+    display: block;
+  }
+
+  .hero-content {
+    position: relative; 
+    z-index: 3;
+    gap: 20px;
+  }
+
+  .glass-wrap.description-glass {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .sticker-glass {
+    background: rgba(255, 255, 255, 0.02);
+  }
+}
+</style>
+
+{% schema %}
+{
+  "name": "Hero - Smoke Smarter",
+  "tag": "section",
+  "class": "section-hero-smoke-smarter",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Hero Stroke / Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "stroke_image",
+      "label": "Background Stroke Image",
+      "info": "If left blank, no stroke will appear."
+    },
+    {
+       "type": "range",
+       "id": "stroke_opacity",
+       "label": "Stroke Opacity",
+       "min": 0,
+       "max": 1,
+       "step": 0.1,
+       "default": 0.1
+    },
+    {
+       "type": "header",
+       "content": "Stroke Position (Desktop)"
+    },
+    {
+      "type": "range",
+      "id": "stroke_x_desktop",
+      "label": "Stroke Offset X (Desktop)",
+      "min": -500,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "stroke_y_desktop",
+      "label": "Stroke Offset Y (Desktop)",
+      "min": -500,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "stroke_scale_desktop",
+      "label": "Stroke Scale (Desktop)",
+      "min": 0.5,
+      "max": 3.0,
+      "step": 0.1,
+      "default": 1.0
+    },
+    {
+      "type": "range",
+      "id": "stroke_rotate_desktop",
+      "label": "Stroke Rotation (Desktop)",
+      "min": -180,
+      "max": 180,
+      "step": 5,
+      "unit": "deg",
+      "default": 0
+    },
+    {
+       "type": "header",
+       "content": "Stroke Position (Mobile)"
+    },
+    {
+      "type": "range",
+      "id": "stroke_x_mobile",
+      "label": "Stroke Offset X (Mobile)",
+      "min": -300,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "stroke_y_mobile",
+      "label": "Stroke Offset Y (Mobile)",
+      "min": -300,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "stroke_scale_mobile",
+      "label": "Stroke Scale (Mobile)",
+      "min": 0.5,
+      "max": 3.0,
+      "step": 0.1,
+      "default": 1.0
+    },
+    {
+      "type": "range",
+      "id": "stroke_rotate_mobile",
+      "label": "Stroke Rotation (Mobile)",
+      "min": -180,
+      "max": 180,
+      "step": 5,
+      "unit": "deg",
+      "default": 90
+    },
+    {
+      "type": "header",
+      "content": "Main Hero Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero Image"
+    },
+    {
+       "type": "header",
+       "content": "Hero Image Position (Desktop)"
+    },
+    {
+      "type": "range",
+      "id": "image_x_desktop",
+      "label": "Offset X (Desktop)",
+      "min": -200,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "image_y_desktop",
+      "label": "Offset Y (Desktop)",
+      "min": -200,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "image_scale_desktop",
+      "label": "Scale (Desktop)",
+      "min": 0.5,
+      "max": 2.0,
+      "step": 0.1,
+      "default": 1.0
+    },
+    {
+      "type": "range",
+      "id": "image_rotate_desktop",
+      "label": "Rotation (Desktop)",
+      "min": -180,
+      "max": 180,
+      "step": 5,
+      "unit": "deg",
+      "default": 0
+    },
+    {
+       "type": "header",
+       "content": "Hero Image Position (Mobile)"
+    },
+    {
+      "type": "range",
+      "id": "image_x_mobile",
+      "label": "Offset X (Mobile)",
+      "min": -200,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "image_y_mobile",
+      "label": "Offset Y (Mobile)",
+      "min": -200,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "image_scale_mobile",
+      "label": "Scale (Mobile)",
+      "min": 0.5,
+      "max": 2.0,
+      "step": 0.1,
+      "default": 1.0
+    },
+    {
+      "type": "range",
+      "id": "image_rotate_mobile",
+      "label": "Rotation (Mobile)",
+      "min": -180,
+      "max": 180,
+      "step": 5,
+      "unit": "deg",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#f8f8f8"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "stat_color",
+      "label": "Statistic Color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_desktop",
+      "label": "Desktop Padding (px)",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_tablet",
+      "label": "Tablet Padding (px)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Mobile Padding Top (px)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Mobile Padding Bottom (px)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Mobile Bottom Margin (Negative Allowed)",
+      "min": -200,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "title",
+      "name": "Title",
+      "settings": [
+        {"type": "text", "id": "text", "label": "Title Text", "default": "SMOKE SMARTER SPEND LESS."},
+        { "type": "header", "content": "Desktop Settings" },
+        {"type": "range", "id": "font_size", "label": "Font Size", "min": 20, "max": 80, "step": 2, "unit": "px", "default": 56},
+        {"type": "range", "id": "margin_bottom", "label": "Bottom Margin", "min": 0, "max": 60, "step": 5, "unit": "px", "default": 30},
+        { "type": "header", "content": "Mobile Settings" },
+        {"type": "range", "id": "font_size_mobile", "label": "Mobile Font Size", "min": 16, "max": 50, "step": 1, "unit": "px", "default": 32},
+        {"type": "range", "id": "margin_bottom_mobile", "label": "Mobile Bottom Margin", "min": 0, "max": 40, "step": 5, "unit": "px", "default": 15},
+        { "type": "header", "content": "Typography" },
+        {"type": "select", "id": "font_family", "label": "Font Family", "options": [{"value":"Arial, sans-serif","label":"Arial"},{"value":"Helvetica, Arial, sans-serif","label":"Helvetica"},{"value":"'Trebuchet MS', sans-serif","label":"Trebuchet MS"},{"value":"Verdana, sans-serif","label":"Verdana"},{"value":"'Times New Roman', serif","label":"Times New Roman"},{"value":"Georgia, serif","label":"Georgia"},{"value":"'Courier New', monospace","label":"Courier New"},{"value":"Impact, sans-serif","label":"Impact"},{"value":"'Comic Sans MS', cursive","label":"Comic Sans MS"},{"value":"inherit","label":"Theme Default"}],"default":"Arial, sans-serif"},
+        {"type": "select", "id": "font_weight", "label": "Font Weight","options":[{"value":"300","label":"Light"},{"value":"400","label":"Normal"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi Bold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra Bold"},{"value":"900","label":"Black"}],"default":"900"},
+        {"type": "select", "id": "font_style", "label": "Font Style","options":[{"value":"normal","label":"Normal"},{"value":"italic","label":"Italic"}],"default":"normal"}
+      ]
+    },
+    {
+      "type": "description",
+      "name": "Description",
+      "settings": [
+        {"type": "textarea","id": "text","label": "Description Text","default": "The average smoker spends over $4,000 a year..."},
+        { "type": "header", "content": "Desktop Settings" },
+        {"type": "range", "id": "font_size","label": "Font Size","min": 12,"max": 24,"step": 1,"unit": "px","default": 18},
+        {"type": "range", "id": "margin_bottom","label": "Bottom Margin","min":0,"max":60,"step":5,"unit":"px","default":40},
+        { "type": "header", "content": "Mobile Settings" },
+        {"type": "range", "id": "font_size_mobile","label": "Mobile Font Size","min": 12,"max": 20,"step": 1,"unit": "px","default": 16},
+        {"type": "range", "id": "margin_bottom_mobile","label": "Mobile Bottom Margin","min":0,"max":40,"step":5,"unit":"px","default":20},
+        { "type": "header", "content": "Typography" },
+        {"type": "select","id":"font_family","label":"Font Family","options":[{"value":"Arial, sans-serif","label":"Arial"},{"value":"Helvetica, Arial, sans-serif","label":"Helvetica"},{"value":"'Trebuchet MS', sans-serif","label":"Trebuchet MS"},{"value":"Verdana, sans-serif","label":"Verdana"},{"value":"'Times New Roman', serif","label":"Times New Roman"},{"value":"Georgia, serif","label":"Georgia"},{"value":"'Courier New', monospace","label":"Courier New"},{"value":"inherit","label":"Theme Default"}],"default":"Arial, sans-serif"},
+        {"type":"select","id":"font_weight","label":"Font Weight","options":[{"value":"300","label":"Light"},{"value":"400","label":"Normal"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi Bold"},{"value":"700","label":"Bold"}],"default":"400"},
+        {"type":"select","id":"font_style","label":"Font Style","options":[{"value":"normal","label":"Normal"},{"value":"italic","label":"Italic"}],"default":"normal"}
+      ]
+    },
+    {
+      "type": "stats",
+      "name": "Statistics",
+      "settings": [
+        {"type":"text","id":"number","label":"Statistic Number","default":"1.97"},
+        { "type": "header", "content": "Desktop Settings" },
+        {"type":"range","id":"number_font_size","label":"Number Font Size","min":30,"max":80,"step":2,"unit":"px","default":64},
+        {"type":"range","id":"number_margin_bottom","label":"Number Bottom Margin","min":0,"max":30,"step":2,"unit":"px","default":10},
+        {"type":"text","id":"description","label":"Statistic Description","default":"Ounces With Us."},
+        {"type":"range","id":"description_font_size","label":"Description Font Size","min":14,"max":28,"step":1,"unit":"px","default":19},
+        { "type": "header", "content": "Mobile Settings" },
+        {"type":"range","id":"number_font_size_mobile","label":"Mobile Number Size","min":20,"max":60,"step":2,"unit":"px","default":48},
+        {"type":"range","id":"number_margin_bottom_mobile","label":"Mobile Number Margin","min":0,"max":30,"step":2,"unit":"px","default":10},
+        {"type":"range","id":"description_font_size_mobile","label":"Mobile Desc Size","min":12,"max":24,"step":1,"unit":"px","default":16},
+        {
+             "type": "header",
+             "content": "Position & Transform"
+        },
+        {"type":"range","id":"stat_rotation","label":"Rotation","min":-180,"max":180,"step":5,"unit":"deg","default":-5},
+        {"type":"range","id":"stat_scale","label":"Scale","min":0.5,"max":2.0,"step":0.1,"default":1.0},
+        
+        { "type": "header", "content": "Offset (Desktop)" },
+        {"type":"range","id":"stat_pos_x_desktop","label":"Horizontal (X) Desktop","min":-200,"max":200,"step":5,"unit":"px","default":0},
+        {"type":"range","id":"stat_pos_y_desktop","label":"Vertical (Y) Desktop","min":-200,"max":200,"step":5,"unit":"px","default":0},
+
+        { "type": "header", "content": "Offset (Mobile)" },
+        {"type":"range","id":"stat_pos_x_mobile","label":"Horizontal (X) Mobile","min":-200,"max":200,"step":5,"unit":"px","default":0},
+        {"type":"range","id":"stat_pos_y_mobile","label":"Vertical (Y) Mobile","min":-200,"max":200,"step":5,"unit":"px","default":0}
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero - Smoke Smarter",
+      "blocks":[{"type":"title"},{"type":"description"},{"type":"stats"}]
+    }
+  ]
+}
+{% endschema %}
