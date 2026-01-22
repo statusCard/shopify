@@ -1,0 +1,912 @@
+{% schema %}
+  {
+    "name": "Herb Card Section",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Faux Header Image (Desktop)"
+      },
+      {
+        "type": "image_picker",
+        "id": "header_image",
+        "label": "Header Image (PNG)"
+      },
+      {
+        "type": "select",
+        "id": "header_layout_mode",
+        "label": "Header Layout Mode",
+        "options": [
+          { "value": "absolute", "label": "Overlay (Float over content)" },
+          { "value": "relative", "label": "Stack (Push content down)" }
+        ],
+        "default": "absolute",
+        "info": "Use 'Stack' if you want the image to act like a real block and push the cards down automatically."
+      },
+      {
+        "type": "range",
+        "id": "header_width_desktop",
+        "min": 50,
+        "max": 800,
+        "step": 10,
+        "unit": "px",
+        "label": "Image Width (Scale)",
+        "default": 300
+      },
+      {
+        "type": "range",
+        "id": "header_top_desktop",
+        "min": -100,
+        "max": 100,
+        "step": 5,
+        "unit": "px",
+        "label": "Top Position / Margin",
+        "default": -40,
+        "info": "In 'Stack' mode, this acts as top margin."
+      },
+      {
+        "type": "range",
+        "id": "header_left_desktop",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "label": "Left Position (X-Axis %)",
+        "default": 50,
+        "info": "50% is center screen"
+      },
+      {
+        "type": "range",
+        "id": "header_rotate_desktop",
+        "min": -90,
+        "max": 90,
+        "step": 2,
+        "unit": "deg",
+        "label": "Rotation",
+        "default": 0
+      },
+      {
+        "type": "header",
+        "content": "Faux Header Image (Mobile)"
+      },
+      {
+        "type": "checkbox",
+        "id": "hide_header_mobile",
+        "label": "Hide Header Image on Mobile?",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "header_layout_mode_mobile",
+        "label": "Mobile Layout Mode",
+        "options": [
+          { "value": "absolute", "label": "Overlay (Float over content)" },
+          { "value": "relative", "label": "Stack (Push content down)" }
+        ],
+        "default": "absolute"
+      },
+      {
+        "type": "range",
+        "id": "header_width_mobile",
+        "min": 50,
+        "max": 400,
+        "step": 5,
+        "unit": "px",
+        "label": "Image Width (Scale)",
+        "default": 200
+      },
+      {
+        "type": "range",
+        "id": "header_top_mobile",
+        "min": -100,
+        "max": 100,
+        "step": 5,
+        "unit": "px",
+        "label": "Top Position / Margin",
+        "default": -20
+      },
+      {
+        "type": "range",
+        "id": "header_left_mobile",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "label": "Left Position (X-Axis %)",
+        "default": 50
+      },
+      {
+        "type": "range",
+        "id": "header_rotate_mobile",
+        "min": -90,
+        "max": 90,
+        "step": 2,
+        "unit": "deg",
+        "label": "Rotation",
+        "default": 0
+      },
+      {
+        "type": "range",
+        "id": "header_z_index",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "label": "Header Layer Order (Z-Index)",
+        "default": 5,
+        "info": "Higher number sits on top of cards."
+      },
+      {
+        "type": "header",
+        "content": "Desktop Settings (769px +)"
+      },
+      {
+        "type": "range", 
+        "id": "section_padding_top",
+        "min": 0,
+        "max": 150,
+        "step": 5,
+        "unit": "px",
+        "label": "Section Padding Top",
+        "default": 60,
+        "info": "Container padding. If using 'Stack' mode, you can reduce this."
+      },
+      {
+        "type": "range",
+        "id": "section_padding_bottom",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Padding Bottom",
+        "default": 40
+      },
+      {
+        "type": "range",
+        "id": "desktop_columns",
+        "min": 1,
+        "max": 6, 
+        "step": 1,
+        "label": "Columns on Desktop",
+        "default": 5
+      },
+      {
+        "type": "range",
+        "id": "card_spacing",
+        "min": 0,
+        "max": 50,
+        "step": 2,
+        "unit": "px",
+        "label": "Spacing Between Cards",
+        "default": 20
+      },
+      {
+        "type": "range",
+        "id": "card_border_radius",
+        "min": 0,
+        "max": 50,
+        "step": 2,
+        "unit": "px",
+        "label": "Card Border Radius (Desktop)",
+        "default": 30
+      },
+      {
+        "type": "range",
+        "id": "image_max_size",
+        "min": 50,
+        "max": 150,
+        "step": 5,
+        "unit": "px",
+        "label": "Image Max Width (Desktop px)",
+        "default": 100 
+      },
+      {
+        "type": "range",
+        "id": "image_offset",
+        "min": -100,
+        "max": 0,
+        "step": 5,
+        "unit": "px",
+        "label": "Image Cut-off Offset (Desktop)",
+        "default": -30
+      },
+      {
+        "type": "range",
+        "id": "card_content_horizontal_padding",
+        "min": 50,
+        "max": 150,
+        "step": 5,
+        "unit": "px",
+        "label": "Card Horizontal Padding (Desktop)",
+        "default": 100
+      },
+      {
+        "type": "range",
+        "id": "desc_font_size_desktop",
+        "min": 0.5,
+        "max": 1.5,
+        "step": 0.1,
+        "unit": "em",
+        "label": "Description Font Size (Desktop)",
+        "default": 0.8
+      },
+      {
+        "type": "range",
+        "id": "desc_line_clamp_desktop",
+        "min": 1,
+        "max": 5,
+        "step": 1,
+        "label": "Description Line Limit (Desktop)",
+        "default": 3
+      },
+
+      {
+        "type": "header",
+        "content": "Mobile Settings (768px and under)"
+      },
+      {
+        "type": "range", 
+        "id": "section_padding_top_mobile",
+        "min": 0,
+        "max": 150,
+        "step": 5,
+        "unit": "px",
+        "label": "Padding Top (Mobile)",
+        "default": 50
+      },
+      {
+        "type": "range",
+        "id": "section_padding_bottom_mobile",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Padding Bottom (Mobile)",
+        "default": 20
+      },
+      {
+        "type": "range",
+        "id": "mobile_columns",
+        "min": 1,
+        "max": 3,
+        "step": 1,
+        "label": "Columns on Mobile",
+        "default": 2
+      },
+      {
+        "type": "range",
+        "id": "card_spacing_mobile",
+        "min": 0,
+        "max": 50,
+        "step": 2,
+        "unit": "px",
+        "label": "Spacing Between Cards",
+        "default": 10
+      },
+      {
+        "type": "range",
+        "id": "card_border_radius_mobile",
+        "min": 0,
+        "max": 50,
+        "step": 2,
+        "unit": "px",
+        "label": "Card Border Radius (Mobile)",
+        "default": 20
+      },
+      {
+        "type": "range",
+        "id": "image_max_size_mobile",
+        "min": 40,
+        "max": 100,
+        "step": 5,
+        "unit": "px",
+        "label": "Image Max Width (Mobile px)",
+        "default": 60
+      },
+      {
+        "type": "range",
+        "id": "image_offset_mobile",
+        "min": -50,
+        "max": 0,
+        "step": 5,
+        "unit": "px",
+        "label": "Image Cut-off Offset (Mobile)",
+        "default": -15
+      },
+      {
+        "type": "range",
+        "id": "card_content_horizontal_padding_mobile",
+        "min": 50,
+        "max": 100,
+        "step": 5,
+        "unit": "px",
+        "label": "Card Horizontal Padding (Mobile)",
+        "default": 70
+      },
+      {
+        "type": "range",
+        "id": "desc_font_size_mobile",
+        "min": 0.5,
+        "max": 1.5,
+        "step": 0.1,
+        "unit": "em",
+        "label": "Description Font Size (Mobile)",
+        "default": 0.8
+      },
+      {
+        "type": "range",
+        "id": "desc_line_clamp_mobile",
+        "min": 1,
+        "max": 5,
+        "step": 1,
+        "label": "Description Line Limit (Mobile)",
+        "default": 3
+      },
+      {
+        "type": "text",
+        "id": "show_more_label",
+        "label": "Show More Button Label",
+        "default": "Show More"
+      },
+      {
+        "type": "text",
+        "id": "show_less_label",
+        "label": "Show Less Button Label",
+        "default": "Show Less"
+      },
+
+      {
+        "type": "header",
+        "content": "Global Visual & Glassmorphism"
+      },
+      {
+        "type": "color",
+        "id": "card_bg_color",
+        "label": "Card Background Color",
+        "info": "Use transparency (e.g., rgba(255,255,255,0.7)) for the glass effect.",
+        "default": "rgba(255,255,255,0.8)"
+      },
+      {
+        "type": "color",
+        "id": "card_border_color",
+        "label": "Card Border Color",
+        "default": "#e0e0e0"
+      },
+      {
+        "type": "range",
+        "id": "glass_blur_amount",
+        "min": 0,
+        "max": 20,
+        "step": 1,
+        "unit": "px",
+        "label": "Glassmorphism Blur Amount",
+        "default": 5
+      },
+      {
+        "type": "color",
+        "id": "glow_color",
+        "label": "Glow Color",
+        "default": "#ffffff",
+        "info": "The color of the box shadow glow."
+      },
+      {
+        "type": "range",
+        "id": "glow_spread",
+        "min": 0,
+        "max": 50,
+        "step": 5,
+        "unit": "px",
+        "label": "Glow Spread/Size (px)",
+        "default": 10
+      },
+      {
+        "type": "range",
+        "id": "glow_opacity",
+        "min": 0.0,
+        "max": 1.0,
+        "step": 0.1,
+        "label": "Glow Opacity",
+        "default": 0.5
+      }
+    ],
+    "blocks": [
+      {
+        "type": "herb_card",
+        "name": "Herb Card",
+        "settings": [
+          {
+            "type": "text",
+            "id": "tagline",
+            "label": "Tagline (e.g., FOR STAMINA)",
+            "default": "FOR WELLNESS"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Herb Title",
+            "default": "Mushroom Name"
+          },
+          {
+            "type": "richtext",
+            "id": "description",
+            "label": "Description",
+            "default": "<p>A short description of the herb's benefits.</p>"
+          },
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Herb Image"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Herb Card Section",
+        "category": "Custom",
+        "blocks": [
+          { "type": "herb_card" },
+          { "type": "herb_card" },
+          { "type": "herb_card" }
+        ]
+      }
+    ],
+    "max_blocks": 12
+  }
+{% endschema %}
+
+{% style %}
+  /* --- Default (Desktop) Settings --- */
+  .herb-card-section {
+    position: relative; /* Essential for absolute positioning of header */
+    padding-top: {{ section.settings.section_padding_top }}px;
+    padding-bottom: {{ section.settings.section_padding_bottom }}px;
+    width: 100%;
+    /* Ensure overflow doesn't cut off the header if it floats up */
+    overflow: visible; 
+  }
+
+  /* --- Faux Header Styling (Desktop) --- */
+  .faux-header-wrapper {
+    /* Common Properties */
+    z-index: {{ section.settings.header_z_index }};
+    pointer-events: none; /* Allows clicking through the image onto cards below */
+    
+    width: {{ section.settings.header_width_desktop }}px;
+    left: {{ section.settings.header_left_desktop }}%;
+    
+    transform: translateX(-50%) rotate({{ section.settings.header_rotate_desktop }}deg);
+    transform-origin: center center;
+    
+    {% if section.settings.header_layout_mode == 'absolute' %}
+      /* OVERLAY MODE */
+      position: absolute;
+      top: {{ section.settings.header_top_desktop }}px;
+    {% else %}
+      /* STACK (PUSH) MODE */
+      position: relative;
+      margin-top: {{ section.settings.header_top_desktop }}px;
+      /* Ensure it blocks out space nicely */
+      display: block;
+      margin-bottom: 0; 
+    {% endif %}
+  }
+  
+  .faux-header-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* --- Grid Styling --- */
+  .herb-card-grid {
+    display: grid;
+    gap: {{ section.settings.card_spacing }}px;
+    grid-template-columns: repeat({{ section.settings.desktop_columns }}, 1fr);
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 15px;
+    position: relative;
+    z-index: 2; /* Content sits here */
+  }
+  
+  /* Desktop 5x5+2 Layout CSS */
+  {%- if section.settings.desktop_columns == 5 -%}
+    .herb-card-grid > .herb-card:nth-child(11) { grid-column: 2 / span 2; }
+    .herb-card-grid > .herb-card:nth-child(12) { grid-column: 4 / span 2; }
+    .herb-card-grid > .herb-card:nth-child(11):last-child:not(:nth-child(12)) { grid-column: 3 / span 1; }
+  {%- endif -%}
+
+  .herb-card {
+    border: 1px solid {{ section.settings.card_border_color }};
+    border-radius: {{ section.settings.card_border_radius }}px; 
+    padding: 15px {{ section.settings.card_content_horizontal_padding }}px 15px 15px; 
+    min-height: 110px; 
+    background-color: {{ section.settings.card_bg_color }}; 
+    backdrop-filter: blur({{ section.settings.glass_blur_amount }}px);
+    -webkit-backdrop-filter: blur({{ section.settings.glass_blur_amount }}px);
+
+    /* Glow Effect */
+    box-shadow: 
+      0 0 {{ section.settings.glow_spread }}px {{ section.settings.glow_spread }}px 
+      {{ section.settings.glow_color | color_modify: 'alpha', section.settings.glow_opacity }};
+  }
+
+  .herb-card__image-wrapper {
+    right: {{ section.settings.image_offset }}px; 
+    width: {{ section.settings.image_max_size | plus: section.settings.image_offset | times: -1 }}px; 
+  }
+
+  .herb-card__image {
+    max-width: {{ section.settings.image_max_size }}px; 
+  }
+
+  /* --- General/Shared Styling --- */
+  .herb-card {
+    display: flex; 
+    align-items: center; 
+    position: relative; 
+    overflow: hidden; 
+    text-align: left; 
+  }
+  .herb-card__image-wrapper {
+    position: absolute; 
+    top: 50%;
+    transform: translateY(-50%); 
+    height: 100%; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .herb-card__image {
+    max-height: 90%; 
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.05)); 
+  }
+  .herb-card__content {
+    flex-grow: 1; 
+    min-width: 0; 
+  }
+  .herb-card__tagline {
+    font-size: 0.75em; 
+    font-weight: bold;
+    color: #888;
+    margin-bottom: 3px; 
+    text-transform: uppercase;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .herb-card__title {
+    font-size: 1em; 
+    font-weight: bold;
+    margin-bottom: 3px; 
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .herb-card__description {
+    font-size: {{ section.settings.desc_font_size_desktop }}em; 
+    color: #555;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: {{ section.settings.desc_line_clamp_desktop }}; 
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Hide mobile-specific elements on desktop */
+  .mobile-show-more-btn-wrapper, 
+  .mobile-fade-overlay {
+    display: none;
+  }
+
+  /* --- Mobile Overrides (768px and under) --- */
+  @media (max-width: 768px) {
+    .herb-card-section {
+      padding-top: {{ section.settings.section_padding_top_mobile }}px;
+      padding-bottom: {{ section.settings.section_padding_bottom_mobile }}px;
+    }
+    
+    /* Mobile Faux Header Settings */
+    .faux-header-wrapper {
+      {% if section.settings.hide_header_mobile %}
+        display: none;
+      {% else %}
+        left: {{ section.settings.header_left_mobile }}%;
+        width: {{ section.settings.header_width_mobile }}px;
+        transform: translateX(-50%) rotate({{ section.settings.header_rotate_mobile }}deg);
+        
+        {% if section.settings.header_layout_mode_mobile == 'absolute' %}
+          position: absolute;
+          top: {{ section.settings.header_top_mobile }}px;
+          margin-top: 0;
+        {% else %}
+          position: relative;
+          top: auto;
+          margin-top: {{ section.settings.header_top_mobile }}px;
+        {% endif %}
+      {% endif %}
+    }
+
+    .herb-card-grid {
+      gap: {{ section.settings.card_spacing_mobile }}px;
+      grid-template-columns: repeat({{ section.settings.mobile_columns }}, 1fr);
+      padding: 0 10px;
+    }
+    
+    {%- if section.settings.desktop_columns == 5 -%}
+      .herb-card-grid > .herb-card:nth-child(11),
+      .herb-card-grid > .herb-card:nth-child(12),
+      .herb-card-grid > .herb-card:nth-child(11):last-child:not(:nth-child(12)) {
+        grid-column: span 1; 
+      }
+    {%- endif -%}
+
+    .herb-card {
+      border-radius: {{ section.settings.card_border_radius_mobile }}px;
+      padding: 10px {{ section.settings.card_content_horizontal_padding_mobile }}px 10px 10px; 
+      min-height: 90px; 
+    }
+
+    .herb-card__image-wrapper {
+      right: {{ section.settings.image_offset_mobile }}px; 
+      width: {{ section.settings.image_max_size_mobile | plus: section.settings.image_offset_mobile | times: -1 }}px;
+    }
+    .herb-card__image {
+      max-width: {{ section.settings.image_max_size_mobile }}px; 
+    }
+
+    .herb-card__tagline {
+      font-size: 0.7em; 
+      white-space: normal; 
+    }
+    .herb-card__title {
+      font-size: 0.9em; 
+      white-space: normal; 
+    }
+    .herb-card__description {
+      font-size: {{ section.settings.desc_font_size_mobile }}em; 
+      -webkit-line-clamp: {{ section.settings.desc_line_clamp_mobile }}; 
+    }
+
+    /* --- EXPAND / FADE LOGIC (Mobile Only) --- */
+    
+    .mobile-expandable-wrapper {
+      position: relative;
+      overflow: hidden;
+      transition: height 0.6s ease-in-out;
+    }
+
+    .mobile-fade-overlay {
+      display: block;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 250px; 
+      background: linear-gradient(to bottom, rgba(228, 226, 226, 0) 0%, #e4e2e2 60%, #e4e2e2 100%);
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      z-index: 5; 
+    }
+
+    .mobile-show-more-btn-wrapper {
+      display: flex;
+      justify-content: center;
+      position: relative;
+      z-index: 10; 
+      
+      /* DEFAULT (Collapsed) State: Pull button UP into the fade */
+      margin-top: -80px; 
+      padding-bottom: 0;
+      transition: margin-top 0.4s ease;
+    }
+
+    /* EXPANDED State: Sibling selector to push button DOWN below content */
+    .mobile-expandable-wrapper.is-expanded + .mobile-show-more-btn-wrapper {
+       margin-top: 20px;
+       padding-bottom: 20px;
+    }
+
+    /* Pulse Animation Keyframes */
+    @keyframes pulse-border {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+      }
+    }
+
+    .mobile-show-more-btn {
+      /* Glassmorphism Style */
+      background: rgba(255, 255, 255, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      color: #333; /* Dark text for contrast against light grey bg */
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      /* Apply Pulse Animation */
+      animation: pulse-border 2s infinite;
+    }
+    
+    .mobile-show-more-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(1.05);
+    }
+
+    /* State: Expanded */
+    .mobile-expandable-wrapper.is-expanded .mobile-fade-overlay {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Remove animation when Expanded */
+    .mobile-expandable-wrapper.is-expanded + .mobile-show-more-btn-wrapper .mobile-show-more-btn {
+      animation: none;
+      background: rgba(0, 0, 0, 0.05); /* Softer look when expanded */
+      border-color: rgba(0,0,0,0.1);
+    }
+  }
+{% endstyle %}
+
+<div class="herb-card-section" data-section-id="{{ section.id }}">
+  
+  {% comment %} --- FAUX HEADER IMAGE RENDER --- {% endcomment %}
+  {% if section.settings.header_image != blank %}
+    <div class="faux-header-wrapper">
+      <img 
+        src="{{ section.settings.header_image | img_url: 'master' }}" 
+        alt="Section Header" 
+        class="faux-header-image"
+        loading="lazy"
+      >
+    </div>
+  {% endif %}
+
+  <div class="container" style="max-width: 1400px; margin: 0 auto;">
+    
+    <div class="mobile-expandable-wrapper" id="ExpandableGrid-{{ section.id }}" data-mobile-columns="{{ section.settings.mobile_columns }}">
+      
+      <div class="herb-card-grid"> 
+        {% for block in section.blocks %}
+          {% if block.type == 'herb_card' %}
+            <div class="herb-card" {{ block.shopify_attributes }}>
+              
+              <div class="herb-card__content">
+                <p class="herb-card__tagline">{{ block.settings.tagline }}</p>
+                <h3 class="herb-card__title">{{ block.settings.title }}</h3>
+                <div class="herb-card__description">
+                  {{ block.settings.description }}
+                </div>
+              </div>
+
+              {% if block.settings.image != blank %}
+                <div class="herb-card__image-wrapper">
+                  <img 
+                    src="{{ block.settings.image | img_url: 'large' }}"
+                    alt="{{ block.settings.title | escape }}" 
+                    class="herb-card__image"
+                    loading="lazy"
+                  >
+                </div>
+              {% endif %}
+              
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <div class="mobile-fade-overlay"></div>
+
+    </div>
+
+    <div class="mobile-show-more-btn-wrapper" id="ShowMoreBtnWrapper-{{ section.id }}">
+      <button class="mobile-show-more-btn" id="ShowMoreBtn-{{ section.id }}" data-more-label="{{ section.settings.show_more_label }}" data-less-label="{{ section.settings.show_less_label }}">
+        {{ section.settings.show_more_label }}
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const sectionId = "{{ section.id }}";
+  const wrapper = document.getElementById(`ExpandableGrid-${sectionId}`);
+  const btnWrapper = document.getElementById(`ShowMoreBtnWrapper-${sectionId}`);
+  const btn = document.getElementById(`ShowMoreBtn-${sectionId}`);
+  const grid = wrapper.querySelector('.herb-card-grid');
+  
+  let collapsedHeight = 0;
+  let isExpanded = false;
+
+  // Run on load
+  if (window.innerWidth <= 768) {
+    calculateHeight();
+  }
+  
+  // Re-run on resize
+  window.addEventListener('resize', function() {
+    if (window.innerWidth <= 768) {
+      if (!isExpanded) {
+        calculateHeight();
+      }
+    } else {
+      wrapper.style.height = 'auto';
+    }
+  });
+
+  function calculateHeight() {
+    const cards = grid.querySelectorAll('.herb-card');
+    const cols = parseInt(wrapper.getAttribute('data-mobile-columns'));
+    
+    // Show first 3 rows
+    const itemsToShow = cols * 3;
+
+    if (cards.length <= itemsToShow) {
+      wrapper.style.height = 'auto';
+      btnWrapper.style.display = 'none';
+      const overlay = wrapper.querySelector('.mobile-fade-overlay');
+      if(overlay) overlay.style.display = 'none';
+      return;
+    }
+
+    // Determine cut-off point
+    // We look at the last visible card in the 3rd row
+    let lastVisibleCard = cards[itemsToShow - 1];
+    
+    if (lastVisibleCard) {
+      // Calculate exactly bottom of the last visible card
+      const cardBottom = lastVisibleCard.offsetTop + lastVisibleCard.offsetHeight;
+      
+      // We set height exactly to cardBottom. 
+      // This prevents the 4th row from showing because overflow: hidden cuts it off.
+      collapsedHeight = cardBottom; 
+      
+      wrapper.style.height = collapsedHeight + 'px';
+      btnWrapper.style.display = 'flex';
+    }
+  }
+
+  // Handle Click Toggle
+  btn.addEventListener('click', function() {
+    const moreLabel = btn.getAttribute('data-more-label');
+    const lessLabel = btn.getAttribute('data-less-label');
+    const fullHeight = grid.scrollHeight;
+
+    if (!isExpanded) {
+      // EXPANDING
+      wrapper.style.height = fullHeight + 'px';
+      wrapper.classList.add('is-expanded');
+      btn.textContent = lessLabel;
+      isExpanded = true;
+    } else {
+      // COLLAPSING
+      wrapper.style.height = collapsedHeight + 'px';
+      wrapper.classList.remove('is-expanded');
+      btn.textContent = moreLabel;
+      isExpanded = false;
+      
+      // Scroll correction if user is too far down
+      // wrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  });
+});
+</script>
