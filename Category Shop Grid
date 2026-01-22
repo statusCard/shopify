@@ -1,0 +1,1014 @@
+{%- liquid
+assign padding_top_desktop = section.settings.padding_top_desktop
+assign padding_bottom_desktop = section.settings.padding_bottom_desktop
+assign horizontal_padding_desktop = section.settings.horizontal_padding_desktop
+
+assign padding_top_mobile = section.settings.padding_top_mobile
+assign padding_bottom_mobile = section.settings.padding_bottom_mobile
+assign horizontal_padding_mobile = section.settings.horizontal_padding_mobile
+
+assign card_min_height_desktop = section.settings.card_min_height_desktop
+assign card_min_height_mobile = section.settings.card_min_height_mobile
+
+assign text_color = section.settings.text_color
+assign background_color = section.settings.background_color
+
+assign card_background_color_alpha = section.settings.card_background_color_alpha
+assign blur_level = section.settings.blur_level
+assign shadow_y = section.settings.shadow_y
+assign shadow_blur = section.settings.shadow_blur
+assign shadow_color = section.settings.shadow_color
+
+assign button_color = section.settings.button_color
+assign button_text_color = section.settings.button_text_color
+assign cta_button_background_color = section.settings.cta_button_background_color
+
+assign main_heading_font = section.settings.main_heading_font
+assign grid_body_font = section.settings.grid_body_font
+
+assign background_image = section.settings.background_image
+assign mobile_image = section.settings.mobile_image
+assign background_video_url = section.settings.background_video_url
+
+assign bg_size = section.settings.background_size
+assign bg_position = section.settings.background_position
+
+assign section_id = section.id
+
+assign main_heading_font_family = main_heading_font.family | escape | prepend: "'" | append: "'" | append: ", " | append: main_heading_font.fallback_families | escape
+assign main_heading_font_weight = main_heading_font.weight | default: '700'
+
+assign grid_body_font_family = grid_body_font.family | escape | prepend: "'" | append: "'" | append: ", " | append: grid_body_font.fallback_families | escape
+assign grid_body_font_weight = grid_body_font.weight | default: '400'
+-%}
+
+{% comment %} 🌟 FONT LOADING AND STYLES {%- endcomment -%}
+{% style %}
+    /* 1. Load the font assets (Required for the font to be available) */
+    {{ main_heading_font | font_face }}
+    {{ grid_body_font | font_face }}
+
+    /* 2. ULTIMATE FONT FIX (V35): Applying font with !important */
+    .category-grid-section-{{ section_id }} h2.grid-heading {
+        font-family: {{ main_heading_font_family }} !important; 
+        font-weight: {{ main_heading_font_weight }} !important; 
+        margin-top: 0 !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .category-grid-section-{{ section_id }} .grid-body-text, 
+    .category-grid-section-{{ section_id }} .main-cta-button {
+        font-family: {{ grid_body_font_family }} !important; 
+        font-weight: {{ grid_body_font_weight }} !important; 
+    }
+    
+    /* ------------------------------------------- */
+    /* SECTION BASE & BACKGROUND STYLES */
+    /* ------------------------------------------- */
+    .category-grid-section-{{ section_id }} {
+        /* Section Sizing & Background */
+        background-color: {{ background_color }};
+        color: {{ text_color }};
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        
+        /* Background Variables */
+        --bg-size: {{ bg_size }};
+        --bg-position: {{ bg_position }};
+    }
+    
+    /* Background Media Container Styling */
+    .category-grid-bg-media {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1; /* Place behind all content */
+        overflow: hidden;
+    }
+    
+    .category-grid-bg-media .section-bg-image img,
+    .category-grid-bg-media .section-bg-video {
+        width: 100%;
+        height: 100%;
+        object-fit: var(--bg-size);
+        object-position: var(--bg-position);
+        display: block;
+    }
+    
+    /* ------------------------------------------- */
+    /* DYNAMIC PADDING & SIZING */
+    /* ------------------------------------------- */
+    
+    /* Desktop Padding (V5 FIX: Added horizontal padding control) */
+    @media (min-width: 768px) {
+        .category-grid-section-{{ section_id }} {
+            padding-top: {{ padding_top_desktop }}px;
+            padding-bottom: {{ padding_bottom_desktop }}px;
+            padding-left: {{ horizontal_padding_desktop }}px; 
+            padding-right: {{ horizontal_padding_desktop }}px;
+        }
+    }
+
+    /* Mobile Padding & Edge-to-Edge Fix (V5 FIX: Uses new mobile padding control) */
+    @media (max-width: 767px) {
+        .category-grid-section-{{ section_id }} {
+            padding-top: {{ padding_top_mobile }}px;
+            padding-bottom: {{ padding_bottom_mobile }}px;
+            padding-left: {{ horizontal_padding_mobile }}px; 
+            padding-right: {{ horizontal_padding_mobile }}px; 
+        }
+    }
+
+
+    /* ------------------------------------------- */
+    /* GRID & CARD BASE STYLES */
+    /* ------------------------------------------- */
+    .grid-container {
+        display: flex;
+        flex-direction: row; 
+        max-width: 1400px; /* Desktop width limit */
+        margin: 0 auto;
+        gap: 40px; 
+        position: relative;
+        z-index: 2;
+    }
+    
+    @media (max-width: 767px) {
+        .grid-container {
+            flex-direction: column; 
+            gap: 20px;
+            max-width: 100%;
+        }
+        .grid-text-column {
+            order: -1; 
+            text-align: center; /* CENTER TEXT, DESC, AND BUTTON */
+            width: 100%; 
+        }
+        .grid-cards-column {
+            flex: 1 1 100%; 
+        }
+    }
+
+    @media (min-width: 768px) {
+        .grid-text-column {
+            flex: 0 0 25%;
+        }
+        .grid-cards-column {
+            flex: 1 1 75%;
+        }
+    }
+
+    /* MOBILE GRID FIX: Force 2x2 layout */
+    @media (max-width: 767px) {
+        .category-cards-wrapper {
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr) !important; 
+            gap: 15px; 
+            padding: 0;
+        }
+        
+        /* MOBILE CARD HEIGHT FIX */
+        .category-card {
+            min-height: {{ card_min_height_mobile }}px; 
+            padding: 8px; /* V9: Padding returned here */
+        }
+    }
+    
+    /* Desktop Grid */
+    @media (min-width: 768px) {
+        .category-cards-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+    }
+    
+    /* ------------------------------------------- */
+    /* IMAGE SCALING (120% on both views) */
+    /* ------------------------------------------- */
+    
+    .card-image-wrap {
+        position: absolute;
+        top: 0; 
+        left: 0;
+        width: 100%; 
+        height: 100%; 
+        
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        
+        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease !important;
+        
+        /* INCREASE IMAGE SIZE TO 120% */
+        transform: scale(1.20); 
+        opacity: 1;
+    }
+    
+    /* Hover state: ensure hover image is also scaled */
+    .category-card-outer-wrap:hover .default-image {
+        opacity: 0;
+        transform: scale(1.20) !important; /* Keep scale consistent */
+    }
+
+    .category-card-outer-wrap:hover .hover-image {
+        opacity: 1;
+        transform: scale(1.20) !important; /* Keep scale consistent */
+    }
+
+
+    /* --- Other Card Styles --- */
+
+    .category-card-outer-wrap {
+        position: relative;
+        z-index: 1; 
+    }
+    
+    .category-card-absolute-glow {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+        pointer-events: none;
+        z-index: 0; 
+        transition: transform 0.3s ease-out, box-shadow 0.3s ease-out; 
+        box-shadow: none !important; 
+    }
+    
+    /* V7: Apply subtle scale to glow, but remove translateY lift (Keeping border fixed) */
+    .category-card-outer-wrap:hover .category-card-absolute-glow {
+        transform: scale(1.02); 
+    }
+
+    /* Main Card */
+    .category-card {
+        border-radius: 12px;
+        overflow: hidden;
+        text-decoration: none;
+        display: block;
+        position: relative;
+        padding: 15px; /* V9: Padding returned here for desktop */
+        min-height: {{ card_min_height_desktop }}px; 
+        color: #FFFFFF;
+
+        /* Glass Effect */
+        background-color: {{ card_background_color_alpha }};
+        backdrop-filter: blur({{ blur_level }}px);
+        -webkit-backdrop-filter: blur({{ blur_level }}px);
+        
+        /* Standard box shadow */
+        box-shadow: 0 {{ shadow_y }}px {{ shadow_blur }}px {{ shadow_color }};
+
+        filter: none !important; 
+        
+        z-index: 10; 
+        transition: box-shadow 0.3s ease-out; /* Only transition shadow here */
+    }
+    
+    /* V7 FIX: Keep the card fixed (no transform), only update drop shadow. */
+    .category-card-outer-wrap:hover .category-card {
+        transform: none; /* Crucial: ensures card base stays put */
+        box-shadow: 0 {{ shadow_y | plus: 5 }}px {{ shadow_blur | plus: 10 }}px {{ shadow_color }} !important;
+    }
+
+    /* V9: Apply Lift directly to inner elements */
+    .category-card-outer-wrap:hover .card-image-inner,
+    .category-card-outer-wrap:hover .card-title-overlay,
+    .category-card-outer-wrap:hover .card-arrow {
+        transform: translateY(-5px);
+    }
+    
+    /* V9: Ensure inner elements have transition for smooth lift */
+    .card-image-inner,
+    .card-title-overlay,
+    .card-arrow {
+        transition: transform 0.3s ease-out;
+    }
+    
+    /* ------------------------------------------- */
+    /* Card Content Positioning (Original) */
+    /* ------------------------------------------- */
+
+    .card-image-inner {
+        /* V9: Restore original absolute positioning relative to .category-card padding */
+        position: absolute;
+        top: 0; 
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: block; 
+        z-index: 5;
+    }
+    
+    .card-image-wrap .card-image {
+        display: block;
+        width: auto;
+        height: auto;
+        object-fit: contain; 
+        transition: none; 
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .category-card .hover-image {
+        opacity: 0;
+        z-index: 2;
+    }
+    
+    .card-title-overlay {
+        position: absolute;
+        top: 15px; /* Relative to card padding */
+        left: 15px; /* Relative to card padding */
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        z-index: 15;
+        display: flex; 
+        align-items: center; 
+        flex-direction: row; 
+    }
+
+    /* V10 FIX: Enforce icon sizing to prevent expansion */
+    .card-title-icon {
+        height: auto !important; 
+        margin-left: 8px; 
+        margin-right: 0; 
+        display: block; 
+    }
+    
+    .card-title-overlay.size-small { font-size: 0.8rem; }
+    .card-title-overlay.size-medium { font-size: 1rem; }
+    .card-title-overlay.size-large { font-size: 1.2rem; }
+    
+    /* Default Desktop Icon Size */
+    @media (min-width: 768px) {
+        .card-title-icon {
+            width: var(--icon-size-desktop) !important; 
+            max-width: var(--icon-size-desktop) !important; 
+        }
+    }
+
+    /* Mobile Icon Size */
+    @media (max-width: 767px) {
+        .card-title-icon {
+            width: var(--icon-size-mobile) !important; 
+            max-width: var(--icon-size-mobile) !important; 
+        }
+        .card-title-overlay {
+            top: 8px; 
+            left: 8px; 
+        }
+        
+        /* V11 Fix: Explicitly use 'bottom' property referencing the customizable variable */
+        .card-arrow {
+            bottom: var(--arrow-bottom-mobile) !important; 
+            right: 8px; 
+        }
+    }
+
+    .card-arrow {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        border: 2px solid white; 
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 15;
+        margin: 0; 
+    }
+
+    /* Desktop Arrow Position (V5 FIX: Uses block setting for bottom offset) */
+    @media (min-width: 768px) {
+        .card-arrow {
+            bottom: var(--arrow-bottom-desktop);
+            right: 15px;
+        }
+    }
+
+
+    /* --- CTA Button Styles --- */
+
+    .main-cta-button {
+        display: inline-block;
+        padding: 12px 25px;
+        margin-top: 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: transform 0.3s ease-out, filter 0.3s ease-out, box-shadow 0.3s ease-out;
+        text-align: center;
+        
+        background-color: {{ cta_button_background_color }};
+        
+        filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+    }
+
+    .main-cta-button:hover {
+        transform: translateY(-2px) scale(1.01);
+        filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.7));
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.3) inset;
+    }
+{% endstyle %}
+
+<div class="category-grid-section-{{ section_id }} category-grid-section">
+
+    {%- comment -%} Background Media Container {%- endcomment -%}
+    {%- if background_image != blank or background_video_url != blank -%}
+        <div class="category-grid-bg-media">
+            {%- if background_video_url != blank -%}
+                <video class="section-bg-video" autoplay muted loop playsinline>
+                    <source src="{{ background_video_url }}" type="video/mp4">
+                </video>
+            {%- elsif background_image != blank -%}
+                <div class="section-bg-image">
+                    {%- if mobile_image != blank -%}
+                        <picture>
+                            <source media="(max-width: 767px)" srcset="{{ mobile_image | image_url: width: 767 }}">
+                            <img src="{{ background_image | image_url: width: 1920 }}"
+                                alt="{{ background_image.alt | escape }}"
+                                loading="lazy"
+                                style="object-fit: cover;">
+                        </picture>
+                    {%- else -%}
+                        <img src="{{ background_image | image_url: width: 1920 }}"
+                            alt="{{ background_image.alt | escape }}"
+                            loading="lazy"
+                            style="object-fit: cover;">
+                        
+                    {%- endif -%}
+                </div>
+            {%- endif -%}
+        </div>
+    {%- endif -%}
+
+
+    <div class="grid-container">
+        <div class="grid-text-column">
+            
+            <h2 class="grid-heading">
+                {{ section.settings.heading | escape }}
+            </h2>
+            
+            <div class="grid-body-text">
+                {{ section.settings.text }}
+            </div>
+
+            {%- if section.settings.reviews_text != blank -%}
+                <div class="grid-reviews-bar" style="margin-top: 20px;">
+                    <div class="star-rating-placeholder" style="display: flex; gap: 2px; color: #ffc107; margin-bottom: 5px; justify-content: center;">
+                        {%- for i in (1..5) -%}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.063.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                            </svg>
+                        {%- endfor -%}
+                    </div>
+                    <small>{{ section.settings.reviews_text | escape }}</small>
+                </div>
+            {%- endif -%}
+
+            {%- if section.settings.cta_link != blank and section.settings.cta_text != blank -%}
+                <a href="{{ section.settings.cta_link }}"
+                    class="main-cta-button"
+                    style="border: 1px solid {{ button_color }}; color: {{ button_text_color }};">
+                    {{ section.settings.cta_text | escape }}
+                </a>
+            {%- endif -%}
+            
+        </div>
+
+        <div class="grid-cards-column">
+            {%- if section.blocks.size > 0 -%}
+                <div class="category-cards-wrapper">
+                    {%- for block in section.blocks -%}
+                        {%- case block.type -%}
+                            {%- when 'category_card' -%}
+                                {%- liquid
+assign block_glow_intensity = block.settings.card_glow_intensity | append: 'px'
+assign block_static_glow_color = block.settings.card_static_glow_color
+assign block_title_size = block.settings.card_title_size
+assign block_card_icon = block.settings.card_icon
+assign title_size_class = 'size-' | append: block_title_size
+
+assign card_arrow_color = block.settings.card_arrow_color | default: '#FFFFFF'
+assign card_arrow_border_color = block.settings.card_arrow_border_color | default: '#FFFFFF'
+assign card_title_text_color = block.settings.card_title_text_color | default: '#FFFFFF'
+
+assign icon_size_desktop = block.settings.card_icon_size_desktop | append: 'px'
+assign icon_size_mobile = block.settings.card_icon_size_mobile | append: 'px'
+
+assign arrow_bottom_desktop = block.settings.card_arrow_bottom_offset_desktop | append: 'px'
+assign arrow_bottom_mobile = block.settings.card_arrow_bottom_offset_mobile | append: 'px'
+                                -%}
+                                
+                                <div class="category-card-outer-wrap">
+                                    <a href="{{ block.settings.card_link }}"
+                                    class="category-card"
+                                    {{ block.shopify_attributes }}
+                                    style="
+                                        --card-glow-intensity: {{ block_glow_intensity }};
+                                        --card-static-glow-color: {{ block_static_glow_color }};
+                                        --icon-size-desktop: {{ icon_size_desktop }};
+                                        --icon-size-mobile: {{ icon_size_mobile }};
+                                        --arrow-bottom-desktop: {{ arrow_bottom_desktop }}; 
+                                        --arrow-bottom-mobile: {{ arrow_bottom_mobile }}; 
+                                    ">
+                                        
+                                        <div class="card-title-overlay {{ title_size_class }}" style="color: {{ card_title_text_color }};">
+                                            <span>{{ block.settings.card_title | escape }}</span>
+                                            {%- if block_card_icon != blank -%}
+                                                <img src="{{ block_card_icon | image_url: width: 64 }}" alt="{{ block_card_icon.alt | escape }}" class="card-title-icon" loading="lazy">
+                                            {%- endif -%}
+                                        </div>
+
+                                        <div class="card-image-inner">
+                                            {%- comment -%} DEFAULT IMAGE WRAPPER {%- endcomment -%}
+                                            <div class="card-image-wrap default-image">
+                                                {%- assign img = block.settings.card_image -%}
+                                                {%- if img != blank -%}
+                                                    <img src="{{ img | image_url: width: 300 }}"
+                                                    srcset="{{ img | image_url: width: 300 }} 300w,
+                                                            {{ img | image_url: width: 400 }} 400w,
+                                                            {{ img | image_url: width: 500 }} 500w"
+                                                    sizes="(min-width: 768px) 25vw, 50vw"
+                                                    alt="{{ img.alt | escape }}"
+                                                    loading="lazy"
+                                                    class="card-image">
+                                                {%- else -%}
+                                                    <div style="width: 150px; height: 150px; background-color: rgba(255,255,255,0.2); border-radius: 50%;"></div>
+                                                {%- endif -%}
+                                            </div>
+                                            
+                                            {%- comment -%} HOVER IMAGE WRAPPER {%- endcomment -%}
+                                            {%- assign img_hover = block.settings.card_image_hover -%}
+                                            {%- if img_hover != blank -%}
+                                                <div class="card-image-wrap hover-image">
+                                                    <img src="{{ img_hover | image_url: width: 300 }}"
+                                                    srcset="{{ img_hover | image_url: width: 300 }} 300w,
+                                                            {{ img_hover | image_url: width: 400 }} 400w,
+                                                            {{ img_hover | image_url: width: 500 }} 500w"
+                                                    sizes="(min-width: 768px) 25vw, 50vw"
+                                                    alt="{{ img_hover.alt | escape }}"
+                                                    loading="lazy"
+                                                    class="card-image">
+                                                </div>
+                                            {%- endif -%}
+                                        </div> 
+                                        
+                                        <div class="card-arrow" 
+                                            style="color: {{ card_arrow_color }}; border-color: {{ card_arrow_border_color }};">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                                            </svg>
+                                        </div>
+                                        
+                                    </a>
+                                    {%- comment -%} CRITICAL: INJECT INLINE BOX-SHADOW FOR MAX SPECIFICITY {%- endcomment -%}
+                                    {%- liquid
+                                        assign inline_shadow = '0 0 ' | append: block_glow_intensity | append: ' ' | append: block_static_glow_color | append: ' !important'
+                                    -%}
+                                    <div class="category-card-absolute-glow"
+                                        style="box-shadow: {{ inline_shadow }};"
+                                        >
+                                    </div>
+                                </div>
+                        {%- endcase -%}
+                    {%- endfor -%}
+                </div>
+            {%- else -%}
+                <div class="placeholder-text">
+                    Add category cards in the Theme Editor to populate this section.
+                </div>
+            {%- endif -%}
+        </div>
+    </div>
+</div>
+
+
+{% schema %}
+{
+    "name": "Category Shop Grid",
+    "class": "section-category-grid",
+    "max_blocks": 4,
+    "settings": [
+        {
+            "type": "header",
+            "content": "Section Sizing & Background"
+        },
+        {
+            "type": "range",
+            "id": "padding_top_desktop",
+            "min": 0,
+            "max": 100,
+            "step": 5,
+            "unit": "px",
+            "label": "Top Padding (Desktop)",
+            "default": 40
+        },
+        {
+            "type": "range",
+            "id": "padding_bottom_desktop",
+            "min": 0,
+            "max": 100,
+            "step": 5,
+            "unit": "px",
+            "label": "Bottom Padding (Desktop)",
+            "default": 40
+        },
+        {
+            "type": "range",
+            "id": "padding_top_mobile",
+            "min": 0,
+            "max": 80,
+            "step": 5,
+            "unit": "px",
+            "label": "Top Padding (Mobile)",
+            "default": 20
+        },
+        {
+            "type": "range",
+            "id": "padding_bottom_mobile",
+            "min": 0,
+            "max": 80,
+            "step": 5,
+            "unit": "px",
+            "label": "Bottom Padding (Mobile)",
+            "default": 20
+        },
+        {
+            "type": "header",
+            "content": "Horizontal Padding Control"
+        },
+        {
+            "type": "range",
+            "id": "horizontal_padding_desktop",
+            "min": 0,
+            "max": 100,
+            "step": 5,
+            "unit": "px",
+            "label": "Horizontal Padding (Desktop)",
+            "default": 0,
+            "info": "Padding applied to the left/right of the section container."
+        },
+        {
+            "type": "range",
+            "id": "horizontal_padding_mobile",
+            "min": 0,
+            "max": 40,
+            "step": 5,
+            "unit": "px",
+            "label": "Horizontal Padding (Mobile)",
+            "default": 15,
+            "info": "Padding applied to the left/right of the section container."
+        },
+        {
+            "type": "header",
+            "content": "Card Sizing"
+        },
+        {
+            "type": "range",
+            "id": "card_min_height_desktop",
+            "min": 200,
+            "max": 500,
+            "step": 10,
+            "unit": "px",
+            "label": "Card Min Height (Desktop)",
+            "default": 300
+        },
+        {
+            "type": "range",
+            "id": "card_min_height_mobile",
+            "min": 150,
+            "max": 400,
+            "step": 10,
+            "unit": "px",
+            "label": "Card Min Height (Mobile)",
+            "default": 250
+        },
+        {
+            "type": "image_picker",
+            "id": "background_image",
+            "label": "Background Image (Desktop)"
+        },
+        {
+            "type": "image_picker",
+            "id": "mobile_image",
+            "label": "Background Image (Mobile, Optional)",
+            "info": "Overrides desktop image on smaller screens."
+        },
+        {
+            "type": "url",
+            "id": "background_video_url",
+            "label": "Background Video URL (.mp4)",
+            "info": "This will override the background image."
+        },
+        {
+            "type": "color",
+            "id": "background_color",
+            "label": "Fallback/Section Background Color",
+            "default": "#e4e2e2",
+            "info": "Used if no image/video is selected."
+        },
+        {
+            "type": "color",
+            "id": "text_color",
+            "label": "Text Color",
+            "default": "#1e1e1e"
+        },
+        {
+            "type": "header",
+            "content": "Background Image Settings"
+        },
+        {
+            "type": "select",
+            "id": "background_size",
+            "label": "Image Scale/Fit",
+            "options": [
+                { "value": "cover", "label": "Cover (Fills container, may crop)" },
+                { "value": "contain", "label": "Contain (Fits inside, may show gaps)" },
+                { "value": "fill", "label": "Fill (Stretches to fill)" }
+            ],
+            "default": "cover",
+            "info": "Controls the 'object-fit' property."
+        },
+        {
+            "type": "select",
+            "id": "background_position",
+            "label": "Image Position",
+            "options": [
+                { "value": "center", "label": "Center" },
+                { "value": "top", "label": "Top" },
+                { "value": "bottom", "label": "Bottom" },
+                { "value": "left", "label": "Left" },
+                { "value": "right", "label": "Right" }
+            ],
+            "default": "center",
+            "info": "Controls the 'object-position' property."
+        },
+        {
+            "type": "header",
+            "content": "Category Card Glass & Drop Shadow"
+        },
+        {
+            "type": "color",
+            "id": "card_background_color_alpha",
+            "label": "Card Background Color (RGBA)",
+            "default": "rgba(255, 115, 0, 0.9)",
+            "info": "Use an RGBA color code (e.g., rgba(255, 115, 0, 0.9)) to set transparency."
+        },
+        {
+            "type": "range",
+            "id": "blur_level",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "unit": "px",
+            "label": "Glass Blur Level",
+            "default": 8
+        },
+        {
+            "type": "range",
+            "id": "shadow_y",
+            "min": 0,
+            "max": 30,
+            "step": 1,
+            "unit": "px",
+            "label": "Box Shadow Y-Offset",
+            "default": 8
+        },
+        {
+            "type": "range",
+            "id": "shadow_blur",
+            "min": 0,
+            "max": 50,
+            "step": 1,
+            "unit": "px",
+            "label": "Box Shadow Blur Radius",
+            "default": 20
+        },
+        {
+            "type": "color",
+            "id": "shadow_color",
+            "label": "Box Shadow Color",
+            "default": "rgba(0, 0, 0, 0.15)"
+        },
+        {
+            "type": "header",
+            "content": "Content & CTA Fonts"
+        },
+        {
+            "type": "font_picker",
+            "id": "main_heading_font",
+            "label": "Main Heading Font (e.g. Archivo Black)",
+            "default": "sans-serif"
+        },
+        {
+            "type": "font_picker",
+            "id": "grid_body_font",
+            "label": "Body/Description Font",
+            "default": "sans-serif"
+        },
+        {
+            "type": "header",
+            "content": "Content & CTA Text"
+        },
+        {
+            "type": "text",
+            "id": "heading",
+            "label": "Heading Text",
+            "default": "SHOP BY CATEGORY",
+            "info": "The main, large heading text."
+        },
+        {
+            "type": "richtext",
+            "id": "text",
+            "label": "Body Text",
+            "default": "<p>Sweat solutions for all areas of the body. That's our mission.</p>"
+        },
+        {
+            "type": "text",
+            "id": "reviews_text",
+            "label": "Reviews Text (e.g., 17,918 reviews)",
+            "default": "17,918 reviews"
+        },
+        {
+            "type": "text",
+            "id": "cta_text",
+            "label": "CTA Button Text",
+            "default": "SHOP ALL PRODUCTS"
+        },
+        {
+            "type": "url",
+            "id": "cta_link",
+            "label": "CTA Button Link",
+            "default": "/collections/all"
+        },
+        {
+            "type": "color",
+            "id": "cta_button_background_color",
+            "label": "CTA Button Background Color",
+            "default": "#1e1e1e"
+        },
+        {
+            "type": "color",
+            "id": "button_color",
+            "label": "CTA Button Border Color (Accent)",
+            "default": "#0099CC"
+        },
+        {
+            "type": "color",
+            "id": "button_text_color",
+            "label": "CTA Button Text Color",
+            "default": "#FFFFFF"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "category_card",
+            "name": "Category Card",
+            "settings": [
+                {
+                    "type": "image_picker",
+                    "id": "card_image",
+                    "label": "Default Image"
+                },
+                {
+                    "type": "image_picker",
+                    "id": "card_image_hover",
+                    "label": "Hover Image (Optional)"
+                },
+                {
+                    "type": "header",
+                    "content": "Title & Icon Settings"
+                },
+                {
+                    "type": "text",
+                    "id": "card_title",
+                    "label": "Card Title (e.g., FACE)",
+                    "default": "NEW CATEGORY"
+                },
+                {
+                    "type": "color",
+                    "id": "card_title_text_color",
+                    "label": "Card Title Text Color",
+                    "default": "#FFFFFF"
+                },
+                {
+                    "type": "select",
+                    "id": "card_title_size",
+                    "label": "Card Title Font Size",
+                    "options": [
+                        { "value": "small", "label": "Small (0.8rem)" },
+                        { "value": "medium", "label": "Medium (1.0rem)" },
+                        { "value": "large", "label": "Large (1.2rem)" }
+                    ],
+                    "default": "small"
+                },
+                {
+                    "type": "image_picker",
+                    "id": "card_icon",
+                    "label": "Icon/Image beside Title (Optional)"
+                },
+                {
+                    "type": "range",
+                    "id": "card_icon_size_desktop",
+                    "min": 16,
+                    "max": 48,
+                    "step": 2,
+                    "unit": "px",
+                    "label": "Icon Size (Desktop)",
+                    "default": 24
+                },
+                {
+                    "type": "range",
+                    "id": "card_icon_size_mobile",
+                    "min": 12,
+                    "max": 36,
+                    "step": 2,
+                    "unit": "px",
+                    "label": "Icon Size (Mobile)",
+                    "default": 20
+                },
+                {
+                    "type": "url",
+                    "id": "card_link",
+                    "label": "Card Link",
+                    "default": "/collections/all"
+                },
+                {
+                    "type": "header",
+                    "content": "Arrow and Glow Settings"
+                },
+                {
+                    "type": "range",
+                    "id": "card_arrow_bottom_offset_desktop",
+                    "min": 5,
+                    "max": 80,
+                    "step": 1,
+                    "unit": "px",
+                    "label": "Arrow Bottom Position (Desktop)",
+                    "default": 15,
+                    "info": "Increase this value to move the arrow higher."
+                },
+                {
+                    "type": "range",
+                    "id": "card_arrow_bottom_offset_mobile",
+                    "min": 5,
+                    "max": 50,
+                    "step": 1,
+                    "unit": "px",
+                    "label": "Arrow Bottom Position (Mobile)",
+                    "default": 8,
+                    "info": "Increase this value to move the arrow higher."
+                },
+                {
+                    "type": "color",
+                    "id": "card_arrow_color",
+                    "label": "Arrow Icon Color",
+                    "default": "#FFFFFF"
+                },
+                {
+                    "type": "color",
+                    "id": "card_arrow_border_color",
+                    "label": "Arrow Circle Border Color",
+                    "default": "#FFFFFF"
+                },
+                {
+                    "type": "range",
+                    "id": "card_glow_intensity",
+                    "min": 0,
+                    "max": 10,
+                    "step": 1,
+                    "unit": "px",
+                    "label": "Glow Intensity (Size)",
+                    "default": 10
+                },
+                {
+                    "type": "color",
+                    "id": "card_static_glow_color",
+                    "label": "Static Glow Color",
+                    "default": "#FFA500"
+                }
+            ]
+        }
+    ],
+    "presets": [
+        {
+            "name": "Category Shop Grid",
+            "category": "Image",
+            "blocks": [
+                { "type": "category_card" },
+                { "type": "category_card" },
+                { "type": "category_card" },
+                { "type": "category_card" }
+            ]
+        }
+    ]
+}
+{% endschema %}
