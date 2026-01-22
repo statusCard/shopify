@@ -355,6 +355,60 @@
 
       {
         "type": "header",
+        "content": "Mobile 'Show More' Button"
+      },
+      {
+        "type": "range",
+        "id": "btn_vertical_offset",
+        "min": -150,
+        "max": 50,
+        "step": 5,
+        "unit": "px",
+        "label": "Vertical Position",
+        "default": -80,
+        "info": "Negative moves UP into cards. Positive moves DOWN below cards."
+      },
+      {
+        "type": "color",
+        "id": "btn_bg_color",
+        "label": "Button Background",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "btn_text_color",
+        "label": "Button Text Color",
+        "default": "#333333"
+      },
+      {
+        "type": "color",
+        "id": "btn_pulse_color",
+        "label": "Pulse Glow Color",
+        "default": "#ffffff"
+      },
+      {
+        "type": "range",
+        "id": "btn_pulse_speed",
+        "min": 0.5,
+        "max": 4.0,
+        "step": 0.1,
+        "unit": "s",
+        "label": "Pulse Speed (Seconds)",
+        "default": 2.0
+      },
+      {
+        "type": "range",
+        "id": "btn_pulse_spread",
+        "min": 0,
+        "max": 40,
+        "step": 1,
+        "unit": "px",
+        "label": "Pulse Spread Distance",
+        "default": 10
+      },
+
+      {
+        "type": "header",
         "content": "Global Visual & Glassmorphism"
       },
       {
@@ -701,8 +755,9 @@
       position: relative;
       z-index: 10; 
       
-      /* DEFAULT (Collapsed) State: Pull button UP into the fade */
-      margin-top: -80px; 
+      /* DEFAULT (Collapsed) State: User controlled Offset */
+      margin-top: {{ section.settings.btn_vertical_offset }}px; 
+
       padding-bottom: 0;
       transition: margin-top 0.4s ease;
     }
@@ -713,26 +768,28 @@
        padding-bottom: 20px;
     }
 
-    /* Pulse Animation Keyframes */
+    /* Pulse Animation Keyframes - DYNAMIC */
     @keyframes pulse-border {
       0% {
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6);
+        box-shadow: 0 0 0 0 {{ section.settings.btn_pulse_color | color_modify: 'alpha', 0.6 }};
       }
       70% {
-        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+        box-shadow: 0 0 0 {{ section.settings.btn_pulse_spread }}px {{ section.settings.btn_pulse_color | color_modify: 'alpha', 0 }};
       }
       100% {
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+        box-shadow: 0 0 0 0 {{ section.settings.btn_pulse_color | color_modify: 'alpha', 0 }};
       }
     }
 
     .mobile-show-more-btn {
-      /* Glassmorphism Style */
-      background: rgba(255, 255, 255, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      color: #333; /* Dark text for contrast against light grey bg */
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      /* Replaced Glassmorphism with User Settings */
+      background: {{ section.settings.btn_bg_color }};
+      color: {{ section.settings.btn_text_color }};
+      border: 1px solid {{ section.settings.btn_bg_color | color_darken: 10 }};
+      
+      /* Removed Backdrop filters (Glass effect) */
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
       
       padding: 12px 28px;
       border-radius: 30px;
@@ -743,11 +800,10 @@
       transition: all 0.3s ease;
       
       /* Apply Pulse Animation */
-      animation: pulse-border 2s infinite;
+      animation: pulse-border {{ section.settings.btn_pulse_speed }}s infinite;
     }
     
     .mobile-show-more-btn:hover {
-      background: rgba(255, 255, 255, 0.4);
       transform: scale(1.05);
     }
 
@@ -762,6 +818,7 @@
       animation: none;
       background: rgba(0, 0, 0, 0.05); /* Softer look when expanded */
       border-color: rgba(0,0,0,0.1);
+      color: #333;
     }
   }
 {% endstyle %}
