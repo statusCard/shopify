@@ -1,0 +1,773 @@
+{% comment %}
+  Interactive Flavor Switcher v4
+  - Gradient Fixed
+  - Subtle Shadow
+  - Static Subtitle Colors
+  - Scramble Text Transition
+{% endcomment %}
+
+{%- style -%}
+  /* --- Global Scope & Layout --- */
+  #shopify-section-{{ section.id }} {
+    --transition-speed: 0.5s;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+    background-color: #fff; /* Ensure we have a base white background */
+
+    /* Font Setup */
+    {% if section.settings.font_heading != blank %}
+      --font-heading-family: {{ section.settings.font_heading.family }}, {{ section.settings.font_heading.fallback_families }};
+    {% endif %}
+  }
+
+  .flavor-card-module {
+    position: relative;
+    min-height: 700px;
+    padding: 20px;
+    background: transparent !important; 
+  }
+
+  /* --- The Background Gradient Layer --- */
+  .flavor-background-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0; 
+    pointer-events: none;
+    transition: background 0.5s ease;
+    
+    /* Radial Gradient logic:
+       Center creates a soft pool of the accent color 
+       fading into transparent/white outwards.
+    */
+    background: radial-gradient(
+      circle at 50% 45%, 
+      var(--theme-gradient-color) 0%, 
+      rgba(255,255,255,0) 65%
+    );
+    opacity: 0.9; /* High opacity so light colors are visible */
+  }
+
+  .flavor-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    max-width: {{ section.settings.page_width }}px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* --- Left Column: Content --- */
+  .flavor-content {
+    width: 100%;
+    order: 2;
+    text-align: center;
+    padding-top: 20px;
+    position: relative;
+    z-index: 10; 
+  }
+
+  @media (min-width: 1024px) {
+    .flavor-content {
+      width: 45%;
+      order: 1;
+      text-align: left;
+      padding-top: 0;
+    }
+  }
+
+  /* --- Right Column: Visuals --- */
+  .flavor-visuals {
+    width: 100%;
+    order: 1; 
+    position: relative;
+    z-index: 1; 
+    height: 400px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
+  }
+
+  @media (min-width: 1024px) {
+    .flavor-visuals {
+      width: 55%;
+      order: 2;
+      height: 600px; 
+    }
+  }
+
+  /* --- Typography --- */
+  
+  /* Wrapper to prevent height jumping during scramble */
+  .scramble-wrapper {
+    display: block;
+    min-height: 3.5rem; 
+    margin-bottom: 0.5rem;
+  }
+
+  .flavor-eyebrow {
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    font-size: 0.75rem;
+    margin-bottom: 1rem;
+    display: block;
+    opacity: 0.6;
+    color: var(--theme-static-color); /* Static Color */
+  }
+
+  /* Main Title - Dynamic Color */
+  .flavor-h2 {
+    font-family: var(--font-heading-family, inherit);
+    font-size: {{ section.settings.title_size_mobile }}px;
+    line-height: 1.1;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin: 0;
+    color: var(--theme-variant-color); /* Changes on click */
+    transition: color 0.3s ease;
+  }
+  @media(min-width: 1024px) {
+    .flavor-h2 { font-size: {{ section.settings.title_size_desktop }}px; }
+  }
+  
+  /* Subtitle - Static Color */
+  .flavor-h3 {
+    font-size: 1.1rem; /* Independent size */
+    line-height: 1.5;
+    font-weight: 500;
+    margin: 1rem 0 2rem 0;
+    min-height: 3.5rem; /* Reserve space */
+    color: var(--theme-static-color); /* Static Color */
+    opacity: 0.8;
+  }
+
+  /* --- Visuals: Main Image vs Background Graphic --- */
+  
+  .visuals-stack {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* The Background Splash/Graphic */
+  .flavor-splash-image {
+    position: absolute;
+    width: var(--img-width);
+    transform: translate(var(--img-x), var(--img-y)) rotate(var(--img-rot));
+    z-index: 1; 
+    opacity: 0;
+    transition: opacity var(--transition-speed) ease, transform 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    pointer-events: none;
+  }
+  
+  .flavor-splash-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* The Product (Can) */
+  .flavor-hero-img-wrapper {
+    position: relative;
+    z-index: 2; 
+    width: auto;
+    height: 80%;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease;
+    position: absolute; 
+  }
+
+  .flavor-hero-img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    /* Extremely subtle shadow, barely visible */
+    filter: drop-shadow(0 15px 15px rgba(0,0,0,0.05));
+  }
+
+  /* Active States */
+  .flavor-splash-image.is-active,
+  .flavor-hero-img-wrapper.is-active {
+    opacity: 1;
+  }
+  .flavor-hero-img-wrapper.is-active {
+    transform: scale(1);
+  }
+
+
+  /* --- Buttons Grid --- */
+  .flavor-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 25px;
+  }
+
+  @media (min-width: 1024px) {
+    .flavor-grid {
+      justify-content: flex-start;
+    }
+  }
+
+  .btn-flavor {
+    width: 90px;
+    height: 90px;
+    border-radius: 16px;
+    border: 2px solid rgba(0,0,0,0.05);
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+
+  .btn-flavor:hover {
+    transform: translateY(-3px);
+  }
+
+  .btn-flavor.selected {
+    border-color: var(--theme-variant-color);
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.5), 0 0 0 2px var(--theme-variant-color);
+  }
+
+  .btn-flavor img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    margin-bottom: 6px;
+  }
+
+  .btn-flavor span {
+    font-size: 0.7rem;
+    text-align: center;
+    line-height: 1;
+    font-weight: 700;
+    color: var(--theme-static-color);
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign first_block = section.blocks.first
+-%}
+
+<div 
+  id="FlavorSection-{{ section.id }}"
+  class="flavor-card-module"
+  style="
+    --theme-variant-color: {{ first_block.settings.color_primary }};
+    --theme-gradient-color: {{ first_block.settings.color_accent }};
+    --theme-static-color: {{ section.settings.static_text_color }};
+  "
+>
+
+  <div class="flavor-background-layer"></div>
+
+  <div class="flavor-wrapper">
+    
+    <div class="flavor-content">
+      
+      <div class="flavor-eyebrow">
+        {{ section.settings.text_eyebrow }}
+      </div>
+
+      <div class="scramble-wrapper">
+        <h2 id="FlavorTitle-{{ section.id }}" class="flavor-h2">
+          {{ first_block.settings.title }}
+        </h2>
+      </div>
+
+      <h3 id="FlavorSubtitle-{{ section.id }}" class="flavor-h3">
+        {{ first_block.settings.subtitle }}
+      </h3>
+
+      <div class="flavor-eyebrow" style="margin-top: 10px; opacity: 1;">
+        {{ section.settings.text_flavors_label }}
+      </div>
+
+      <div class="flavor-grid">
+        {%- for block in section.blocks -%}
+          <button 
+            class="btn-flavor {% if forloop.first %}selected{% endif %}"
+            data-block-id="{{ block.id }}"
+            
+            {% comment %} DATA Attributes for JS {% endcomment %}
+            data-title="{{ block.settings.title | escape }}"
+            data-subtitle="{{ block.settings.subtitle | escape }}"
+            
+            data-color-primary="{{ block.settings.color_primary }}"
+            data-color-accent="{{ block.settings.color_accent }}"
+            
+            aria-label="Select {{ block.settings.title }}"
+            type="button"
+          >
+            {%- if block.settings.icon != blank -%}
+              {{ block.settings.icon | image_url: width: 100 | image_tag: loading: 'lazy' }}
+            {%- else -%}
+              <div style="width:30px; height:30px; background: {{ block.settings.color_primary }}; border-radius:50%;"></div>
+            {%- endif -%}
+            
+            <span>{{ block.settings.title }}</span>
+          </button>
+        {%- endfor -%}
+      </div>
+
+      {% if section.settings.show_cta %}
+        <div style="margin-top: 2.5rem; display: flex; justify-content: {% if section.settings.center_cta_mobile %}center{% else %}flex-start{% endif %};">
+            <a href="{{ section.settings.cta_link }}" class="button" style="background-color: #000; color: #fff; padding: 15px 35px; border-radius: 50px; text-decoration: none; text-transform: uppercase; font-weight: bold; font-size: 0.9rem;">
+                {{ section.settings.cta_text }}
+            </a>
+        </div>
+      {% endif %}
+
+    </div>
+
+    <div class="flavor-visuals">
+      <div class="visuals-stack">
+        
+        {%- for block in section.blocks -%}
+          {% if block.settings.bg_image != blank %}
+            <div 
+              class="flavor-splash-image {% if forloop.first %}is-active{% endif %}"
+              data-block-id="{{ block.id }}"
+              style="
+                --img-width: {{ block.settings.bg_width_m }}%;
+                --img-x: {{ block.settings.bg_x_m }}%;
+                --img-y: {{ block.settings.bg_y_m }}%;
+                --img-rot: {{ block.settings.bg_rot_m }}deg;
+              "
+              data-style-desktop="
+                --img-width: {{ block.settings.bg_width_d }}%;
+                --img-x: {{ block.settings.bg_x_d }}%;
+                --img-y: {{ block.settings.bg_y_d }}%;
+                --img-rot: {{ block.settings.bg_rot_d }}deg;
+              "
+              data-style-mobile="
+                --img-width: {{ block.settings.bg_width_m }}%;
+                --img-x: {{ block.settings.bg_x_m }}%;
+                --img-y: {{ block.settings.bg_y_m }}%;
+                --img-rot: {{ block.settings.bg_rot_m }}deg;
+              "
+            >
+              {{ block.settings.bg_image | image_url: width: 800 | image_tag: loading: 'lazy' }}
+            </div>
+          {% endif %}
+
+          <div 
+            class="flavor-hero-img-wrapper {% if forloop.first %}is-active{% endif %}" 
+            data-block-id="{{ block.id }}"
+          >
+            {%- if block.settings.main_image != blank -%}
+              {{ block.settings.main_image | image_url: width: 1000 | image_tag: class: 'flavor-hero-img', loading: 'eager' }}
+            {%- else -%}
+              <div style="width: 200px; height: 350px; background: rgba(0,0,0,0.05); border-radius: 20px;"></div>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const sectionContainer = document.getElementById('FlavorSection-{{ section.id }}');
+    const buttons = sectionContainer.querySelectorAll('.btn-flavor');
+    const titleEl = document.getElementById('FlavorTitle-{{ section.id }}');
+    const subtitleEl = document.getElementById('FlavorSubtitle-{{ section.id }}');
+    const heroImages = sectionContainer.querySelectorAll('.flavor-hero-img-wrapper');
+    const splashImages = sectionContainer.querySelectorAll('.flavor-splash-image');
+
+    // --- SCRAMBLE TEXT EFFECT ---
+    const chars = '!<>-_\\/[]{}—=+*^?#________'; 
+    
+    const scrambleText = (element, newText) => {
+      const oldText = element.innerText;
+      const length = Math.max(oldText.length, newText.length);
+      const promise = new Promise((resolve) => {
+        const queue = [];
+        for (let i = 0; i < length; i++) {
+          const from = oldText[i] || '';
+          const to = newText[i] || '';
+          const start = Math.floor(Math.random() * 20); 
+          const end = start + Math.floor(Math.random() * 20); 
+          queue.push({ from, to, start, end });
+        }
+        
+        let frame = 0;
+        const update = () => {
+          let output = '';
+          let complete = 0;
+          for (let i = 0; i < length; i++) {
+            const { from, to, start, end } = queue[i];
+            let char = from;
+            if (frame >= end) {
+              char = to;
+              complete++;
+            } else if (frame >= start) {
+              const charIndex = Math.floor(Math.random() * chars.length);
+              char = chars[charIndex];
+            }
+            output += char;
+          }
+          element.innerText = output;
+          if (complete === length) {
+            resolve();
+          } else {
+            frame++;
+            requestAnimationFrame(update);
+          }
+        };
+        update();
+      });
+      return promise;
+    };
+
+    // --- RESPONSIVE STYLE UPDATES ---
+    const updateSplashStyles = () => {
+      const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+      splashImages.forEach(splash => {
+        const styleStr = isDesktop ? splash.dataset.styleDesktop : splash.dataset.styleMobile;
+        if(styleStr) {
+           const pairs = styleStr.trim().split(';');
+           pairs.forEach(pair => {
+             const [key, value] = pair.split(':');
+             if(key && value) splash.style.setProperty(key.trim(), value.trim());
+           });
+        }
+      });
+    };
+
+    updateSplashStyles();
+    window.addEventListener('resize', updateSplashStyles);
+
+    // --- CLICK HANDLERS ---
+    buttons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const targetId = this.dataset.blockId;
+        const newTitle = this.dataset.title;
+        const newSubtitle = this.dataset.subtitle;
+
+        // 1. Update Dynamic CSS Variables
+        // Only changing title color and background gradient
+        sectionContainer.style.setProperty('--theme-variant-color', this.dataset.colorPrimary);
+        sectionContainer.style.setProperty('--theme-gradient-color', this.dataset.colorAccent);
+
+        // 2. Trigger Scramble
+        if(titleEl.innerText !== newTitle) scrambleText(titleEl, newTitle);
+        if(subtitleEl.innerText !== newSubtitle) scrambleText(subtitleEl, newSubtitle);
+
+        // 3. Update Button State
+        buttons.forEach(b => b.classList.remove('selected'));
+        this.classList.add('selected');
+
+        // 4. Update Images
+        const swapActive = (nodeList) => {
+          nodeList.forEach(el => {
+            if(el.dataset.blockId === targetId) {
+              el.classList.add('is-active');
+            } else {
+              el.classList.remove('is-active');
+            }
+          });
+        };
+        swapActive(heroImages);
+        swapActive(splashImages);
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Flavor Switcher v4",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Global Layout"
+    },
+    {
+      "type": "range",
+      "id": "page_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "label": "Max Page Width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Typography Colors & Sizes"
+    },
+    {
+      "type": "color",
+      "id": "static_text_color",
+      "label": "Base Text Color",
+      "default": "#222222",
+      "info": "This color stays the same for subtitles and labels."
+    },
+    {
+      "type": "font_picker",
+      "id": "font_heading",
+      "label": "Heading Font",
+      "default": "sans-serif"
+    },
+    {
+      "type": "range",
+      "id": "title_size_desktop",
+      "min": 30,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Title Size (Desktop)",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "min": 24,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Title Size (Mobile)",
+      "default": 40
+    },
+    {
+      "type": "text",
+      "id": "text_eyebrow",
+      "label": "Top Label (Pack Size)",
+      "default": "12 PACK - 12 FL OZ"
+    },
+    {
+      "type": "text",
+      "id": "text_flavors_label",
+      "label": "Grid Label",
+      "default": "CHOOSE YOUR FLAVOR"
+    },
+    {
+      "type": "header",
+      "content": "Call to Action"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta",
+      "label": "Show CTA Button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "center_cta_mobile",
+      "label": "Center Button on Mobile?",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "flavor",
+      "name": "Flavor Variant",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Text Content"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Product Title",
+          "default": "Flavor Name"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle / Description",
+          "default": "Short description goes here."
+        },
+        {
+          "type": "header",
+          "content": "Variant Specific Colors"
+        },
+        {
+          "type": "color",
+          "id": "color_primary",
+          "label": "Variant Main Color",
+          "default": "#000000",
+          "info": "Used for the Title text and Button Border."
+        },
+        {
+          "type": "color",
+          "id": "color_accent",
+          "label": "Background Gradient Color",
+          "default": "#f0f0f0",
+          "info": "This color appears in the center of the background."
+        },
+        {
+          "type": "header",
+          "content": "Images"
+        },
+        {
+          "type": "image_picker",
+          "id": "main_image",
+          "label": "Product Image (Front)",
+          "info": "Cutout transparent PNG of the can."
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Button Icon",
+          "info": "Small fruit icon or logo."
+        },
+        {
+          "type": "header",
+          "content": "Background Graphic (Behind Product)"
+        },
+        {
+          "type": "image_picker",
+          "id": "bg_image",
+          "label": "Graphic / Splash Image"
+        },
+        {
+          "type": "paragraph",
+          "content": "--- Desktop Positioning ---"
+        },
+        {
+          "type": "range",
+          "id": "bg_width_d",
+          "min": 10,
+          "max": 200,
+          "step": 5,
+          "unit": "%",
+          "label": "Width (Desktop)",
+          "default": 100
+        },
+        {
+          "type": "range",
+          "id": "bg_x_d",
+          "min": -100,
+          "max": 100,
+          "step": 2,
+          "unit": "%",
+          "label": "Horizontal Offset (X)",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "bg_y_d",
+          "min": -100,
+          "max": 100,
+          "step": 2,
+          "unit": "%",
+          "label": "Vertical Offset (Y)",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "bg_rot_d",
+          "min": -180,
+          "max": 180,
+          "step": 5,
+          "unit": "deg",
+          "label": "Rotation",
+          "default": 0
+        },
+        {
+          "type": "paragraph",
+          "content": "--- Mobile Positioning ---"
+        },
+        {
+          "type": "range",
+          "id": "bg_width_m",
+          "min": 10,
+          "max": 200,
+          "step": 5,
+          "unit": "%",
+          "label": "Width (Mobile)",
+          "default": 100
+        },
+        {
+          "type": "range",
+          "id": "bg_x_m",
+          "min": -100,
+          "max": 100,
+          "step": 2,
+          "unit": "%",
+          "label": "Horizontal Offset (X)",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "bg_y_m",
+          "min": -100,
+          "max": 100,
+          "step": 2,
+          "unit": "%",
+          "label": "Vertical Offset (Y)",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "bg_rot_m",
+          "min": -180,
+          "max": 180,
+          "step": 5,
+          "unit": "deg",
+          "label": "Rotation",
+          "default": 0
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Flavor Switcher v4"
+    }
+  ]
+}
+{% endschema %}
