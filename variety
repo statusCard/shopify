@@ -1,9 +1,7 @@
 {% comment %}
-  Interactive Flavor Switcher v4
-  - Gradient Fixed
-  - Subtle Shadow
-  - Static Subtitle Colors
-  - Scramble Text Transition
+  Interactive Flavor Switcher v5
+  - Gradient Fixed: Blends explicitly to #e4e2e2
+  - Background Priority: Overrides global white backgrounds
 {% endcomment %}
 
 {%- style -%}
@@ -14,7 +12,12 @@
     position: relative;
     overflow: hidden;
     padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
-    background-color: #fff; /* Ensure we have a base white background */
+    
+    /* 1. BASE BACKGROUND 
+      We force the whole section to be your grey color.
+      !important ensures your theme doesn't force it back to white.
+    */
+    background-color: #e4e2e2 !important; 
 
     /* Font Setup */
     {% if section.settings.font_heading != blank %}
@@ -40,16 +43,14 @@
     pointer-events: none;
     transition: background 0.5s ease;
     
-    /* Radial Gradient logic:
-       Center creates a soft pool of the accent color 
-       fading into transparent/white outwards.
-    */
+    /* UPDATED GRADIENT LOGIC */
     background: radial-gradient(
-      circle at 50% 45%, 
+      circle at 50% 40%, 
       var(--theme-gradient-color) 0%, 
-      rgba(255,255,255,0) 65%
+      #e4e2e2 70% 
     );
-    opacity: 0.9; /* High opacity so light colors are visible */
+    
+    opacity: 1; 
   }
 
   .flavor-wrapper {
@@ -104,7 +105,6 @@
 
   /* --- Typography --- */
   
-  /* Wrapper to prevent height jumping during scramble */
   .scramble-wrapper {
     display: block;
     min-height: 3.5rem; 
@@ -119,7 +119,7 @@
     margin-bottom: 1rem;
     display: block;
     opacity: 0.6;
-    color: var(--theme-static-color); /* Static Color */
+    color: var(--theme-static-color); 
   }
 
   /* Main Title - Dynamic Color */
@@ -130,7 +130,7 @@
     font-weight: 800;
     text-transform: uppercase;
     margin: 0;
-    color: var(--theme-variant-color); /* Changes on click */
+    color: var(--theme-variant-color); 
     transition: color 0.3s ease;
   }
   @media(min-width: 1024px) {
@@ -139,12 +139,12 @@
   
   /* Subtitle - Static Color */
   .flavor-h3 {
-    font-size: 1.1rem; /* Independent size */
+    font-size: 1.1rem; 
     line-height: 1.5;
     font-weight: 500;
     margin: 1rem 0 2rem 0;
-    min-height: 3.5rem; /* Reserve space */
-    color: var(--theme-static-color); /* Static Color */
+    min-height: 3.5rem; 
+    color: var(--theme-static-color); 
     opacity: 0.8;
   }
 
@@ -159,7 +159,6 @@
     align-items: center;
   }
 
-  /* The Background Splash/Graphic */
   .flavor-splash-image {
     position: absolute;
     width: var(--img-width);
@@ -176,7 +175,6 @@
     display: block;
   }
 
-  /* The Product (Can) */
   .flavor-hero-img-wrapper {
     position: relative;
     z-index: 2; 
@@ -192,11 +190,9 @@
     height: 100%;
     width: auto;
     object-fit: contain;
-    /* Extremely subtle shadow, barely visible */
     filter: drop-shadow(0 15px 15px rgba(0,0,0,0.05));
   }
 
-  /* Active States */
   .flavor-splash-image.is-active,
   .flavor-hero-img-wrapper.is-active {
     opacity: 1;
@@ -204,7 +200,6 @@
   .flavor-hero-img-wrapper.is-active {
     transform: scale(1);
   }
-
 
   /* --- Buttons Grid --- */
   .flavor-grid {
@@ -317,7 +312,7 @@
             type="button"
           >
             {%- if block.settings.icon != blank -%}
-              {{ block.settings.icon | image_url: width: 100 | image_tag: loading: 'lazy' }}
+              {{ block.settings.icon | image_url: width: 100 | image_tag: loading: 'eager' }}
             {%- else -%}
               <div style="width:30px; height:30px; background: {{ block.settings.color_primary }}; border-radius:50%;"></div>
             {%- endif -%}
@@ -386,117 +381,134 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const sectionContainer = document.getElementById('FlavorSection-{{ section.id }}');
-    const buttons = sectionContainer.querySelectorAll('.btn-flavor');
-    const titleEl = document.getElementById('FlavorTitle-{{ section.id }}');
-    const subtitleEl = document.getElementById('FlavorSubtitle-{{ section.id }}');
-    const heroImages = sectionContainer.querySelectorAll('.flavor-hero-img-wrapper');
-    const splashImages = sectionContainer.querySelectorAll('.flavor-splash-image');
+  (function() {
+    const initFlavorSwitcher = () => {
+      const sectionContainer = document.getElementById('FlavorSection-{{ section.id }}');
+      if (!sectionContainer) return; // Guard clause in case section is removed
+      
+      const buttons = sectionContainer.querySelectorAll('.btn-flavor');
+      const titleEl = document.getElementById('FlavorTitle-{{ section.id }}');
+      const subtitleEl = document.getElementById('FlavorSubtitle-{{ section.id }}');
+      const heroImages = sectionContainer.querySelectorAll('.flavor-hero-img-wrapper');
+      const splashImages = sectionContainer.querySelectorAll('.flavor-splash-image');
 
-    // --- SCRAMBLE TEXT EFFECT ---
-    const chars = '!<>-_\\/[]{}—=+*^?#________'; 
-    
-    const scrambleText = (element, newText) => {
-      const oldText = element.innerText;
-      const length = Math.max(oldText.length, newText.length);
-      const promise = new Promise((resolve) => {
-        const queue = [];
-        for (let i = 0; i < length; i++) {
-          const from = oldText[i] || '';
-          const to = newText[i] || '';
-          const start = Math.floor(Math.random() * 20); 
-          const end = start + Math.floor(Math.random() * 20); 
-          queue.push({ from, to, start, end });
-        }
+      // --- SCRAMBLE TEXT EFFECT ---
+      const chars = '!<>-_\\/[]{}—=+*^?#________'; 
+      
+      const scrambleText = (element, newText) => {
+        const oldText = element.innerText;
+        const length = Math.max(oldText.length, newText.length);
         
-        let frame = 0;
-        const update = () => {
-          let output = '';
-          let complete = 0;
+        // Prevent layout thrashing by locking height temporarily
+        const originalHeight = element.offsetHeight;
+        element.style.height = `${originalHeight}px`;
+        element.style.display = 'block';
+
+        const promise = new Promise((resolve) => {
+          const queue = [];
           for (let i = 0; i < length; i++) {
-            const { from, to, start, end } = queue[i];
-            let char = from;
-            if (frame >= end) {
-              char = to;
-              complete++;
-            } else if (frame >= start) {
-              const charIndex = Math.floor(Math.random() * chars.length);
-              char = chars[charIndex];
+            const from = oldText[i] || '';
+            const to = newText[i] || '';
+            const start = Math.floor(Math.random() * 20); 
+            const end = start + Math.floor(Math.random() * 20); 
+            queue.push({ from, to, start, end });
+          }
+          
+          let frame = 0;
+          const update = () => {
+            let output = '';
+            let complete = 0;
+            for (let i = 0; i < length; i++) {
+              const { from, to, start, end } = queue[i];
+              let char = from;
+              if (frame >= end) {
+                char = to;
+                complete++;
+              } else if (frame >= start) {
+                const charIndex = Math.floor(Math.random() * chars.length);
+                char = chars[charIndex];
+              }
+              output += char;
             }
-            output += char;
-          }
-          element.innerText = output;
-          if (complete === length) {
-            resolve();
-          } else {
-            frame++;
-            requestAnimationFrame(update);
-          }
-        };
-        update();
-      });
-      return promise;
-    };
-
-    // --- RESPONSIVE STYLE UPDATES ---
-    const updateSplashStyles = () => {
-      const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
-      splashImages.forEach(splash => {
-        const styleStr = isDesktop ? splash.dataset.styleDesktop : splash.dataset.styleMobile;
-        if(styleStr) {
-           const pairs = styleStr.trim().split(';');
-           pairs.forEach(pair => {
-             const [key, value] = pair.split(':');
-             if(key && value) splash.style.setProperty(key.trim(), value.trim());
-           });
-        }
-      });
-    };
-
-    updateSplashStyles();
-    window.addEventListener('resize', updateSplashStyles);
-
-    // --- CLICK HANDLERS ---
-    buttons.forEach(btn => {
-      btn.addEventListener('click', function() {
-        const targetId = this.dataset.blockId;
-        const newTitle = this.dataset.title;
-        const newSubtitle = this.dataset.subtitle;
-
-        // 1. Update Dynamic CSS Variables
-        // Only changing title color and background gradient
-        sectionContainer.style.setProperty('--theme-variant-color', this.dataset.colorPrimary);
-        sectionContainer.style.setProperty('--theme-gradient-color', this.dataset.colorAccent);
-
-        // 2. Trigger Scramble
-        if(titleEl.innerText !== newTitle) scrambleText(titleEl, newTitle);
-        if(subtitleEl.innerText !== newSubtitle) scrambleText(subtitleEl, newSubtitle);
-
-        // 3. Update Button State
-        buttons.forEach(b => b.classList.remove('selected'));
-        this.classList.add('selected');
-
-        // 4. Update Images
-        const swapActive = (nodeList) => {
-          nodeList.forEach(el => {
-            if(el.dataset.blockId === targetId) {
-              el.classList.add('is-active');
+            element.innerText = output;
+            if (complete === length) {
+              // Unlock height after animation
+              element.style.height = ''; 
+              resolve();
             } else {
-              el.classList.remove('is-active');
+              frame++;
+              requestAnimationFrame(update);
             }
-          });
-        };
-        swapActive(heroImages);
-        swapActive(splashImages);
+          };
+          update();
+        });
+        return promise;
+      };
+
+      // --- RESPONSIVE STYLE UPDATES ---
+      const updateSplashStyles = () => {
+        const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+        splashImages.forEach(splash => {
+          const styleStr = isDesktop ? splash.dataset.styleDesktop : splash.dataset.styleMobile;
+          if(styleStr) {
+             const pairs = styleStr.trim().split(';');
+             pairs.forEach(pair => {
+               const [key, value] = pair.split(':');
+               if(key && value) splash.style.setProperty(key.trim(), value.trim());
+             });
+          }
+        });
+      };
+
+      updateSplashStyles();
+      window.addEventListener('resize', updateSplashStyles);
+
+      // --- CLICK HANDLERS ---
+      buttons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const targetId = this.dataset.blockId;
+          const newTitle = this.dataset.title;
+          const newSubtitle = this.dataset.subtitle;
+
+          // 1. Update Dynamic CSS Variables
+          sectionContainer.style.setProperty('--theme-variant-color', this.dataset.colorPrimary);
+          sectionContainer.style.setProperty('--theme-gradient-color', this.dataset.colorAccent);
+
+          // 2. Trigger Scramble
+          if(titleEl.innerText !== newTitle) scrambleText(titleEl, newTitle);
+          if(subtitleEl.innerText !== newSubtitle) scrambleText(subtitleEl, newSubtitle);
+
+          // 3. Update Button State
+          buttons.forEach(b => b.classList.remove('selected'));
+          this.classList.add('selected');
+
+          // 4. Update Images
+          const swapActive = (nodeList) => {
+            nodeList.forEach(el => {
+              if(el.dataset.blockId === targetId) {
+                el.classList.add('is-active');
+              } else {
+                el.classList.remove('is-active');
+              }
+            });
+          };
+          swapActive(heroImages);
+          swapActive(splashImages);
+        });
       });
-    });
-  });
+    };
+
+    // Run on initial load
+    document.addEventListener('DOMContentLoaded', initFlavorSwitcher);
+
+    // Run on Shopify Theme Editor updates
+    document.addEventListener('shopify:section:load', initFlavorSwitcher);
+  })();
 </script>
 
 {% schema %}
 {
-  "name": "Flavor Switcher v4",
+  "name": "Flavor Switcher v5",
   "settings": [
     {
       "type": "header",
@@ -766,7 +778,7 @@
   ],
   "presets": [
     {
-      "name": "Flavor Switcher v4"
+      "name": "Flavor Switcher v5"
     }
   ]
 }
