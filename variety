@@ -1,14 +1,21 @@
 {%- style -%}
   #shopify-section-{{ section.id }} {
-    --transition-speed: 0.5s;
+    --transition-speed: 0.8s; /* Slowed down global transitions */
     width: 100%;
     position: relative;
     overflow: hidden;
     padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
     background-color: #e4e2e2 !important; 
 
+    /* Fonts */
     {% if section.settings.font_heading != blank %}
       --font-heading-family: {{ section.settings.font_heading.family }}, {{ section.settings.font_heading.fallback_families }};
+    {% endif %}
+    {% if section.settings.font_eyebrow != blank %}
+      --font-eyebrow-family: {{ section.settings.font_eyebrow.family }}, {{ section.settings.font_eyebrow.fallback_families }};
+    {% endif %}
+    {% if section.settings.font_grid_label != blank %}
+      --font-grid-label-family: {{ section.settings.font_grid_label.family }}, {{ section.settings.font_grid_label.fallback_families }};
     {% endif %}
   }
 
@@ -19,6 +26,7 @@
     background: transparent !important; 
   }
 
+  /* --- STACKED BACKGROUNDS --- */
   .flavor-bg-stack {
     position: absolute;
     top: 0;
@@ -31,12 +39,14 @@
 
   .flavor-bg-item {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 50%; /* Center anchor */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120%; /* Oversize to ensure coverage */
+    height: 120%;
     opacity: 0; 
-    transition: opacity 0.6s ease-in-out;
+    transition: opacity 0.8s ease-in-out;
+    mix-blend-mode: multiply; /* Helps gradient show on gray bg */
   }
 
   .flavor-bg-item.is-active {
@@ -53,6 +63,7 @@
     z-index: 2;
   }
 
+  /* --- Left Column: Content --- */
   .flavor-content {
     width: 100%;
     order: 2;
@@ -71,6 +82,7 @@
     }
   }
 
+  /* --- Right Column: Visuals --- */
   .flavor-visuals {
     width: 100%;
     order: 1; 
@@ -91,37 +103,82 @@
     }
   }
 
+  /* --- Typography --- */
+  
   .scramble-wrapper {
     display: block;
-    min-height: 3.5rem; 
+    position: relative;
     margin-bottom: 0.5rem;
+    /* Ensure container doesn't collapse */
+    min-height: 3.5rem; 
   }
 
-  .flavor-eyebrow {
+  /* TOP EYEBROW LABEL */
+  .flavor-eyebrow-top {
+    display: inline-block; /* Allows transform to work */
     text-transform: uppercase;
     font-weight: 700;
     letter-spacing: 0.15em;
-    font-size: 0.75rem;
-    margin-bottom: 1rem;
-    display: block;
     opacity: 0.6;
-    color: var(--theme-static-color); 
+    color: var(--theme-static-color);
+    font-family: var(--font-eyebrow-family, inherit);
+    
+    /* Mobile Settings */
+    font-size: {{ section.settings.eyebrow_size_m }}px;
+    transform: translate({{ section.settings.eyebrow_x_m }}px, {{ section.settings.eyebrow_y_m }}px);
+    margin-bottom: 1rem;
   }
 
+  @media(min-width: 1024px) {
+    .flavor-eyebrow-top {
+      font-size: {{ section.settings.eyebrow_size_d }}px;
+      transform: translate({{ section.settings.eyebrow_x_d }}px, {{ section.settings.eyebrow_y_d }}px);
+    }
+  }
+
+  /* GRID LABEL (Choose Your Mood) */
+  .flavor-eyebrow-grid {
+    display: inline-block;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    opacity: 0.6;
+    color: var(--theme-static-color);
+    font-family: var(--font-grid-label-family, inherit);
+    margin-top: 10px;
+
+    /* Mobile Settings */
+    font-size: {{ section.settings.grid_label_size_m }}px;
+    transform: translate({{ section.settings.grid_label_x_m }}px, {{ section.settings.grid_label_y_m }}px);
+  }
+
+  @media(min-width: 1024px) {
+    .flavor-eyebrow-grid {
+      font-size: {{ section.settings.grid_label_size_d }}px;
+      transform: translate({{ section.settings.grid_label_x_d }}px, {{ section.settings.grid_label_y_d }}px);
+    }
+  }
+
+  /* Main Title */
   .flavor-h2 {
     font-family: var(--font-heading-family, inherit);
-    font-size: {{ section.settings.title_size_mobile }}px;
     line-height: 1.1;
     font-weight: 800;
     text-transform: uppercase;
     margin: 0;
     color: var(--theme-variant-color); 
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, opacity 0.5s ease; /* Added opacity transition for fade effect */
+    
+    /* Mobile Size */
+    font-size: {{ section.settings.title_size_mobile }}px;
+    word-break: break-word; /* Prevent overflow */
+    hyphens: auto;
   }
   @media(min-width: 1024px) {
     .flavor-h2 { font-size: {{ section.settings.title_size_desktop }}px; }
   }
   
+  /* Subtitle */
   .flavor-h3 {
     font-size: 1.1rem; 
     line-height: 1.5;
@@ -132,6 +189,7 @@
     opacity: 0.8;
   }
 
+  /* --- Visuals --- */
   .visuals-stack {
     position: relative;
     width: 100%;
@@ -147,7 +205,7 @@
     transform: translate(var(--img-x), var(--img-y)) rotate(var(--img-rot));
     z-index: 1; 
     opacity: 0;
-    transition: opacity var(--transition-speed) ease, transform 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    transition: opacity var(--transition-speed) ease, transform 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28);
     pointer-events: none;
   }
   
@@ -183,8 +241,9 @@
     transform: scale(1);
   }
 
+  /* --- Buttons Grid --- */
   .flavor-grid-container {
-    position: relative;
+    position: relative; 
     display: inline-block;
     width: 100%;
   }
@@ -192,30 +251,31 @@
   .flavor-grid {
     display: flex;
     justify-content: center;
-    gap: 8px;
+    gap: 8px; 
     margin-top: 25px;
     padding-bottom: 110px; 
     position: relative;
     z-index: 20; 
   }
 
+  /* MOBILE LAYOUT */
   @media (max-width: 1023px) {
     .flavor-grid {
-      flex-wrap: nowrap;
+      flex-wrap: nowrap; 
       width: 100%;
     }
     .btn-flavor {
-      flex: 1;
-      min-width: 0;
-      max-width: 90px;
+      flex: 1; 
+      min-width: 0; 
+      max-width: 90px; 
       height: auto;
-      aspect-ratio: 1 / 1;
+      aspect-ratio: 1 / 1; 
     }
     .btn-flavor span {
-      font-size: 0.6rem;
+      font-size: 0.6rem; 
     }
     .btn-flavor img {
-      width: 30px;
+      width: 30px; 
       height: 30px;
     }
   }
@@ -251,7 +311,7 @@
     transition: all 0.2s ease;
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     position: relative;
-    z-index: 20;
+    z-index: 20; 
   }
 
   .btn-flavor:hover {
@@ -279,6 +339,7 @@
     width: 100%;
   }
 
+  /* --- THE FLOATING SHOP BOX --- */
   .flavor-floating-cta {
     position: absolute;
     top: 0;
@@ -287,9 +348,9 @@
     background: {{ section.settings.btn_bg_color }};
     color: {{ section.settings.btn_text_color }};
     border: {{ section.settings.btn_border_width }}px {{ section.settings.btn_border_style }} {{ section.settings.btn_border_color }};
-    font-size: 0.75rem;
-    padding: 6px 16px;
-    border-radius: 8px;
+    font-size: 0.75rem; 
+    padding: 6px 16px; 
+    border-radius: 8px; 
     text-decoration: underline;
     text-underline-offset: 3px;
     font-weight: 600;
@@ -297,7 +358,7 @@
     white-space: nowrap;
     letter-spacing: 0.05em;
     opacity: 0;
-    transform: translateX(-50%) translateY(-20px);
+    transform: translateX(-50%) translateY(-20px); 
     transition: 
       transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
       opacity 0.3s ease;
@@ -330,7 +391,13 @@
       <div 
         class="flavor-bg-item {% if forloop.first %}is-active{% endif %}"
         data-block-id="{{ block.id }}"
-        style="background: radial-gradient(circle at 50% 40%, {{ block.settings.color_accent }} 0%, rgba(228, 226, 226, 0) 80%);"
+        style="
+          background: radial-gradient(
+            circle at center, 
+            {{ block.settings.color_accent }} 0%, 
+            transparent 70%
+          );
+        "
       ></div>
     {%- endfor -%}
   </div>
@@ -339,11 +406,11 @@
     
     <div class="flavor-content">
       
-      <div class="flavor-eyebrow">
+      <div class="flavor-eyebrow-top">
         {{ section.settings.text_eyebrow }}
       </div>
 
-      <div class="scramble-wrapper">
+      <div class="scramble-wrapper" id="ScrambleWrapper-{{ section.id }}">
         <h2 id="FlavorTitle-{{ section.id }}" class="flavor-h2">
           {{ first_block.settings.title }}
         </h2>
@@ -353,7 +420,7 @@
         {{ first_block.settings.subtitle }}
       </h3>
 
-      <div class="flavor-eyebrow" style="margin-top: 10px; opacity: 1;">
+      <div class="flavor-eyebrow-grid">
         {{ section.settings.text_flavors_label }}
       </div>
 
@@ -452,32 +519,51 @@
       
       const buttons = sectionContainer.querySelectorAll('.btn-flavor');
       const titleEl = document.getElementById('FlavorTitle-{{ section.id }}');
+      const scrambleWrapper = document.getElementById('ScrambleWrapper-{{ section.id }}');
       const subtitleEl = document.getElementById('FlavorSubtitle-{{ section.id }}');
       const heroImages = sectionContainer.querySelectorAll('.flavor-hero-img-wrapper');
       const splashImages = sectionContainer.querySelectorAll('.flavor-splash-image');
       const bgItems = sectionContainer.querySelectorAll('.flavor-bg-item'); 
-      
       const gridContainer = document.getElementById('GridContainer-{{ section.id }}');
       const floatingBtn = document.getElementById('FloatingCTA-{{ section.id }}');
 
+      // --- SMOOTH SCRAMBLE LOGIC ---
       const chars = '!<>-_\\/[]{}—=+*^?#________'; 
-      const scrambleText = (element, newText) => {
+      
+      const scrambleText = (element, newText, isTitle = false) => {
         const oldText = element.innerText;
-        const length = Math.max(oldText.length, newText.length);
-        const originalHeight = element.offsetHeight;
-        element.style.height = `${originalHeight}px`;
-        element.style.display = 'block';
+        // Calculation to prevent jump:
+        // 1. Get current height
+        const startHeight = element.offsetHeight;
+        
+        // 2. Temporarily set new text to measure it
+        element.innerText = newText;
+        const endHeight = element.offsetHeight;
+        
+        // 3. Set text back to old for animation
+        element.innerText = oldText;
+        
+        // 4. Lock wrapper height to the taller of the two
+        // This prevents the "going into other parts" issue on mobile
+        if(isTitle && scrambleWrapper) {
+            scrambleWrapper.style.minHeight = Math.max(startHeight, endHeight) + 'px';
+        }
 
+        const length = Math.max(oldText.length, newText.length);
         const promise = new Promise((resolve) => {
           const queue = [];
           for (let i = 0; i < length; i++) {
             const from = oldText[i] || '';
             const to = newText[i] || '';
-            const start = Math.floor(Math.random() * 20); 
-            const end = start + Math.floor(Math.random() * 20); 
+            // Longer start/end window for slower feel
+            const start = Math.floor(Math.random() * 30); 
+            const end = start + Math.floor(Math.random() * 30); 
             queue.push({ from, to, start, end });
           }
+          
           let frame = 0;
+          let opacityVal = 0.4; // Start dim (Half Fade)
+
           const update = () => {
             let output = '';
             let complete = 0;
@@ -493,13 +579,26 @@
               }
               output += char;
             }
+            
             element.innerText = output;
+
+            // FADE EFFECT: Increase opacity as we get closer to completion
+            if(opacityVal < 1) {
+                opacityVal += 0.01; 
+                element.style.opacity = opacityVal;
+            }
+
             if (complete === length) {
-              element.style.height = ''; 
+              element.style.opacity = 1;
+              if(isTitle && scrambleWrapper) scrambleWrapper.style.minHeight = ''; // Unlock height
               resolve();
             } else {
               frame++;
-              requestAnimationFrame(update);
+              // Slow down the frame rate:
+              // setTimeout inside requestAnimationFrame adds drag
+              setTimeout(() => {
+                  requestAnimationFrame(update);
+              }, 15); // 15ms delay per frame = slower scramble
             }
           };
           update();
@@ -567,8 +666,12 @@
 
           sectionContainer.style.setProperty('--theme-variant-color', this.dataset.colorPrimary);
 
-          if(titleEl.innerText !== newTitle) scrambleText(titleEl, newTitle);
-          if(subtitleEl.innerText !== newSubtitle) scrambleText(subtitleEl, newSubtitle);
+          // Reset opacity for the fade effect
+          titleEl.style.opacity = 0.4;
+          subtitleEl.style.opacity = 0.4;
+
+          if(titleEl.innerText !== newTitle) scrambleText(titleEl, newTitle, true);
+          if(subtitleEl.innerText !== newSubtitle) scrambleText(subtitleEl, newSubtitle, false);
 
           buttons.forEach(b => b.classList.remove('selected'));
           this.classList.add('selected');
@@ -603,7 +706,7 @@
 
 {% schema %}
 {
-  "name": "Flavor Switcher v8",
+  "name": "Flavor Switcher v8.3",
   "settings": [
     {
       "type": "header",
@@ -690,6 +793,118 @@
     },
     {
       "type": "header",
+      "content": "Top Label (Pack Size) Settings"
+    },
+    {
+      "type": "text",
+      "id": "text_eyebrow",
+      "label": "Text",
+      "default": "12 PACK - 12 FL OZ"
+    },
+    {
+      "type": "font_picker",
+      "id": "font_eyebrow",
+      "label": "Font Family",
+      "default": "sans-serif"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size_d",
+      "label": "Size (Desktop)",
+      "min": 10, "max": 30, "step": 1, "unit": "px", "default": 12
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size_m",
+      "label": "Size (Mobile)",
+      "min": 8, "max": 24, "step": 1, "unit": "px", "default": 12
+    },
+    {
+      "type": "paragraph",
+      "content": "Independent Position (X/Y Offset)"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_x_d",
+      "label": "Offset X (Desktop)",
+      "min": -50, "max": 50, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_y_d",
+      "label": "Offset Y (Desktop)",
+      "min": -50, "max": 50, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_x_m",
+      "label": "Offset X (Mobile)",
+      "min": -50, "max": 50, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_y_m",
+      "label": "Offset Y (Mobile)",
+      "min": -50, "max": 50, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Grid Label Settings"
+    },
+    {
+      "type": "text",
+      "id": "text_flavors_label",
+      "label": "Text",
+      "default": "CHOOSE YOUR MOOD"
+    },
+    {
+      "type": "font_picker",
+      "id": "font_grid_label",
+      "label": "Font Family",
+      "default": "sans-serif"
+    },
+    {
+      "type": "range",
+      "id": "grid_label_size_d",
+      "label": "Size (Desktop)",
+      "min": 10, "max": 30, "step": 1, "unit": "px", "default": 12
+    },
+    {
+      "type": "range",
+      "id": "grid_label_size_m",
+      "label": "Size (Mobile)",
+      "min": 8, "max": 24, "step": 1, "unit": "px", "default": 12
+    },
+    {
+      "type": "paragraph",
+      "content": "Independent Position (X/Y Offset)"
+    },
+    {
+      "type": "range",
+      "id": "grid_label_x_d",
+      "label": "Offset X (Desktop)",
+      "min": -50, "max": 50, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "grid_label_y_d",
+      "label": "Offset Y (Desktop)",
+      "min": -50, "max": 50, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "grid_label_x_m",
+      "label": "Offset X (Mobile)",
+      "min": -50, "max": 50, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "grid_label_y_m",
+      "label": "Offset Y (Mobile)",
+      "min": -50, "max": 50, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "header",
       "content": "Typography Colors & Sizes"
     },
     {
@@ -718,24 +933,12 @@
     {
       "type": "range",
       "id": "title_size_mobile",
-      "min": 24,
-      "max": 60,
-      "step": 2,
+      "min": 20,
+      "max": 50,
+      "step": 1,
       "unit": "px",
       "label": "Title Size (Mobile)",
-      "default": 40
-    },
-    {
-      "type": "text",
-      "id": "text_eyebrow",
-      "label": "Top Label (Pack Size)",
-      "default": "12 PACK - 12 FL OZ"
-    },
-    {
-      "type": "text",
-      "id": "text_flavors_label",
-      "label": "Grid Label",
-      "default": "CHOOSE YOUR MOOD"
+      "default": 32
     }
   ],
   "blocks": [
@@ -788,7 +991,7 @@
           "id": "color_accent",
           "label": "Background Gradient Color",
           "default": "#f0f0f0",
-          "info": "This color appears in the center of the background."
+          "info": "Make sure this is darker than the gray background!"
         },
         {
           "type": "header",
@@ -908,7 +1111,7 @@
   ],
   "presets": [
     {
-      "name": "Flavor Switcher v8"
+      "name": "Flavor Switcher v8.3"
     }
   ]
 }
