@@ -1,8 +1,8 @@
 {% comment %}
-  Interactive Flavor Switcher v8 - Mobile Fix & Smooth Drop
-  - Mobile: Fits 4 items in one row (no wrapping).
-  - Animation: Snaps to position instantly (hidden), then fades/drops down. No sliding/jumping.
-  - Sizing: Shop button reduced by 50%.
+  Interactive Flavor Switcher v8.2 - Click Fix & Spacing Adjustment
+  - Mobile: Fits 4 items in one row.
+  - Fix: Shop button z-index increased to 30 (now clickable).
+  - Fix: Spacing adjusted to 45px (middle ground).
 {% endcomment %}
 
 {%- style -%}
@@ -213,7 +213,8 @@
     justify-content: center;
     gap: 8px; /* Slightly tighter gap for mobile fitting */
     margin-top: 25px;
-    padding-bottom: 80px; 
+    /* Adjusted padding to fit button without excess space */
+    padding-bottom: 110px; 
     position: relative;
     z-index: 20; 
   }
@@ -304,7 +305,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 10; /* Lower than grid buttons */
+    /* FIX: Increased z-index to 30 to sit ABOVE the grid padding */
+    z-index: 30; 
     
     /* Style Match: Dashed/Solid per settings */
     background: {{ section.settings.btn_bg_color }};
@@ -565,8 +567,9 @@
         const btnHeight = targetBtn.offsetHeight;
 
         const targetX = btnLeft + (btnWidth / 2);
-        // Added +20px so it sits UNDER the button, not inside it
-        const targetY = btnTop + btnHeight + 20; 
+        
+        // FIX: Spacing adjusted to 45px (Middle ground)
+        const targetY = btnTop + btnHeight + 45; 
 
         // Update URL
         const newUrl = targetBtn.dataset.productUrl;
