@@ -1,7 +1,8 @@
 {% comment %}
-  Interactive Flavor Switcher v5
-  - Gradient Fixed: Blends explicitly to #e4e2e2
-  - Background Priority: Overrides global white backgrounds
+  Interactive Flavor Switcher v6 - Ultimate Fix
+  - Gradient: Uses stacked DIVs with opacity transitions (Solves the "not updating" bug)
+  - Text: Added 'Button Label' independent of Title
+  - Logic: Floating 'Shop' button slides to position under the active variant button
 {% endcomment %}
 
 {%- style -%}
@@ -12,11 +13,6 @@
     position: relative;
     overflow: hidden;
     padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
-    
-    /* 1. BASE BACKGROUND 
-      We force the whole section to be your grey color.
-      !important ensures your theme doesn't force it back to white.
-    */
     background-color: #e4e2e2 !important; 
 
     /* Font Setup */
@@ -32,25 +28,30 @@
     background: transparent !important; 
   }
 
-  /* --- The Background Gradient Layer --- */
-  .flavor-background-layer {
+  /* --- STACKED BACKGROUNDS (The Gradient Fix) --- */
+  /* We create one background div per block and fade them in/out */
+  .flavor-bg-stack {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 0; 
+    z-index: 0;
     pointer-events: none;
-    transition: background 0.5s ease;
-    
-    /* UPDATED GRADIENT LOGIC */
-    background: radial-gradient(
-      circle at 50% 40%, 
-      var(--theme-gradient-color) 0%, 
-      #e4e2e2 70% 
-    );
-    
-    opacity: 1; 
+  }
+
+  .flavor-bg-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.6s ease-in-out;
+  }
+
+  .flavor-bg-item.is-active {
+    opacity: 1; /* Only the active one is shown */
   }
 
   .flavor-wrapper {
@@ -202,12 +203,20 @@
   }
 
   /* --- Buttons Grid --- */
+  .flavor-grid-container {
+    position: relative; /* Anchor for the floating button */
+    display: inline-block;
+    width: 100%;
+  }
+
   .flavor-grid {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 12px;
     margin-top: 25px;
+    /* Ensure there is space below for the floating box */
+    padding-bottom: 80px; 
   }
 
   @media (min-width: 1024px) {
@@ -230,6 +239,8 @@
     padding: 8px;
     transition: all 0.2s ease;
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    position: relative;
+    z-index: 2;
   }
 
   .btn-flavor:hover {
@@ -255,6 +266,52 @@
     font-weight: 700;
     color: var(--theme-static-color);
   }
+
+  /* --- THE FLOATING SHOP BOX --- */
+  .flavor-floating-cta {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    background: #000;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    white-space: nowrap;
+    
+    /* Animation Properties */
+    opacity: 0;
+    transform: translate(0, 10px) translateX(-50%);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, top 0.4s ease, left 0.4s ease;
+    pointer-events: none; /* Ignore clicks when hidden */
+    
+    /* Center origin for X axis calculations */
+    transform-origin: center top;
+  }
+
+  .flavor-floating-cta.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    /* TranslateX -50% centers it relative to the 'left' pixel value we set in JS */
+    transform: translate(0, 0) translateX(-50%); 
+  }
+
+  /* Little triangle pointer */
+  .flavor-floating-cta::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #000;
+  }
+
 {%- endstyle -%}
 
 {%- liquid
@@ -266,12 +323,25 @@
   class="flavor-card-module"
   style="
     --theme-variant-color: {{ first_block.settings.color_primary }};
-    --theme-gradient-color: {{ first_block.settings.color_accent }};
     --theme-static-color: {{ section.settings.static_text_color }};
   "
 >
 
-  <div class="flavor-background-layer"></div>
+  <div class="flavor-bg-stack">
+    {%- for block in section.blocks -%}
+      <div 
+        class="flavor-bg-item {% if forloop.first %}is-active{% endif %}"
+        data-block-id="{{ block.id }}"
+        style="
+          background: radial-gradient(
+            circle at 50% 40%, 
+            {{ block.settings.color_accent }} 0%, 
+            #e4e2e2 70%
+          );
+        "
+      ></div>
+    {%- endfor -%}
+  </div>
 
   <div class="flavor-wrapper">
     
@@ -295,40 +365,47 @@
         {{ section.settings.text_flavors_label }}
       </div>
 
-      <div class="flavor-grid">
-        {%- for block in section.blocks -%}
-          <button 
-            class="btn-flavor {% if forloop.first %}selected{% endif %}"
-            data-block-id="{{ block.id }}"
-            
-            {% comment %} DATA Attributes for JS {% endcomment %}
-            data-title="{{ block.settings.title | escape }}"
-            data-subtitle="{{ block.settings.subtitle | escape }}"
-            
-            data-color-primary="{{ block.settings.color_primary }}"
-            data-color-accent="{{ block.settings.color_accent }}"
-            
-            aria-label="Select {{ block.settings.title }}"
-            type="button"
-          >
-            {%- if block.settings.icon != blank -%}
-              {{ block.settings.icon | image_url: width: 100 | image_tag: loading: 'eager' }}
-            {%- else -%}
-              <div style="width:30px; height:30px; background: {{ block.settings.color_primary }}; border-radius:50%;"></div>
-            {%- endif -%}
-            
-            <span>{{ block.settings.title }}</span>
-          </button>
-        {%- endfor -%}
-      </div>
-
-      {% if section.settings.show_cta %}
-        <div style="margin-top: 2.5rem; display: flex; justify-content: {% if section.settings.center_cta_mobile %}center{% else %}flex-start{% endif %};">
-            <a href="{{ section.settings.cta_link }}" class="button" style="background-color: #000; color: #fff; padding: 15px 35px; border-radius: 50px; text-decoration: none; text-transform: uppercase; font-weight: bold; font-size: 0.9rem;">
-                {{ section.settings.cta_text }}
-            </a>
+      <div class="flavor-grid-container" id="GridContainer-{{ section.id }}">
+        
+        <div class="flavor-grid">
+          {%- for block in section.blocks -%}
+            <button 
+              class="btn-flavor {% if forloop.first %}selected{% endif %}"
+              data-block-id="{{ block.id }}"
+              
+              {% comment %} DATA Attributes for JS {% endcomment %}
+              data-title="{{ block.settings.title | escape }}"
+              data-subtitle="{{ block.settings.subtitle | escape }}"
+              data-color-primary="{{ block.settings.color_primary }}"
+              
+              {% comment %} Link for the sliding box {% endcomment %}
+              data-product-url="{{ block.settings.product_link }}"
+              
+              aria-label="Select {{ block.settings.title }}"
+              type="button"
+            >
+              {%- if block.settings.icon != blank -%}
+                {{ block.settings.icon | image_url: width: 100 | image_tag: loading: 'eager' }}
+              {%- else -%}
+                <div style="width:30px; height:30px; background: {{ block.settings.color_primary }}; border-radius:50%;"></div>
+              {%- endif -%}
+              
+              <span>
+                {% if block.settings.button_label != blank %}
+                  {{ block.settings.button_label }}
+                {% else %}
+                  {{ block.settings.title }}
+                {% endif %}
+              </span>
+            </button>
+          {%- endfor -%}
         </div>
-      {% endif %}
+
+        <a href="{{ first_block.settings.product_link }}" id="FloatingCTA-{{ section.id }}" class="flavor-floating-cta">
+          Shop Now
+        </a>
+
+      </div>
 
     </div>
 
@@ -384,22 +461,23 @@
   (function() {
     const initFlavorSwitcher = () => {
       const sectionContainer = document.getElementById('FlavorSection-{{ section.id }}');
-      if (!sectionContainer) return; // Guard clause in case section is removed
+      if (!sectionContainer) return; 
       
       const buttons = sectionContainer.querySelectorAll('.btn-flavor');
       const titleEl = document.getElementById('FlavorTitle-{{ section.id }}');
       const subtitleEl = document.getElementById('FlavorSubtitle-{{ section.id }}');
       const heroImages = sectionContainer.querySelectorAll('.flavor-hero-img-wrapper');
       const splashImages = sectionContainer.querySelectorAll('.flavor-splash-image');
+      const bgItems = sectionContainer.querySelectorAll('.flavor-bg-item'); // The stacked gradients
+      
+      const gridContainer = document.getElementById('GridContainer-{{ section.id }}');
+      const floatingBtn = document.getElementById('FloatingCTA-{{ section.id }}');
 
       // --- SCRAMBLE TEXT EFFECT ---
       const chars = '!<>-_\\/[]{}—=+*^?#________'; 
-      
       const scrambleText = (element, newText) => {
         const oldText = element.innerText;
         const length = Math.max(oldText.length, newText.length);
-        
-        // Prevent layout thrashing by locking height temporarily
         const originalHeight = element.offsetHeight;
         element.style.height = `${originalHeight}px`;
         element.style.display = 'block';
@@ -413,7 +491,6 @@
             const end = start + Math.floor(Math.random() * 20); 
             queue.push({ from, to, start, end });
           }
-          
           let frame = 0;
           const update = () => {
             let output = '';
@@ -432,7 +509,6 @@
             }
             element.innerText = output;
             if (complete === length) {
-              // Unlock height after animation
               element.style.height = ''; 
               resolve();
             } else {
@@ -443,6 +519,36 @@
           update();
         });
         return promise;
+      };
+
+      // --- FLOATING BOX LOGIC ---
+      const updateFloatingBtnPosition = (targetBtn) => {
+        if(!targetBtn || !floatingBtn) return;
+
+        // Get button position relative to the grid container
+        // We use offsetLeft/Top because the floating btn is absolute inside the relative gridContainer
+        const btnLeft = targetBtn.offsetLeft;
+        const btnTop = targetBtn.offsetTop;
+        const btnWidth = targetBtn.offsetWidth;
+        const btnHeight = targetBtn.offsetHeight;
+
+        // Calculate center bottom
+        const targetX = btnLeft + (btnWidth / 2);
+        const targetY = btnTop + btnHeight + 15; // 15px gap
+
+        // Apply styles
+        floatingBtn.style.left = `${targetX}px`;
+        floatingBtn.style.top = `${targetY}px`;
+        
+        // Update URL
+        const newUrl = targetBtn.dataset.productUrl;
+        if(newUrl) {
+          floatingBtn.href = newUrl;
+          floatingBtn.classList.add('is-visible');
+        } else {
+          // Hide if no URL
+          floatingBtn.classList.remove('is-visible');
+        }
       };
 
       // --- RESPONSIVE STYLE UPDATES ---
@@ -462,6 +568,12 @@
 
       updateSplashStyles();
       window.addEventListener('resize', updateSplashStyles);
+      
+      // Update floating button on resize too, to keep it centered
+      window.addEventListener('resize', () => {
+        const activeBtn = sectionContainer.querySelector('.btn-flavor.selected');
+        if(activeBtn) updateFloatingBtnPosition(activeBtn);
+      });
 
       // --- CLICK HANDLERS ---
       buttons.forEach(btn => {
@@ -470,9 +582,9 @@
           const newTitle = this.dataset.title;
           const newSubtitle = this.dataset.subtitle;
 
-          // 1. Update Dynamic CSS Variables
+          // 1. Update Dynamic CSS Variables for Text
           sectionContainer.style.setProperty('--theme-variant-color', this.dataset.colorPrimary);
-          sectionContainer.style.setProperty('--theme-gradient-color', this.dataset.colorAccent);
+          // Note: Gradient color is no longer set via JS var, handled by stacked divs
 
           // 2. Trigger Scramble
           if(titleEl.innerText !== newTitle) scrambleText(titleEl, newTitle);
@@ -482,7 +594,10 @@
           buttons.forEach(b => b.classList.remove('selected'));
           this.classList.add('selected');
 
-          // 4. Update Images
+          // 4. Move Floating Box
+          updateFloatingBtnPosition(this);
+
+          // 5. Update All Visuals (Images AND Backgrounds)
           const swapActive = (nodeList) => {
             nodeList.forEach(el => {
               if(el.dataset.blockId === targetId) {
@@ -494,21 +609,26 @@
           };
           swapActive(heroImages);
           swapActive(splashImages);
+          swapActive(bgItems); // Swaps the background gradient divs
         });
       });
+
+      // Initialize floating button position for the first item
+      const initialBtn = sectionContainer.querySelector('.btn-flavor.selected');
+      if(initialBtn) {
+        // slight delay to ensure layout is ready
+        setTimeout(() => updateFloatingBtnPosition(initialBtn), 100);
+      }
     };
 
-    // Run on initial load
     document.addEventListener('DOMContentLoaded', initFlavorSwitcher);
-
-    // Run on Shopify Theme Editor updates
     document.addEventListener('shopify:section:load', initFlavorSwitcher);
   })();
 </script>
 
 {% schema %}
 {
-  "name": "Flavor Switcher v5",
+  "name": "Flavor Switcher v6",
   "settings": [
     {
       "type": "header",
@@ -591,34 +711,7 @@
       "type": "text",
       "id": "text_flavors_label",
       "label": "Grid Label",
-      "default": "CHOOSE YOUR FLAVOR"
-    },
-    {
-      "type": "header",
-      "content": "Call to Action"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_cta",
-      "label": "Show CTA Button",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "cta_text",
-      "label": "Button Text",
-      "default": "Shop Now"
-    },
-    {
-      "type": "url",
-      "id": "cta_link",
-      "label": "Button Link"
-    },
-    {
-      "type": "checkbox",
-      "id": "center_cta_mobile",
-      "label": "Center Button on Mobile?",
-      "default": true
+      "default": "CHOOSE YOUR MOOD"
     }
   ],
   "blocks": [
@@ -638,9 +731,22 @@
         },
         {
           "type": "text",
+          "id": "button_label",
+          "label": "Button Label (Optional)",
+          "info": "Overrides the Product Title inside the small square button.",
+          "default": "Flavor Short"
+        },
+        {
+          "type": "text",
           "id": "subtitle",
           "label": "Subtitle / Description",
           "default": "Short description goes here."
+        },
+        {
+          "type": "url",
+          "id": "product_link",
+          "label": "Product Page Link",
+          "info": "Where the 'Shop Now' box links to."
         },
         {
           "type": "header",
@@ -778,7 +884,7 @@
   ],
   "presets": [
     {
-      "name": "Flavor Switcher v5"
+      "name": "Flavor Switcher v6"
     }
   ]
 }
