@@ -1,12 +1,4 @@
-{% comment %}
-  Interactive Flavor Switcher v8.2 - Click Fix & Spacing Adjustment
-  - Mobile: Fits 4 items in one row.
-  - Fix: Shop button z-index increased to 30 (now clickable).
-  - Fix: Spacing adjusted to 45px (middle ground).
-{% endcomment %}
-
 {%- style -%}
-  /* --- Global Scope & Layout --- */
   #shopify-section-{{ section.id }} {
     --transition-speed: 0.5s;
     width: 100%;
@@ -15,7 +7,6 @@
     padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
     background-color: #e4e2e2 !important; 
 
-    /* Font Setup */
     {% if section.settings.font_heading != blank %}
       --font-heading-family: {{ section.settings.font_heading.family }}, {{ section.settings.font_heading.fallback_families }};
     {% endif %}
@@ -28,7 +19,6 @@
     background: transparent !important; 
   }
 
-  /* --- STACKED BACKGROUNDS --- */
   .flavor-bg-stack {
     position: absolute;
     top: 0;
@@ -45,7 +35,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    opacity: 0; /* Hidden by default */
+    opacity: 0; 
     transition: opacity 0.6s ease-in-out;
   }
 
@@ -63,7 +53,6 @@
     z-index: 2;
   }
 
-  /* --- Left Column: Content --- */
   .flavor-content {
     width: 100%;
     order: 2;
@@ -82,7 +71,6 @@
     }
   }
 
-  /* --- Right Column: Visuals --- */
   .flavor-visuals {
     width: 100%;
     order: 1; 
@@ -103,8 +91,6 @@
     }
   }
 
-  /* --- Typography --- */
-  
   .scramble-wrapper {
     display: block;
     min-height: 3.5rem; 
@@ -122,7 +108,6 @@
     color: var(--theme-static-color); 
   }
 
-  /* Main Title - Dynamic Color */
   .flavor-h2 {
     font-family: var(--font-heading-family, inherit);
     font-size: {{ section.settings.title_size_mobile }}px;
@@ -137,7 +122,6 @@
     .flavor-h2 { font-size: {{ section.settings.title_size_desktop }}px; }
   }
   
-  /* Subtitle - Static Color */
   .flavor-h3 {
     font-size: 1.1rem; 
     line-height: 1.5;
@@ -148,8 +132,6 @@
     opacity: 0.8;
   }
 
-  /* --- Visuals: Main Image vs Background Graphic --- */
-  
   .visuals-stack {
     position: relative;
     width: 100%;
@@ -201,9 +183,8 @@
     transform: scale(1);
   }
 
-  /* --- Buttons Grid --- */
   .flavor-grid-container {
-    position: relative; /* Anchor for the floating button */
+    position: relative;
     display: inline-block;
     width: 100%;
   }
@@ -211,32 +192,30 @@
   .flavor-grid {
     display: flex;
     justify-content: center;
-    gap: 8px; /* Slightly tighter gap for mobile fitting */
+    gap: 8px;
     margin-top: 25px;
-    /* Adjusted padding to fit button without excess space */
     padding-bottom: 110px; 
     position: relative;
     z-index: 20; 
   }
 
-  /* MOBILE LAYOUT: Fit all 4 in one row */
   @media (max-width: 1023px) {
     .flavor-grid {
-      flex-wrap: nowrap; /* Force single line */
+      flex-wrap: nowrap;
       width: 100%;
     }
     .btn-flavor {
-      flex: 1; /* Grow to fill space equally */
-      min-width: 0; /* Allow shrinking */
-      max-width: 90px; /* Don't get too huge */
+      flex: 1;
+      min-width: 0;
+      max-width: 90px;
       height: auto;
-      aspect-ratio: 1 / 1; /* Keep square */
+      aspect-ratio: 1 / 1;
     }
     .btn-flavor span {
-      font-size: 0.6rem; /* Smaller text for mobile buttons */
+      font-size: 0.6rem;
     }
     .btn-flavor img {
-      width: 30px; /* Smaller icon */
+      width: 30px;
       height: 30px;
     }
   }
@@ -272,7 +251,7 @@
     transition: all 0.2s ease;
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     position: relative;
-    z-index: 20; /* Keep above floating button */
+    z-index: 20;
   }
 
   .btn-flavor:hover {
@@ -300,53 +279,37 @@
     width: 100%;
   }
 
-  /* --- THE FLOATING SHOP BOX (SCALED DOWN 50%) --- */
   .flavor-floating-cta {
     position: absolute;
     top: 0;
     left: 0;
-    /* FIX: Increased z-index to 30 to sit ABOVE the grid padding */
     z-index: 30; 
-    
-    /* Style Match: Dashed/Solid per settings */
     background: {{ section.settings.btn_bg_color }};
     color: {{ section.settings.btn_text_color }};
     border: {{ section.settings.btn_border_width }}px {{ section.settings.btn_border_style }} {{ section.settings.btn_border_color }};
-    
-    /* SCALED DOWN SIZES */
-    font-size: 0.75rem; /* Smaller font */
-    padding: 6px 16px;  /* Smaller padding */
-    border-radius: 8px; /* Tighter radius */
-
-    /* Typography */
+    font-size: 0.75rem;
+    padding: 6px 16px;
+    border-radius: 8px;
     text-decoration: underline;
     text-underline-offset: 3px;
     font-weight: 600;
     text-transform: capitalize;
     white-space: nowrap;
     letter-spacing: 0.05em;
-    
-    /* Animation Properties - NO TRANSITION ON LEFT/TOP to prevent jumping */
     opacity: 0;
-    transform: translateX(-50%) translateY(-20px); /* Start tucked 'inside' (hidden) */
-    
-    /* Only animate the appearance (Opacity and Drop) */
+    transform: translateX(-50%) translateY(-20px);
     transition: 
       transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
       opacity 0.3s ease;
-      
     pointer-events: none; 
     transform-origin: center top;
   }
 
-  /* When Visible: Drops down and fades in */
   .flavor-floating-cta.is-visible {
     opacity: 1;
     pointer-events: auto;
-    /* Drop down to final position */
     transform: translateX(-50%) translateY(0); 
   }
-  
 {%- endstyle -%}
 
 {%- liquid
@@ -367,13 +330,7 @@
       <div 
         class="flavor-bg-item {% if forloop.first %}is-active{% endif %}"
         data-block-id="{{ block.id }}"
-        style="
-          background: radial-gradient(
-            circle at 50% 40%, 
-            {{ block.settings.color_accent }} 0%, 
-            #e4e2e2 70%
-          );
-        "
+        style="background: radial-gradient(circle at 50% 40%, {{ block.settings.color_accent }} 0%, rgba(228, 226, 226, 0) 80%);"
       ></div>
     {%- endfor -%}
   </div>
@@ -407,15 +364,10 @@
             <button 
               class="btn-flavor {% if forloop.first %}selected{% endif %}"
               data-block-id="{{ block.id }}"
-              
-              {% comment %} DATA Attributes for JS {% endcomment %}
               data-title="{{ block.settings.title | escape }}"
               data-subtitle="{{ block.settings.subtitle | escape }}"
               data-color-primary="{{ block.settings.color_primary }}"
-              
-              {% comment %} Link for the sliding box {% endcomment %}
               data-product-url="{{ block.settings.product_link }}"
-              
               aria-label="Select {{ block.settings.title }}"
               type="button"
             >
@@ -508,7 +460,6 @@
       const gridContainer = document.getElementById('GridContainer-{{ section.id }}');
       const floatingBtn = document.getElementById('FloatingCTA-{{ section.id }}');
 
-      // --- SCRAMBLE TEXT EFFECT ---
       const chars = '!<>-_\\/[]{}—=+*^?#________'; 
       const scrambleText = (element, newText) => {
         const oldText = element.innerText;
@@ -556,49 +507,36 @@
         return promise;
       };
 
-      // --- FLOATING BOX LOGIC ---
       const updateFloatingBtnPosition = (targetBtn, animate = true) => {
         if(!targetBtn || !floatingBtn) return;
 
-        // Position Calculation
         const btnLeft = targetBtn.offsetLeft;
         const btnTop = targetBtn.offsetTop;
         const btnWidth = targetBtn.offsetWidth;
         const btnHeight = targetBtn.offsetHeight;
 
         const targetX = btnLeft + (btnWidth / 2);
-        
-        // FIX: Spacing adjusted to 45px (Middle ground)
         const targetY = btnTop + btnHeight + 45; 
 
-        // Update URL
         const newUrl = targetBtn.dataset.productUrl;
         
-        // --- ANIMATION SEQUENCE ---
         if(animate) {
-            // 1. Hide it immediately (reset to hidden state)
             floatingBtn.classList.remove('is-visible');
-            
-            // 2. MOVE INSTANTLY (Invisible Snap)
-            // Because CSS transition for 'left' and 'top' was removed, this happens instantly
             floatingBtn.style.left = `${targetX}px`;
             floatingBtn.style.top = `${targetY}px`;
             
             if(newUrl) {
                 floatingBtn.href = newUrl;
-                // 3. Small delay to allow the DOM to register position, then FADE/DROP IN
                 setTimeout(() => {
                     floatingBtn.classList.add('is-visible');
                 }, 50);
             }
         } else {
-            // Static update (resize)
             floatingBtn.style.left = `${targetX}px`;
             floatingBtn.style.top = `${targetY}px`;
         }
       };
 
-      // --- RESPONSIVE STYLE UPDATES ---
       const updateSplashStyles = () => {
         const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
         splashImages.forEach(splash => {
@@ -616,34 +554,27 @@
       updateSplashStyles();
       window.addEventListener('resize', updateSplashStyles);
       
-      // Update floating button on resize too
       window.addEventListener('resize', () => {
         const activeBtn = sectionContainer.querySelector('.btn-flavor.selected');
-        if(activeBtn) updateFloatingBtnPosition(activeBtn, false); // False = no re-animation on resize
+        if(activeBtn) updateFloatingBtnPosition(activeBtn, false); 
       });
 
-      // --- CLICK HANDLERS ---
       buttons.forEach(btn => {
         btn.addEventListener('click', function() {
           const targetId = this.dataset.blockId;
           const newTitle = this.dataset.title;
           const newSubtitle = this.dataset.subtitle;
 
-          // 1. Update Dynamic CSS Variables for Text
           sectionContainer.style.setProperty('--theme-variant-color', this.dataset.colorPrimary);
 
-          // 2. Trigger Scramble
           if(titleEl.innerText !== newTitle) scrambleText(titleEl, newTitle);
           if(subtitleEl.innerText !== newSubtitle) scrambleText(subtitleEl, newSubtitle);
 
-          // 3. Update Button State
           buttons.forEach(b => b.classList.remove('selected'));
           this.classList.add('selected');
 
-          // 4. Reset and Re-Animate Floating Box
           updateFloatingBtnPosition(this, true);
 
-          // 5. Update All Visuals
           const swapActive = (nodeList) => {
             nodeList.forEach(el => {
               if(el.dataset.blockId === targetId) {
@@ -659,10 +590,8 @@
         });
       });
 
-      // Initialize floating button position for the first item
       const initialBtn = sectionContainer.querySelector('.btn-flavor.selected');
       if(initialBtn) {
-        // slight delay to ensure layout is ready
         setTimeout(() => updateFloatingBtnPosition(initialBtn, true), 100);
       }
     };
