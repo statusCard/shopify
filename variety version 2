@@ -1,0 +1,1152 @@
+{%- style -%}
+  /* --- SECTION BASE --- */
+  #shopify-section-{{ section.id }} {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+    background-color: transparent; 
+
+    /* Variables */
+    --transition-speed: 0.6s;
+    --theme-static-color: {{ section.settings.static_text_color }};
+    
+    /* Fonts */
+    {% if section.settings.font_heading != blank %}
+      --font-heading-family: {{ section.settings.font_heading.family }}, {{ section.settings.font_heading.fallback_families }};
+    {% endif %}
+    {% if section.settings.font_eyebrow != blank %}
+      --font-eyebrow-family: {{ section.settings.font_eyebrow.family }}, {{ section.settings.font_eyebrow.fallback_families }};
+    {% endif %}
+    {% if section.settings.font_grid_label != blank %}
+      --font-grid-label-family: {{ section.settings.font_grid_label.family }}, {{ section.settings.font_grid_label.fallback_families }};
+    {% endif %}
+  }
+
+  /* --- 1. BASE BACKGROUND LAYER --- */
+  .flavor-section-bg {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -{{ section.settings.padding_top }}px;
+    bottom: -{{ section.settings.padding_bottom }}px;
+    background-color: #e4e2e2;
+    z-index: 1;
+    
+    /* New Background Image Logic */
+    {% if section.settings.section_bg_image != blank %}
+      background-image: url({{ section.settings.section_bg_image | image_url: width: 2000 }});
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    {% endif %}
+  }
+
+  .flavor-bg-stack {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -{{ section.settings.padding_top }}px;
+    bottom: -{{ section.settings.padding_bottom }}px;
+    z-index: 2;
+  }
+
+  /* --- 2. GLOW GRADIENT LAYER --- */
+  .flavor-bg-item {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    pointer-events: none;
+  }
+
+  .flavor-bg-item.is-active {
+    opacity: 1;
+  }
+
+  .flavor-bg-gradient {
+    position: absolute;
+    /* Hard limit the glow area */
+    top: 20%;
+    left: 10%;
+    width: 80%;
+    height: 60%;
+
+    background:
+      radial-gradient(
+        ellipse at center,
+        color-mix(in srgb, var(--glow-color) 65%, transparent) 0%,
+        color-mix(in srgb, var(--glow-color) 35%, transparent) 45%,
+        transparent 75%
+      );
+
+    filter: blur(90px);
+    opacity: 0.7;
+
+    /* NO blend modes */
+    mix-blend-mode: multiply;
+
+    pointer-events: none;
+  }
+
+  /* --- 3. CONTENT CONTAINER --- */
+  .flavor-card-module {
+    position: relative;
+    z-index: 5; 
+    background: transparent !important;
+    min-height: auto; 
+    padding-bottom: 20px; 
+  }
+
+  .flavor-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    max-width: {{ section.settings.page_width }}px;
+    margin: 0 auto;
+    position: relative;
+    padding: 0 20px;
+  }
+
+  /* --- Left Column: Content --- */
+  .flavor-content {
+    width: 100%;
+    order: 2;
+    text-align: center;
+    padding-top: 0; 
+    position: relative;
+    z-index: 10; 
+  }
+  
+  @media (min-width: 1024px) {
+    .flavor-wrapper {
+      margin-left: 450px;   
+      margin-right: auto;
+    }
+    .flavor-bg-gradient {
+      left: 30%;   
+      width: 60%;  
+    }
+    .flavor-content {
+      width: 45%;
+      order: 1;
+      text-align: left;
+      padding-top: 0;
+    }
+  }
+
+  /* --- Right Column: Visuals --- */
+  .flavor-visuals {
+    width: 100%;
+    order: 1; 
+    position: relative;
+    z-index: 1; 
+    min-height: 350px; 
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
+  }
+
+  @media (min-width: 1024px) {
+    .flavor-visuals {
+      width: 55%;
+      order: 2;
+      height: 550px; 
+    }
+  }
+
+  /* --- Typography --- */
+  .text-wrapper-block {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    margin-bottom: 0.5rem;
+    transition: height 0.4s ease; 
+    overflow: hidden;
+    will-change: height;
+  }
+
+  .flavor-eyebrow-top {
+    display: inline-block; 
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    opacity: 0.6;
+    color: var(--theme-static-color);
+    font-family: var(--font-eyebrow-family, inherit);
+    
+    font-size: {{ section.settings.eyebrow_size_m }}px;
+    transform: translate({{ section.settings.eyebrow_x_m }}px, {{ section.settings.eyebrow_y_m }}px);
+    margin-bottom: 1rem;
+  }
+
+  @media(min-width: 1024px) {
+    .flavor-eyebrow-top {
+      font-size: {{ section.settings.eyebrow_size_d }}px;
+      transform: translate({{ section.settings.eyebrow_x_d }}px, {{ section.settings.eyebrow_y_d }}px);
+    }
+  }
+
+  .flavor-eyebrow-grid {
+    display: inline-block;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    opacity: 0.6;
+    color: var(--theme-static-color);
+    font-family: var(--font-grid-label-family, inherit);
+    margin-top: 10px;
+
+    font-size: {{ section.settings.grid_label_size_m }}px;
+    transform: translate({{ section.settings.grid_label_x_m }}px, {{ section.settings.grid_label_y_m }}px);
+  }
+
+  @media(min-width: 1024px) {
+    .flavor-eyebrow-grid {
+      font-size: {{ section.settings.grid_label_size_d }}px;
+      transform: translate({{ section.settings.grid_label_x_d }}px, {{ section.settings.grid_label_y_d }}px);
+    }
+  }
+
+  /* Main Title & Subtitle Transitions */
+  .flavor-h2,
+  .flavor-h3 {
+    transition: 
+      opacity 0.4s ease, 
+      transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), 
+      color 0.3s ease;
+    opacity: 1;
+    transform: translateY(0);
+    will-change: opacity, transform;
+  }
+
+  .flavor-h2.is-hidden,
+  .flavor-h3.is-hidden {
+    opacity: 0;
+    transform: translateY(10px); 
+  }
+
+  .flavor-h2 {
+    font-family: var(--font-heading-family, inherit);
+    line-height: 1.1;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin: 0;
+    color: var(--theme-variant-color); 
+    font-size: {{ section.settings.title_size_mobile }}px;
+    word-break: break-word; 
+    hyphens: auto;
+  }
+  @media(min-width: 1024px) {
+    .flavor-h2 { font-size: {{ section.settings.title_size_desktop }}px; }
+  }
+  
+  .flavor-h3 {
+    font-size: 1.1rem; 
+    line-height: 1.5;
+    font-weight: 500;
+    margin: 1rem 0 2rem 0;
+    color: var(--theme-static-color); 
+    opacity: 0.8;
+  }
+
+  /* --- Visuals --- */
+  .visuals-stack {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .flavor-splash-image {
+    position: absolute;
+    width: var(--img-width);
+    transform: translate(var(--img-x), var(--img-y)) rotate(var(--img-rot));
+    z-index: 1; 
+    opacity: 0;
+    transition: opacity var(--transition-speed) ease, transform 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    pointer-events: none;
+  }
+  
+  .flavor-splash-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .flavor-hero-img-wrapper {
+    position: relative;
+    z-index: 2; 
+    width: auto;
+    height: 80%;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease;
+    position: absolute; 
+  }
+
+  .flavor-hero-img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 15px 15px rgba(0,0,0,0.05));
+  }
+
+  /* Updated Active State to use Variable Opacity */
+  .flavor-splash-image.is-active {
+    opacity: var(--target-opacity, 1);
+  }
+  
+  .flavor-hero-img-wrapper.is-active {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* --- Buttons Grid --- */
+  .flavor-grid-container {
+    position: relative; 
+    display: inline-block;
+    width: 100%;
+  }
+
+  .flavor-grid {
+    display: flex;
+    justify-content: center;
+    gap: 8px; 
+    margin-top: 25px;
+    padding-bottom: 60px; 
+    position: relative;
+    z-index: 20; 
+  }
+
+  @media (max-width: 1023px) {
+    .flavor-grid {
+      flex-wrap: nowrap; 
+      width: 100%;
+      overflow-x: auto; 
+      justify-content: flex-start;
+      padding-left: 5px; 
+    }
+    .btn-flavor {
+      flex: 0 0 auto; 
+      width: 80px; 
+      height: 80px;
+    }
+    .btn-flavor span { font-size: 0.6rem; }
+    .btn-flavor img { width: 30px; height: 30px; }
+  }
+
+  @media (min-width: 1024px) {
+    .flavor-grid {
+      justify-content: flex-start;
+      gap: 12px;
+    }
+    .btn-flavor {
+      width: 90px;
+      height: 90px;
+    }
+    .btn-flavor span { font-size: 0.7rem; }
+    .btn-flavor img { width: 40px; height: 40px; }
+  }
+
+  .btn-flavor {
+    border-radius: 16px;
+    border: 2px solid rgba(0,0,0,0.05);
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    position: relative;
+    z-index: 20; 
+  }
+
+  .btn-flavor:hover {
+    transform: translateY(-3px);
+  }
+
+  .btn-flavor.selected {
+    border-color: var(--theme-variant-color);
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.5), 0 0 0 2px var(--theme-variant-color);
+  }
+
+  .btn-flavor img {
+    object-fit: contain;
+    margin-bottom: 6px;
+  }
+
+  .btn-flavor span {
+    text-align: center;
+    line-height: 1;
+    font-weight: 700;
+    color: var(--theme-static-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+
+  /* --- THE FLOATING SHOP BOX --- */
+  .flavor-floating-cta {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 30; 
+    background: {{ section.settings.btn_bg_color }};
+    color: {{ section.settings.btn_text_color }};
+    border: {{ section.settings.btn_border_width }}px {{ section.settings.btn_border_style }} {{ section.settings.btn_border_color }};
+    font-size: 0.75rem; 
+    padding: 6px 16px; 
+    border-radius: 8px; 
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-weight: 600;
+    text-transform: capitalize;
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px); 
+    transition: 
+      transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+      opacity 0.3s ease;
+    pointer-events: none; 
+    transform-origin: center top;
+  }
+
+  .flavor-floating-cta.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0); 
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign first_block = section.blocks.first
+-%}
+
+<div id="FlavorSection-{{ section.id }}">
+  
+  <!-- 1. Base Gray Background (Now optionally an image) -->
+  <div class="flavor-section-bg"></div>
+
+  <!-- 2. New Glow Layer -->
+  <div class="flavor-bg-stack">
+    {%- for block in section.blocks -%}
+      <div 
+        class="flavor-bg-item {% if forloop.first %}is-active{% endif %}"
+        data-block-id="{{ block.id }}"
+      >
+        <!-- The Actual Glowing Orb -->
+        <div
+          class="flavor-bg-gradient"
+          style="--glow-color: {{ block.settings.color_accent }};">
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+
+  <!-- 3. Main Content -->
+  <div 
+    class="flavor-card-module"
+    style="
+      --theme-variant-color: {{ first_block.settings.color_primary }};
+      --theme-static-color: {{ section.settings.static_text_color }};
+    "
+  >
+    <div class="flavor-wrapper">
+      
+      <div class="flavor-content">
+        
+        <div class="flavor-eyebrow-top">
+          {{ section.settings.text_eyebrow }}
+        </div>
+
+        <div class="text-wrapper-block" id="TitleWrapper-{{ section.id }}">
+          <h2 id="FlavorTitle-{{ section.id }}" class="flavor-h2">
+            {{ first_block.settings.title }}
+          </h2>
+        </div>
+
+        <div class="text-wrapper-block" id="SubtitleWrapper-{{ section.id }}">
+          <h3 id="FlavorSubtitle-{{ section.id }}" class="flavor-h3">
+            {{ first_block.settings.subtitle }}
+          </h3>
+        </div>
+
+        <div class="flavor-eyebrow-grid">
+          {{ section.settings.text_flavors_label }}
+        </div>
+
+        <div class="flavor-grid-container" id="GridContainer-{{ section.id }}">
+          
+          <div class="flavor-grid">
+            {%- for block in section.blocks -%}
+              <button 
+                class="btn-flavor {% if forloop.first %}selected{% endif %}"
+                data-block-id="{{ block.id }}"
+                data-title="{{ block.settings.title | escape }}"
+                data-subtitle="{{ block.settings.subtitle | escape }}"
+                data-color-primary="{{ block.settings.color_primary }}"
+                data-product-url="{{ block.settings.product_link }}"
+                aria-label="Select {{ block.settings.title }}"
+                type="button"
+              >
+                {%- if block.settings.icon != blank -%}
+                  {{ block.settings.icon | image_url: width: 100 | image_tag: loading: 'eager' }}
+                {%- else -%}
+                  <div style="width:30px; height:30px; background: {{ block.settings.color_primary }}; border-radius:50%;"></div>
+                {%- endif -%}
+                
+                <span>
+                  {% if block.settings.button_label != blank %}
+                    {{ block.settings.button_label }}
+                  {% else %}
+                    {{ block.settings.title }}
+                  {% endif %}
+                </span>
+              </button>
+            {%- endfor -%}
+          </div>
+
+          <a href="{{ first_block.settings.product_link }}" id="FloatingCTA-{{ section.id }}" class="flavor-floating-cta">
+            {{ section.settings.btn_text_label }}
+          </a>
+
+        </div>
+
+      </div>
+
+      <div class="flavor-visuals">
+        <div class="visuals-stack">
+          
+          {%- for block in section.blocks -%}
+            {% if block.settings.bg_image != blank %}
+              {% assign opacity_decimal = block.settings.bg_opacity | divided_by: 100.0 %}
+              <div 
+                class="flavor-splash-image {% if forloop.first %}is-active{% endif %}"
+                data-block-id="{{ block.id }}"
+                style="
+                  --target-opacity: {{ opacity_decimal }};
+                  --img-width: {{ block.settings.bg_width_m }}%;
+                  --img-x: {{ block.settings.bg_x_m }}%;
+                  --img-y: {{ block.settings.bg_y_m }}%;
+                  --img-rot: {{ block.settings.bg_rot_m }}deg;
+                "
+                data-style-desktop="
+                  --img-width: {{ block.settings.bg_width_d }}%;
+                  --img-x: {{ block.settings.bg_x_d }}%;
+                  --img-y: {{ block.settings.bg_y_d }}%;
+                  --img-rot: {{ block.settings.bg_rot_d }}deg;
+                "
+                data-style-mobile="
+                  --img-width: {{ block.settings.bg_width_m }}%;
+                  --img-x: {{ block.settings.bg_x_m }}%;
+                  --img-y: {{ block.settings.bg_y_m }}%;
+                  --img-rot: {{ block.settings.bg_rot_m }}deg;
+                "
+              >
+                {{ block.settings.bg_image | image_url: width: 800 | image_tag: loading: 'lazy' }}
+              </div>
+            {% endif %}
+
+            <div 
+              class="flavor-hero-img-wrapper {% if forloop.first %}is-active{% endif %}" 
+              data-block-id="{{ block.id }}"
+            >
+              {%- if block.settings.main_image != blank -%}
+                {{ block.settings.main_image | image_url: width: 1000 | image_tag: class: 'flavor-hero-img', loading: 'eager' }}
+              {%- else -%}
+                <div style="width: 200px; height: 350px; background: rgba(0,0,0,0.05); border-radius: 20px;"></div>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const initFlavorSwitcher = () => {
+      const sectionContainer = document.getElementById('FlavorSection-{{ section.id }}');
+      if (!sectionContainer) return; 
+      
+      const buttons = sectionContainer.querySelectorAll('.btn-flavor');
+      const cardModule = sectionContainer.querySelector('.flavor-card-module');
+
+      // Text Elements & Wrappers
+      const titleEl = document.getElementById('FlavorTitle-{{ section.id }}');
+      const titleWrapper = document.getElementById('TitleWrapper-{{ section.id }}');
+      
+      const subtitleEl = document.getElementById('FlavorSubtitle-{{ section.id }}');
+      const subtitleWrapper = document.getElementById('SubtitleWrapper-{{ section.id }}');
+
+      // Visuals
+      const heroImages = sectionContainer.querySelectorAll('.flavor-hero-img-wrapper');
+      const splashImages = sectionContainer.querySelectorAll('.flavor-splash-image');
+      const bgItems = sectionContainer.querySelectorAll('.flavor-bg-item'); 
+      const floatingBtn = document.getElementById('FloatingCTA-{{ section.id }}');
+
+      // --- MODERN FADE SWITCH LOGIC ---
+      const modernTextSwitch = (element, wrapper, newText, delay = 0) => {
+        if(element.innerText === newText) return;
+
+        setTimeout(() => {
+          const startHeight = wrapper.offsetHeight;
+          wrapper.style.height = `${startHeight}px`;
+
+          element.classList.add('is-hidden');
+          
+          setTimeout(() => {
+              element.innerText = newText;
+              wrapper.style.height = 'auto';
+              const targetHeight = wrapper.offsetHeight;
+              wrapper.style.height = `${startHeight}px`;
+              void wrapper.offsetHeight; 
+              wrapper.style.height = `${targetHeight}px`;
+              element.classList.remove('is-hidden');
+          }, 350); 
+        }, delay);
+      };
+
+      const updateFloatingBtnPosition = (targetBtn, animate = true) => {
+        if(!targetBtn || !floatingBtn) return;
+
+        const btnLeft = targetBtn.offsetLeft;
+        const btnTop = targetBtn.offsetTop;
+        const btnWidth = targetBtn.offsetWidth;
+        const btnHeight = targetBtn.offsetHeight;
+
+        const targetX = btnLeft + (btnWidth / 2);
+        const targetY = btnTop + btnHeight + 45; 
+
+        const newUrl = targetBtn.dataset.productUrl;
+        
+        if(animate) {
+            floatingBtn.classList.remove('is-visible');
+            floatingBtn.style.left = `${targetX}px`;
+            floatingBtn.style.top = `${targetY}px`;
+            
+            if(newUrl) {
+                floatingBtn.href = newUrl;
+                setTimeout(() => {
+                    floatingBtn.classList.add('is-visible');
+                }, 50);
+            }
+        } else {
+            floatingBtn.style.left = `${targetX}px`;
+            floatingBtn.style.top = `${targetY}px`;
+        }
+      };
+
+      const updateSplashStyles = () => {
+        const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+        splashImages.forEach(splash => {
+          const styleStr = isDesktop ? splash.dataset.styleDesktop : splash.dataset.styleMobile;
+          if(styleStr) {
+             const pairs = styleStr.trim().split(';');
+             pairs.forEach(pair => {
+               const [key, value] = pair.split(':');
+               if(key && value) splash.style.setProperty(key.trim(), value.trim());
+             });
+          }
+        });
+      };
+
+      updateSplashStyles();
+      
+      window.addEventListener('resize', () => {
+        const activeBtn = sectionContainer.querySelector('.btn-flavor.selected');
+        if(activeBtn) updateFloatingBtnPosition(activeBtn, false); 
+        
+        updateSplashStyles();
+        titleWrapper.style.height = 'auto';
+        subtitleWrapper.style.height = 'auto';
+      });
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const targetId = this.dataset.blockId;
+          const newTitle = this.dataset.title;
+          const newSubtitle = this.dataset.subtitle;
+
+          // Set Color on the Card Module so children inherit
+          cardModule.style.setProperty('--theme-variant-color', this.dataset.colorPrimary);
+
+          modernTextSwitch(titleEl, titleWrapper, newTitle, 0);
+          modernTextSwitch(subtitleEl, subtitleWrapper, newSubtitle, 50);
+
+          buttons.forEach(b => b.classList.remove('selected'));
+          this.classList.add('selected');
+
+          updateFloatingBtnPosition(this, true);
+
+          const swapActive = (nodeList) => {
+            nodeList.forEach(el => {
+              if(el.dataset.blockId === targetId) {
+                el.classList.add('is-active');
+              } else {
+                el.classList.remove('is-active');
+              }
+            });
+          };
+          swapActive(heroImages);
+          swapActive(splashImages);
+          swapActive(bgItems); 
+        });
+      });
+
+      // Init State
+      const initialBtn = sectionContainer.querySelector('.btn-flavor.selected');
+      if(initialBtn) {
+        setTimeout(() => updateFloatingBtnPosition(initialBtn, true), 100);
+        
+        // Force BG Active (Safeguard)
+        const firstBg = sectionContainer.querySelector('.flavor-bg-item');
+        if(firstBg) firstBg.classList.add('is-active');
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', initFlavorSwitcher);
+    document.addEventListener('shopify:section:load', initFlavorSwitcher);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Flavor Switcher v10.0",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Global Layout"
+    },
+    {
+      "type": "image_picker",
+      "id": "section_bg_image",
+      "label": "Section Background Image",
+      "info": "Optional. Overrides the default gray background."
+    },
+    {
+      "type": "range",
+      "id": "page_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "label": "Max Page Width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Floating Button Styles"
+    },
+    {
+        "type": "text",
+        "id": "btn_text_label",
+        "label": "Button Text",
+        "default": "View Product"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_color",
+      "label": "Button Background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_border_color",
+      "label": "Button Border Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "btn_border_width",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "label": "Border Width",
+      "default": 2
+    },
+    {
+        "type": "select",
+        "id": "btn_border_style",
+        "label": "Border Style",
+        "options": [
+            {"value": "solid", "label": "Solid"},
+            {"value": "dashed", "label": "Dashed"},
+            {"value": "dotted", "label": "Dotted"}
+        ],
+        "default": "dashed"
+    },
+    {
+      "type": "header",
+      "content": "Top Label (Pack Size) Settings"
+    },
+    {
+      "type": "text",
+      "id": "text_eyebrow",
+      "label": "Text",
+      "default": "12 PACK - 12 FL OZ"
+    },
+    {
+      "type": "font_picker",
+      "id": "font_eyebrow",
+      "label": "Font Family",
+      "default": "sans-serif"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size_d",
+      "label": "Size (Desktop)",
+      "min": 10, "max": 30, "step": 1, "unit": "px", "default": 12
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size_m",
+      "label": "Size (Mobile)",
+      "min": 8, "max": 24, "step": 1, "unit": "px", "default": 12
+    },
+    {
+      "type": "paragraph",
+      "content": "Independent Position (X/Y Offset)"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_x_d",
+      "label": "Offset X (Desktop)",
+      "min": -50, "max": 50, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_y_d",
+      "label": "Offset Y (Desktop)",
+      "min": -50, "max": 50, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_x_m",
+      "label": "Offset X (Mobile)",
+      "min": -50, "max": 50, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_y_m",
+      "label": "Offset Y (Mobile)",
+      "min": -50, "max": 50, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Grid Label Settings"
+    },
+    {
+      "type": "text",
+      "id": "text_flavors_label",
+      "label": "Text",
+      "default": "CHOOSE YOUR MOOD"
+    },
+    {
+      "type": "font_picker",
+      "id": "font_grid_label",
+      "label": "Font Family",
+      "default": "sans-serif"
+    },
+    {
+      "type": "range",
+      "id": "grid_label_size_d",
+      "label": "Size (Desktop)",
+      "min": 10, "max": 30, "step": 1, "unit": "px", "default": 12
+    },
+    {
+      "type": "range",
+      "id": "grid_label_size_m",
+      "label": "Size (Mobile)",
+      "min": 8, "max": 24, "step": 1, "unit": "px", "default": 12
+    },
+    {
+      "type": "paragraph",
+      "content": "Independent Position (X/Y Offset)"
+    },
+    {
+      "type": "range",
+      "id": "grid_label_x_d",
+      "label": "Offset X (Desktop)",
+      "min": -50, "max": 50, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "grid_label_y_d",
+      "label": "Offset Y (Desktop)",
+      "min": -50, "max": 50, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "grid_label_x_m",
+      "label": "Offset X (Mobile)",
+      "min": -50, "max": 50, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "grid_label_y_m",
+      "label": "Offset Y (Mobile)",
+      "min": -50, "max": 50, "step": 1, "unit": "px", "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Typography Colors & Sizes"
+    },
+    {
+      "type": "color",
+      "id": "static_text_color",
+      "label": "Base Text Color",
+      "default": "#222222",
+      "info": "This color stays the same for subtitles and labels."
+    },
+    {
+      "type": "font_picker",
+      "id": "font_heading",
+      "label": "Heading Font",
+      "default": "sans-serif"
+    },
+    {
+      "type": "range",
+      "id": "title_size_desktop",
+      "min": 30,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Title Size (Desktop)",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "min": 20,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "label": "Title Size (Mobile)",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "flavor",
+      "name": "Flavor Variant",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Text Content"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Product Title",
+          "default": "Flavor Name"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button Label (Optional)",
+          "info": "Overrides the Product Title inside the small square button.",
+          "default": "Flavor Short"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle / Description",
+          "default": "Short description goes here."
+        },
+        {
+          "type": "url",
+          "id": "product_link",
+          "label": "Product Page Link",
+          "info": "Where the 'Shop Now' box links to."
+        },
+        {
+          "type": "header",
+          "content": "Variant Specific Colors"
+        },
+        {
+          "type": "color",
+          "id": "color_primary",
+          "label": "Variant Main Color",
+          "default": "#000000",
+          "info": "Used for the Title text and Button Border."
+        },
+        {
+          "type": "color",
+          "id": "color_accent",
+          "label": "Glow/Light Leak Color",
+          "default": "#FF9980",
+          "info": "Pick a VIBRANT color. It will automatically fade out."
+        },
+        {
+          "type": "header",
+          "content": "Images"
+        },
+        {
+          "type": "image_picker",
+          "id": "main_image",
+          "label": "Product Image (Front)",
+          "info": "Cutout transparent PNG of the can."
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Button Icon",
+          "info": "Small fruit icon or logo."
+        },
+        {
+          "type": "header",
+          "content": "Background Graphic (Behind Product)"
+        },
+        {
+          "type": "image_picker",
+          "id": "bg_image",
+          "label": "Graphic / Splash Image"
+        },
+        {
+          "type": "range",
+          "id": "bg_opacity",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "label": "Graphic Opacity",
+          "default": 100
+        },
+        {
+          "type": "paragraph",
+          "content": "--- Desktop Positioning ---"
+        },
+        {
+          "type": "range",
+          "id": "bg_width_d",
+          "min": 10,
+          "max": 200,
+          "step": 5,
+          "unit": "%",
+          "label": "Width (Desktop)",
+          "default": 100
+        },
+        {
+          "type": "range",
+          "id": "bg_x_d",
+          "min": -100,
+          "max": 100,
+          "step": 2,
+          "unit": "%",
+          "label": "Horizontal Offset (X)",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "bg_y_d",
+          "min": -100,
+          "max": 100,
+          "step": 2,
+          "unit": "%",
+          "label": "Vertical Offset (Y)",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "bg_rot_d",
+          "min": -180,
+          "max": 180,
+          "step": 5,
+          "unit": "deg",
+          "label": "Rotation",
+          "default": 0
+        },
+        {
+          "type": "paragraph",
+          "content": "--- Mobile Positioning ---"
+        },
+        {
+          "type": "range",
+          "id": "bg_width_m",
+          "min": 10,
+          "max": 200,
+          "step": 5,
+          "unit": "%",
+          "label": "Width (Mobile)",
+          "default": 100
+        },
+        {
+          "type": "range",
+          "id": "bg_x_m",
+          "min": -100,
+          "max": 100,
+          "step": 2,
+          "unit": "%",
+          "label": "Horizontal Offset (X)",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "bg_y_m",
+          "min": -100,
+          "max": 100,
+          "step": 2,
+          "unit": "%",
+          "label": "Vertical Offset (Y)",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "bg_rot_m",
+          "min": -180,
+          "max": 180,
+          "step": 5,
+          "unit": "deg",
+          "label": "Rotation",
+          "default": 0
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Flavor Switcher v10.0"
+    }
+  ]
+}
+{% endschema %}
