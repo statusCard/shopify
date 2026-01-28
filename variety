@@ -89,7 +89,9 @@
     position: relative;
     z-index: 5; /* Ensures content is above the glow */
     background: transparent !important;
-    min-height: 700px;
+    /* FIX: Changed from min-height: 700px to auto so it doesn't force height */
+    min-height: auto; 
+    padding-bottom: 20px; /* Small buffer */
   }
 
   .flavor-wrapper {
@@ -107,7 +109,8 @@
     width: 100%;
     order: 2;
     text-align: center;
-    padding-top: 20px;
+    /* FIX: Removed padding-top: 20px */
+    padding-top: 0; 
     position: relative;
     z-index: 10; 
   }
@@ -139,7 +142,9 @@
     order: 1; 
     position: relative;
     z-index: 1; 
-    height: 400px; 
+    /* FIX: Changed fixed height to min-height to allow shrinking */
+    min-height: 350px; 
+    height: auto;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -150,7 +155,8 @@
     .flavor-visuals {
       width: 55%;
       order: 2;
-      height: 600px; 
+      /* FIX: Adjusted desktop height to be less aggressive */
+      height: 550px; 
     }
   }
 
@@ -315,7 +321,8 @@
     justify-content: center;
     gap: 8px; 
     margin-top: 25px;
-    padding-bottom: 110px; 
+    /* FIX: Reduced from 110px to 60px to remove dead space at bottom */
+    padding-bottom: 60px; 
     position: relative;
     z-index: 20; 
   }
