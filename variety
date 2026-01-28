@@ -1,12 +1,16 @@
 {%- style -%}
+  /* --- SECTION BASE --- */
   #shopify-section-{{ section.id }} {
-    --transition-speed: 0.8s; /* Slowed down global transitions */
     width: 100%;
     position: relative;
     overflow: hidden;
     padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
-    background-color: #e4e2e2 !important; 
+    background-color: transparent; /* We handle BG in a separate layer now */
 
+    /* Variables */
+    --transition-speed: 0.6s;
+    --theme-static-color: {{ section.settings.static_text_color }};
+    
     /* Fonts */
     {% if section.settings.font_heading != blank %}
       --font-heading-family: {{ section.settings.font_heading.family }}, {{ section.settings.font_heading.fallback_families }};
@@ -19,38 +23,50 @@
     {% endif %}
   }
 
-  .flavor-card-module {
-    position: relative;
-    min-height: 700px;
-    padding: 20px;
-    background: transparent !important; 
-  }
-
-  /* --- STACKED BACKGROUNDS --- */
-  .flavor-bg-stack {
+  /* --- 1. BASE BACKGROUND LAYER (The Gray) --- */
+  .flavor-section-bg {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 0;
-    pointer-events: none;
+    background-color: #e4e2e2; /* Your light gray base */
+    z-index: 1;
   }
 
-  .flavor-bg-item {
-    position: absolute;
-    top: 50%; /* Center anchor */
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 120%; /* Oversize to ensure coverage */
-    height: 120%;
-    opacity: 0; 
-    transition: opacity 0.8s ease-in-out;
-    mix-blend-mode: multiply; /* Helps gradient show on gray bg */
-  }
+/* --- 2. GLOW/GRADIENT LAYER --- */
+.flavor-bg-stack {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; /* Ensures it fills the section */
+  z-index: 1; 
+  pointer-events: none;
+  overflow: hidden;
+}
 
-  .flavor-bg-item.is-active {
-    opacity: 1; 
+.flavor-bg-item {
+  position: absolute;
+  top: 0;   /* Changed from 50% for testing */
+  left: 0;  /* Changed from 50% for testing */
+  width: 100%; 
+  height: 100%; 
+  opacity: 1 !important; /* FORCING VISIBILITY FOR DEBUGGING */
+  transition: opacity 1s ease-in-out;
+  
+  /* Remove blur for now to see the shape */
+  /* filter: blur(100px); */
+  
+  will-change: opacity;
+}
+
+  /* --- 3. CONTENT CONTAINER --- */
+  .flavor-card-module {
+    position: relative;
+    z-index: 5; /* Ensures content is above the glow */
+    background: transparent !important;
+    min-height: 700px;
   }
 
   .flavor-wrapper {
@@ -60,7 +76,7 @@
     max-width: {{ section.settings.page_width }}px;
     margin: 0 auto;
     position: relative;
-    z-index: 2;
+    padding: 0 20px;
   }
 
   /* --- Left Column: Content --- */
@@ -104,18 +120,18 @@
   }
 
   /* --- Typography --- */
-  
-  .scramble-wrapper {
-    display: block;
+  .text-wrapper-block {
+    display: flex;
+    flex-direction: column;
     position: relative;
     margin-bottom: 0.5rem;
-    /* Ensure container doesn't collapse */
-    min-height: 3.5rem; 
+    transition: height 0.4s ease; 
+    overflow: hidden;
+    will-change: height;
   }
 
-  /* TOP EYEBROW LABEL */
   .flavor-eyebrow-top {
-    display: inline-block; /* Allows transform to work */
+    display: inline-block; 
     text-transform: uppercase;
     font-weight: 700;
     letter-spacing: 0.15em;
@@ -136,7 +152,6 @@
     }
   }
 
-  /* GRID LABEL (Choose Your Mood) */
   .flavor-eyebrow-grid {
     display: inline-block;
     text-transform: uppercase;
@@ -159,7 +174,24 @@
     }
   }
 
-  /* Main Title */
+  /* Main Title & Subtitle Transitions */
+  .flavor-h2,
+  .flavor-h3 {
+    transition: 
+      opacity 0.4s ease, 
+      transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), 
+      color 0.3s ease;
+    opacity: 1;
+    transform: translateY(0);
+    will-change: opacity, transform;
+  }
+
+  .flavor-h2.is-hidden,
+  .flavor-h3.is-hidden {
+    opacity: 0;
+    transform: translateY(10px); 
+  }
+
   .flavor-h2 {
     font-family: var(--font-heading-family, inherit);
     line-height: 1.1;
@@ -167,24 +199,19 @@
     text-transform: uppercase;
     margin: 0;
     color: var(--theme-variant-color); 
-    transition: color 0.3s ease, opacity 0.5s ease; /* Added opacity transition for fade effect */
-    
-    /* Mobile Size */
     font-size: {{ section.settings.title_size_mobile }}px;
-    word-break: break-word; /* Prevent overflow */
+    word-break: break-word; 
     hyphens: auto;
   }
   @media(min-width: 1024px) {
     .flavor-h2 { font-size: {{ section.settings.title_size_desktop }}px; }
   }
   
-  /* Subtitle */
   .flavor-h3 {
     font-size: 1.1rem; 
     line-height: 1.5;
     font-weight: 500;
     margin: 1rem 0 2rem 0;
-    min-height: 3.5rem; 
     color: var(--theme-static-color); 
     opacity: 0.8;
   }
@@ -258,26 +285,21 @@
     z-index: 20; 
   }
 
-  /* MOBILE LAYOUT */
   @media (max-width: 1023px) {
     .flavor-grid {
       flex-wrap: nowrap; 
       width: 100%;
+      overflow-x: auto; /* Enable scroll if too many buttons */
+      justify-content: flex-start;
+      padding-left: 5px; /* Spacing for scroll */
     }
     .btn-flavor {
-      flex: 1; 
-      min-width: 0; 
-      max-width: 90px; 
-      height: auto;
-      aspect-ratio: 1 / 1; 
+      flex: 0 0 auto; /* Stop shrinking */
+      width: 80px; 
+      height: 80px;
     }
-    .btn-flavor span {
-      font-size: 0.6rem; 
-    }
-    .btn-flavor img {
-      width: 30px; 
-      height: 30px;
-    }
+    .btn-flavor span { font-size: 0.6rem; }
+    .btn-flavor img { width: 30px; height: 30px; }
   }
 
   @media (min-width: 1024px) {
@@ -289,13 +311,8 @@
       width: 90px;
       height: 90px;
     }
-    .btn-flavor span {
-        font-size: 0.7rem;
-    }
-    .btn-flavor img {
-        width: 40px;
-        height: 40px;
-    }
+    .btn-flavor span { font-size: 0.7rem; }
+    .btn-flavor img { width: 40px; height: 40px; }
   }
 
   .btn-flavor {
@@ -377,137 +394,136 @@
   assign first_block = section.blocks.first
 -%}
 
-<div 
-  id="FlavorSection-{{ section.id }}"
-  class="flavor-card-module"
-  style="
-    --theme-variant-color: {{ first_block.settings.color_primary }};
-    --theme-static-color: {{ section.settings.static_text_color }};
-  "
->
+<div id="FlavorSection-{{ section.id }}">
+  
+  <div class="flavor-section-bg"></div>
 
   <div class="flavor-bg-stack">
     {%- for block in section.blocks -%}
       <div 
-        class="flavor-bg-item {% if forloop.first %}is-active{% endif %}"
-        data-block-id="{{ block.id }}"
-        style="
-          background: radial-gradient(
-            circle at center, 
-            {{ block.settings.color_accent }} 0%, 
-            transparent 70%
-          );
-        "
-      ></div>
+  class="flavor-bg-item {% if forloop.first %}is-active{% endif %}"
+  data-block-id="{{ block.id }}"
+  style="background: radial-gradient(circle at 50% 50%, {{ block.settings.color_accent }} 0%, transparent 80%);"
+  ></div>
     {%- endfor -%}
   </div>
 
-  <div class="flavor-wrapper">
-    
-    <div class="flavor-content">
+  <div 
+    class="flavor-card-module"
+    style="
+      --theme-variant-color: {{ first_block.settings.color_primary }};
+      --theme-static-color: {{ section.settings.static_text_color }};
+    "
+  >
+    <div class="flavor-wrapper">
       
-      <div class="flavor-eyebrow-top">
-        {{ section.settings.text_eyebrow }}
-      </div>
-
-      <div class="scramble-wrapper" id="ScrambleWrapper-{{ section.id }}">
-        <h2 id="FlavorTitle-{{ section.id }}" class="flavor-h2">
-          {{ first_block.settings.title }}
-        </h2>
-      </div>
-
-      <h3 id="FlavorSubtitle-{{ section.id }}" class="flavor-h3">
-        {{ first_block.settings.subtitle }}
-      </h3>
-
-      <div class="flavor-eyebrow-grid">
-        {{ section.settings.text_flavors_label }}
-      </div>
-
-      <div class="flavor-grid-container" id="GridContainer-{{ section.id }}">
+      <div class="flavor-content">
         
-        <div class="flavor-grid">
-          {%- for block in section.blocks -%}
-            <button 
-              class="btn-flavor {% if forloop.first %}selected{% endif %}"
-              data-block-id="{{ block.id }}"
-              data-title="{{ block.settings.title | escape }}"
-              data-subtitle="{{ block.settings.subtitle | escape }}"
-              data-color-primary="{{ block.settings.color_primary }}"
-              data-product-url="{{ block.settings.product_link }}"
-              aria-label="Select {{ block.settings.title }}"
-              type="button"
-            >
-              {%- if block.settings.icon != blank -%}
-                {{ block.settings.icon | image_url: width: 100 | image_tag: loading: 'eager' }}
-              {%- else -%}
-                <div style="width:30px; height:30px; background: {{ block.settings.color_primary }}; border-radius:50%;"></div>
-              {%- endif -%}
-              
-              <span>
-                {% if block.settings.button_label != blank %}
-                  {{ block.settings.button_label }}
-                {% else %}
-                  {{ block.settings.title }}
-                {% endif %}
-              </span>
-            </button>
-          {%- endfor -%}
+        <div class="flavor-eyebrow-top">
+          {{ section.settings.text_eyebrow }}
         </div>
 
-        <a href="{{ first_block.settings.product_link }}" id="FloatingCTA-{{ section.id }}" class="flavor-floating-cta">
-          {{ section.settings.btn_text_label }}
-        </a>
+        <div class="text-wrapper-block" id="TitleWrapper-{{ section.id }}">
+          <h2 id="FlavorTitle-{{ section.id }}" class="flavor-h2">
+            {{ first_block.settings.title }}
+          </h2>
+        </div>
 
-      </div>
+        <div class="text-wrapper-block" id="SubtitleWrapper-{{ section.id }}">
+          <h3 id="FlavorSubtitle-{{ section.id }}" class="flavor-h3">
+            {{ first_block.settings.subtitle }}
+          </h3>
+        </div>
 
-    </div>
+        <div class="flavor-eyebrow-grid">
+          {{ section.settings.text_flavors_label }}
+        </div>
 
-    <div class="flavor-visuals">
-      <div class="visuals-stack">
-        
-        {%- for block in section.blocks -%}
-          {% if block.settings.bg_image != blank %}
-            <div 
-              class="flavor-splash-image {% if forloop.first %}is-active{% endif %}"
-              data-block-id="{{ block.id }}"
-              style="
-                --img-width: {{ block.settings.bg_width_m }}%;
-                --img-x: {{ block.settings.bg_x_m }}%;
-                --img-y: {{ block.settings.bg_y_m }}%;
-                --img-rot: {{ block.settings.bg_rot_m }}deg;
-              "
-              data-style-desktop="
-                --img-width: {{ block.settings.bg_width_d }}%;
-                --img-x: {{ block.settings.bg_x_d }}%;
-                --img-y: {{ block.settings.bg_y_d }}%;
-                --img-rot: {{ block.settings.bg_rot_d }}deg;
-              "
-              data-style-mobile="
-                --img-width: {{ block.settings.bg_width_m }}%;
-                --img-x: {{ block.settings.bg_x_m }}%;
-                --img-y: {{ block.settings.bg_y_m }}%;
-                --img-rot: {{ block.settings.bg_rot_m }}deg;
-              "
-            >
-              {{ block.settings.bg_image | image_url: width: 800 | image_tag: loading: 'lazy' }}
-            </div>
-          {% endif %}
-
-          <div 
-            class="flavor-hero-img-wrapper {% if forloop.first %}is-active{% endif %}" 
-            data-block-id="{{ block.id }}"
-          >
-            {%- if block.settings.main_image != blank -%}
-              {{ block.settings.main_image | image_url: width: 1000 | image_tag: class: 'flavor-hero-img', loading: 'eager' }}
-            {%- else -%}
-              <div style="width: 200px; height: 350px; background: rgba(0,0,0,0.05); border-radius: 20px;"></div>
-            {%- endif -%}
+        <div class="flavor-grid-container" id="GridContainer-{{ section.id }}">
+          
+          <div class="flavor-grid">
+            {%- for block in section.blocks -%}
+              <button 
+                class="btn-flavor {% if forloop.first %}selected{% endif %}"
+                data-block-id="{{ block.id }}"
+                data-title="{{ block.settings.title | escape }}"
+                data-subtitle="{{ block.settings.subtitle | escape }}"
+                data-color-primary="{{ block.settings.color_primary }}"
+                data-product-url="{{ block.settings.product_link }}"
+                aria-label="Select {{ block.settings.title }}"
+                type="button"
+              >
+                {%- if block.settings.icon != blank -%}
+                  {{ block.settings.icon | image_url: width: 100 | image_tag: loading: 'eager' }}
+                {%- else -%}
+                  <div style="width:30px; height:30px; background: {{ block.settings.color_primary }}; border-radius:50%;"></div>
+                {%- endif -%}
+                
+                <span>
+                  {% if block.settings.button_label != blank %}
+                    {{ block.settings.button_label }}
+                  {% else %}
+                    {{ block.settings.title }}
+                  {% endif %}
+                </span>
+              </button>
+            {%- endfor -%}
           </div>
-        {%- endfor -%}
-      </div>
-    </div>
 
+          <a href="{{ first_block.settings.product_link }}" id="FloatingCTA-{{ section.id }}" class="flavor-floating-cta">
+            {{ section.settings.btn_text_label }}
+          </a>
+
+        </div>
+
+      </div>
+
+      <div class="flavor-visuals">
+        <div class="visuals-stack">
+          
+          {%- for block in section.blocks -%}
+            {% if block.settings.bg_image != blank %}
+              <div 
+                class="flavor-splash-image {% if forloop.first %}is-active{% endif %}"
+                data-block-id="{{ block.id }}"
+                style="
+                  --img-width: {{ block.settings.bg_width_m }}%;
+                  --img-x: {{ block.settings.bg_x_m }}%;
+                  --img-y: {{ block.settings.bg_y_m }}%;
+                  --img-rot: {{ block.settings.bg_rot_m }}deg;
+                "
+                data-style-desktop="
+                  --img-width: {{ block.settings.bg_width_d }}%;
+                  --img-x: {{ block.settings.bg_x_d }}%;
+                  --img-y: {{ block.settings.bg_y_d }}%;
+                  --img-rot: {{ block.settings.bg_rot_d }}deg;
+                "
+                data-style-mobile="
+                  --img-width: {{ block.settings.bg_width_m }}%;
+                  --img-x: {{ block.settings.bg_x_m }}%;
+                  --img-y: {{ block.settings.bg_y_m }}%;
+                  --img-rot: {{ block.settings.bg_rot_m }}deg;
+                "
+              >
+                {{ block.settings.bg_image | image_url: width: 800 | image_tag: loading: 'lazy' }}
+              </div>
+            {% endif %}
+
+            <div 
+              class="flavor-hero-img-wrapper {% if forloop.first %}is-active{% endif %}" 
+              data-block-id="{{ block.id }}"
+            >
+              {%- if block.settings.main_image != blank -%}
+                {{ block.settings.main_image | image_url: width: 1000 | image_tag: class: 'flavor-hero-img', loading: 'eager' }}
+              {%- else -%}
+                <div style="width: 200px; height: 350px; background: rgba(0,0,0,0.05); border-radius: 20px;"></div>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 
@@ -518,92 +534,41 @@
       if (!sectionContainer) return; 
       
       const buttons = sectionContainer.querySelectorAll('.btn-flavor');
+      const cardModule = sectionContainer.querySelector('.flavor-card-module');
+
+      // Text Elements & Wrappers
       const titleEl = document.getElementById('FlavorTitle-{{ section.id }}');
-      const scrambleWrapper = document.getElementById('ScrambleWrapper-{{ section.id }}');
+      const titleWrapper = document.getElementById('TitleWrapper-{{ section.id }}');
+      
       const subtitleEl = document.getElementById('FlavorSubtitle-{{ section.id }}');
+      const subtitleWrapper = document.getElementById('SubtitleWrapper-{{ section.id }}');
+
+      // Visuals
       const heroImages = sectionContainer.querySelectorAll('.flavor-hero-img-wrapper');
       const splashImages = sectionContainer.querySelectorAll('.flavor-splash-image');
       const bgItems = sectionContainer.querySelectorAll('.flavor-bg-item'); 
-      const gridContainer = document.getElementById('GridContainer-{{ section.id }}');
       const floatingBtn = document.getElementById('FloatingCTA-{{ section.id }}');
 
-      // --- SMOOTH SCRAMBLE LOGIC ---
-      const chars = '!<>-_\\/[]{}—=+*^?#________'; 
-      
-      const scrambleText = (element, newText, isTitle = false) => {
-        const oldText = element.innerText;
-        // Calculation to prevent jump:
-        // 1. Get current height
-        const startHeight = element.offsetHeight;
-        
-        // 2. Temporarily set new text to measure it
-        element.innerText = newText;
-        const endHeight = element.offsetHeight;
-        
-        // 3. Set text back to old for animation
-        element.innerText = oldText;
-        
-        // 4. Lock wrapper height to the taller of the two
-        // This prevents the "going into other parts" issue on mobile
-        if(isTitle && scrambleWrapper) {
-            scrambleWrapper.style.minHeight = Math.max(startHeight, endHeight) + 'px';
-        }
+      // --- MODERN FADE SWITCH LOGIC ---
+      const modernTextSwitch = (element, wrapper, newText, delay = 0) => {
+        if(element.innerText === newText) return;
 
-        const length = Math.max(oldText.length, newText.length);
-        const promise = new Promise((resolve) => {
-          const queue = [];
-          for (let i = 0; i < length; i++) {
-            const from = oldText[i] || '';
-            const to = newText[i] || '';
-            // Longer start/end window for slower feel
-            const start = Math.floor(Math.random() * 30); 
-            const end = start + Math.floor(Math.random() * 30); 
-            queue.push({ from, to, start, end });
-          }
+        setTimeout(() => {
+          const startHeight = wrapper.offsetHeight;
+          wrapper.style.height = `${startHeight}px`;
+
+          element.classList.add('is-hidden');
           
-          let frame = 0;
-          let opacityVal = 0.4; // Start dim (Half Fade)
-
-          const update = () => {
-            let output = '';
-            let complete = 0;
-            for (let i = 0; i < length; i++) {
-              const { from, to, start, end } = queue[i];
-              let char = from;
-              if (frame >= end) {
-                char = to;
-                complete++;
-              } else if (frame >= start) {
-                const charIndex = Math.floor(Math.random() * chars.length);
-                char = chars[charIndex];
-              }
-              output += char;
-            }
-            
-            element.innerText = output;
-
-            // FADE EFFECT: Increase opacity as we get closer to completion
-            if(opacityVal < 1) {
-                opacityVal += 0.01; 
-                element.style.opacity = opacityVal;
-            }
-
-            if (complete === length) {
-              element.style.opacity = 1;
-              if(isTitle && scrambleWrapper) scrambleWrapper.style.minHeight = ''; // Unlock height
-              resolve();
-            } else {
-              frame++;
-              // Slow down the frame rate:
-              // setTimeout inside requestAnimationFrame adds drag
-              setTimeout(() => {
-                  requestAnimationFrame(update);
-              }, 15); // 15ms delay per frame = slower scramble
-            }
-          };
-          update();
-        });
-        return promise;
+          setTimeout(() => {
+              element.innerText = newText;
+              wrapper.style.height = 'auto';
+              const targetHeight = wrapper.offsetHeight;
+              wrapper.style.height = `${startHeight}px`;
+              void wrapper.offsetHeight; 
+              wrapper.style.height = `${targetHeight}px`;
+              element.classList.remove('is-hidden');
+          }, 350); 
+        }, delay);
       };
 
       const updateFloatingBtnPosition = (targetBtn, animate = true) => {
@@ -651,11 +616,14 @@
       };
 
       updateSplashStyles();
-      window.addEventListener('resize', updateSplashStyles);
       
       window.addEventListener('resize', () => {
         const activeBtn = sectionContainer.querySelector('.btn-flavor.selected');
         if(activeBtn) updateFloatingBtnPosition(activeBtn, false); 
+        
+        updateSplashStyles();
+        titleWrapper.style.height = 'auto';
+        subtitleWrapper.style.height = 'auto';
       });
 
       buttons.forEach(btn => {
@@ -664,14 +632,11 @@
           const newTitle = this.dataset.title;
           const newSubtitle = this.dataset.subtitle;
 
-          sectionContainer.style.setProperty('--theme-variant-color', this.dataset.colorPrimary);
+          // Set Color on the Card Module so children inherit
+          cardModule.style.setProperty('--theme-variant-color', this.dataset.colorPrimary);
 
-          // Reset opacity for the fade effect
-          titleEl.style.opacity = 0.4;
-          subtitleEl.style.opacity = 0.4;
-
-          if(titleEl.innerText !== newTitle) scrambleText(titleEl, newTitle, true);
-          if(subtitleEl.innerText !== newSubtitle) scrambleText(subtitleEl, newSubtitle, false);
+          modernTextSwitch(titleEl, titleWrapper, newTitle, 0);
+          modernTextSwitch(subtitleEl, subtitleWrapper, newSubtitle, 50);
 
           buttons.forEach(b => b.classList.remove('selected'));
           this.classList.add('selected');
@@ -693,9 +658,14 @@
         });
       });
 
+      // Init State
       const initialBtn = sectionContainer.querySelector('.btn-flavor.selected');
       if(initialBtn) {
         setTimeout(() => updateFloatingBtnPosition(initialBtn, true), 100);
+        
+        // Force BG Active (Safeguard)
+        const firstBg = sectionContainer.querySelector('.flavor-bg-item');
+        if(firstBg) firstBg.classList.add('is-active');
       }
     };
 
@@ -706,7 +676,7 @@
 
 {% schema %}
 {
-  "name": "Flavor Switcher v8.3",
+  "name": "Flavor Switcher v10.0",
   "settings": [
     {
       "type": "header",
@@ -989,9 +959,9 @@
         {
           "type": "color",
           "id": "color_accent",
-          "label": "Background Gradient Color",
-          "default": "#f0f0f0",
-          "info": "Make sure this is darker than the gray background!"
+          "label": "Glow/Light Leak Color",
+          "default": "#FF9980",
+          "info": "Pick a VIBRANT color. It will automatically fade out."
         },
         {
           "type": "header",
@@ -1111,7 +1081,7 @@
   ],
   "presets": [
     {
-      "name": "Flavor Switcher v8.3"
+      "name": "Flavor Switcher v10.0"
     }
   ]
 }
