@@ -26,9 +26,9 @@
   /* --- 1. BASE BACKGROUND LAYER --- */
   .flavor-section-bg {
     position: absolute;
-    inset: 0; /* Shorthand for top/left/right/bottom: 0 */
-    background-color: #e4e2e2;
-    z-index: 0; /* Lowest level */
+    inset: 0; 
+    background-color: {{ section.settings.section_bg_color }};
+    z-index: 0; 
 
     {% if section.settings.section_bg_image != blank %}
       background-image: url({{ section.settings.section_bg_image | image_url: width: 2000 }});
@@ -41,7 +41,7 @@
   .flavor-bg-stack {
     position: absolute;
     inset: 0;
-    z-index: 1; /* Sits on top of BG image, below content */
+    z-index: 1; 
     pointer-events: none;
   }
 
@@ -64,7 +64,7 @@
     left: 10%;
     width: 80%;
     height: 60%;
-    will-change: opacity, transform; /* Performance Hint */
+    will-change: opacity, transform;
 
     background:
       radial-gradient(
@@ -74,10 +74,8 @@
         transparent 75%
       );
 
-    filter: blur(60px); /* Reduced blur for performance */
+    filter: blur(60px);
     opacity: 0.6;
-    
-    /* Removed mix-blend-mode for better mobile performance */
     pointer-events: none;
   }
 
@@ -132,11 +130,8 @@
     width: 100%;
     order: 1; 
     position: relative;
-    z-index: 2; /* Increased Z-index to ensure it sits above background layers */
-    
-    /* UPDATED: Fixed height on mobile to ensure absolute children are visible */
+    z-index: 2; 
     height: 400px;
-    
     display: flex;
     justify-content: center;
     align-items: center;
@@ -277,7 +272,6 @@
     position: relative;
     z-index: 2; 
     width: auto;
-    /* UPDATED: Increased mobile height to 85% for better visibility */
     height: 85%; 
     max-height: 350px;
     opacity: 0;
@@ -301,7 +295,6 @@
     filter: drop-shadow(0 15px 15px rgba(0,0,0,0.05));
   }
 
-  /* Updated Active State to use Variable Opacity */
   .flavor-splash-image.is-active {
     opacity: var(--target-opacity, 1);
   }
@@ -322,7 +315,6 @@
     display: flex;
     justify-content: center;
     gap: 8px; 
-    /* Increased margin-top to push boxes down */
     margin-top: 40px; 
     padding-bottom: 60px; 
     position: relative;
@@ -335,7 +327,6 @@
       width: 100%;
       overflow-x: auto; 
       justify-content: flex-start;
-      /* Added top padding to prevent clipping on hover/shadow */
       padding: 15px 5px 60px 5px;
     }
     .btn-flavor {
@@ -351,7 +342,7 @@
     .flavor-grid {
       justify-content: flex-start;
       gap: 12px;
-      padding-top: 10px; /* Safety padding for desktop hover too */
+      padding-top: 10px; 
     }
     .btn-flavor {
       width: 90px;
@@ -422,13 +413,13 @@
     letter-spacing: 0.05em;
     opacity: 0;
     
-    /* UPDATED: Start position is now 20px DOWN (positive Y) so it moves UP */
-    transform: translateX(-50%) translateY(20px); 
+    /* Start position (Hidden State): slightly down */
+    transform: translateX(-50%) translateY(15px); 
     
-    /* UPDATED: Matched transition curve and speed to the Title (0.4s cubic-bezier) */
+    /* Transition: Opacity is quick, Transform is springy */
     transition: 
-      transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), 
-      opacity 0.4s ease;
+      transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
+      opacity 0.3s ease;
       
     pointer-events: none; 
     transform-origin: center top;
@@ -437,6 +428,7 @@
   .flavor-floating-cta.is-visible {
     opacity: 1;
     pointer-events: auto;
+    /* End position: Standard */
     transform: translateX(-50%) translateY(0); 
   }
 {%- endstyle -%}
@@ -447,17 +439,16 @@
 
 <div id="FlavorSection-{{ section.id }}">
   
-  <!-- 1. Base Gray Background (Now optionally an image) -->
+  <!-- 1. Base Background (Color + Image) -->
   <div class="flavor-section-bg"></div>
 
-  <!-- 2. New Glow Layer -->
+  <!-- 2. Glow Layer -->
   <div class="flavor-bg-stack">
     {%- for block in section.blocks -%}
       <div 
         class="flavor-bg-item {% if forloop.first %}is-active{% endif %}"
         data-block-id="{{ block.id }}"
       >
-        <!-- The Actual Glowing Orb -->
         <div
           class="flavor-bg-gradient"
           style="--glow-color: {{ block.settings.color_accent }};">
@@ -498,7 +489,14 @@
           {{ section.settings.text_flavors_label }}
         </div>
 
-        <div class="flavor-grid-container" id="GridContainer-{{ section.id }}">
+        <!-- 
+          Added data-floating-offset here to pass schema setting to JS 
+        -->
+        <div 
+          class="flavor-grid-container" 
+          id="GridContainer-{{ section.id }}"
+          data-floating-offset="{{ section.settings.btn_floating_offset }}"
+        >
           
           <div class="flavor-grid">
             {%- for block in section.blocks -%}
@@ -596,6 +594,7 @@
       
       const buttons = sectionContainer.querySelectorAll('.btn-flavor');
       const cardModule = sectionContainer.querySelector('.flavor-card-module');
+      const gridContainer = document.getElementById('GridContainer-{{ section.id }}');
 
       // Text Elements & Wrappers
       const titleEl = document.getElementById('FlavorTitle-{{ section.id }}');
@@ -640,26 +639,34 @@
         const btnWidth = targetBtn.offsetWidth;
         const btnHeight = targetBtn.offsetHeight;
 
+        // Get offset from Schema (default to 45 if missing)
+        const offsetSetting = parseInt(gridContainer.dataset.floatingOffset) || 45;
+
         const targetX = btnLeft + (btnWidth / 2);
-        // UPDATED: Added more spacing (+45) to move it down further
-        const targetY = btnTop + btnHeight + 45; 
+        const targetY = btnTop + btnHeight + offsetSetting; 
 
         const newUrl = targetBtn.dataset.productUrl;
         
         if(animate) {
+            // 1. Fade Out
             floatingBtn.classList.remove('is-visible');
-            floatingBtn.style.left = `${targetX}px`;
-            floatingBtn.style.top = `${targetY}px`;
             
-            if(newUrl) {
-                floatingBtn.href = newUrl;
+            // 2. Wait for fade out to start, then move
+            setTimeout(() => {
+                floatingBtn.style.left = `${targetX}px`;
+                floatingBtn.style.top = `${targetY}px`;
+                if(newUrl) floatingBtn.href = newUrl;
+
+                // 3. Fade In (small delay to ensure position is set)
                 setTimeout(() => {
                     floatingBtn.classList.add('is-visible');
                 }, 50);
-            }
+            }, 200); // 200ms delay gives it time to disappear before moving
         } else {
+            // Initial load or resize (no animation)
             floatingBtn.style.left = `${targetX}px`;
             floatingBtn.style.top = `${targetY}px`;
+            if(newUrl) floatingBtn.href = newUrl;
         }
       };
 
@@ -694,7 +701,6 @@
           const newTitle = this.dataset.title;
           const newSubtitle = this.dataset.subtitle;
 
-          // Set Color on the Card Module so children inherit
           cardModule.style.setProperty('--theme-variant-color', this.dataset.colorPrimary);
 
           modernTextSwitch(titleEl, titleWrapper, newTitle, 0);
@@ -723,9 +729,11 @@
       // Init State
       const initialBtn = sectionContainer.querySelector('.btn-flavor.selected');
       if(initialBtn) {
-        setTimeout(() => updateFloatingBtnPosition(initialBtn, true), 100);
+        setTimeout(() => {
+            updateFloatingBtnPosition(initialBtn, false);
+            floatingBtn.classList.add('is-visible');
+        }, 100);
         
-        // Force BG Active (Safeguard)
         const firstBg = sectionContainer.querySelector('.flavor-bg-item');
         if(firstBg) firstBg.classList.add('is-active');
       }
@@ -738,17 +746,24 @@
 
 {% schema %}
 {
-  "name": "Flavor Switcher v10.0",
+  "name": "Flavor Switcher v11.0",
   "settings": [
     {
       "type": "header",
       "content": "Global Layout"
     },
     {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section Background Color",
+      "default": "#e4e2e2",
+      "info": "Visible if no image is selected, or if image is transparent."
+    },
+    {
       "type": "image_picker",
       "id": "section_bg_image",
       "label": "Section Background Image",
-      "info": "Optional. Overrides the default gray background."
+      "info": "Optional. Layers on top of the background color."
     },
     {
       "type": "range",
@@ -789,6 +804,17 @@
         "id": "btn_text_label",
         "label": "Button Text",
         "default": "View Product"
+    },
+    {
+      "type": "range",
+      "id": "btn_floating_offset",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Vertical Distance from Icon",
+      "default": 45,
+      "info": "How far below the variety icon the button sits."
     },
     {
       "type": "color",
@@ -912,10 +938,6 @@
       "id": "grid_label_size_m",
       "label": "Size (Mobile)",
       "min": 8, "max": 24, "step": 1, "unit": "px", "default": 12
-    },
-    {
-      "type": "paragraph",
-      "content": "Independent Position (X/Y Offset)"
     },
     {
       "type": "range",
@@ -1159,7 +1181,7 @@
   ],
   "presets": [
     {
-      "name": "Flavor Switcher v10.0"
+      "name": "Flavor Switcher v11.0"
     }
   ]
 }
