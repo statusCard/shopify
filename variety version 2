@@ -24,30 +24,25 @@
   }
 
   /* --- 1. BASE BACKGROUND LAYER --- */
-.flavor-section-bg {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(-1 * {{ section.settings.padding_top }}px);
-  bottom: calc(-1 * {{ section.settings.padding_bottom }}px);
-  background-color: #e4e2e2;
-  z-index: 1;
+  .flavor-section-bg {
+    position: absolute;
+    inset: 0; /* Shorthand for top/left/right/bottom: 0 */
+    background-color: #e4e2e2;
+    z-index: 0; /* Lowest level */
 
-  {% if section.settings.section_bg_image != blank %}
-    background-image: url({{ section.settings.section_bg_image | image_url: width: 2000 }});
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-  {% endif %}
-}
+    {% if section.settings.section_bg_image != blank %}
+      background-image: url({{ section.settings.section_bg_image | image_url: width: 2000 }});
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    {% endif %}
+  }
 
   .flavor-bg-stack {
     position: absolute;
-    left: 0;
-    right: 0;
-    top: -{{ section.settings.padding_top }}px;
-    bottom: -{{ section.settings.padding_bottom }}px;
-    z-index: 2;
+    inset: 0;
+    z-index: 1; /* Sits on top of BG image, below content */
+    pointer-events: none;
   }
 
   /* --- 2. GLOW GRADIENT LAYER --- */
@@ -65,11 +60,11 @@
 
   .flavor-bg-gradient {
     position: absolute;
-    /* Hard limit the glow area */
     top: 20%;
     left: 10%;
     width: 80%;
     height: 60%;
+    will-change: opacity, transform; /* Performance Hint */
 
     background:
       radial-gradient(
@@ -79,12 +74,10 @@
         transparent 75%
       );
 
-    filter: blur(90px);
-    opacity: 0.7;
-
-    /* NO blend modes */
-    mix-blend-mode: multiply;
-
+    filter: blur(60px); /* Reduced blur for performance */
+    opacity: 0.6;
+    
+    /* Removed mix-blend-mode for better mobile performance */
     pointer-events: none;
   }
 
@@ -140,7 +133,8 @@
     order: 1; 
     position: relative;
     z-index: 1; 
-    min-height: 350px; 
+    /* Increased mobile height to ensure visibility */
+    min-height: 400px; 
     height: auto;
     display: flex;
     justify-content: center;
@@ -269,6 +263,7 @@
     opacity: 0;
     transition: opacity var(--transition-speed) ease, transform 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28);
     pointer-events: none;
+    will-change: transform, opacity;
   }
   
   .flavor-splash-image img {
@@ -281,11 +276,21 @@
     position: relative;
     z-index: 2; 
     width: auto;
-    height: 80%;
+    /* Adjusted mobile height logic */
+    height: 70%; 
+    max-height: 350px;
     opacity: 0;
     transform: scale(0.9);
     transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease;
     position: absolute; 
+    will-change: transform, opacity;
+  }
+
+  @media(min-width: 1024px) {
+    .flavor-hero-img-wrapper {
+      height: 80%;
+      max-height: none;
+    }
   }
 
   .flavor-hero-img {
@@ -316,7 +321,8 @@
     display: flex;
     justify-content: center;
     gap: 8px; 
-    margin-top: 25px;
+    /* Increased margin-top to push boxes down */
+    margin-top: 40px; 
     padding-bottom: 60px; 
     position: relative;
     z-index: 20; 
@@ -328,7 +334,8 @@
       width: 100%;
       overflow-x: auto; 
       justify-content: flex-start;
-      padding-left: 5px; 
+      /* Added top padding to prevent clipping on hover/shadow */
+      padding: 15px 5px 60px 5px;
     }
     .btn-flavor {
       flex: 0 0 auto; 
@@ -343,6 +350,7 @@
     .flavor-grid {
       justify-content: flex-start;
       gap: 12px;
+      padding-top: 10px; /* Safety padding for desktop hover too */
     }
     .btn-flavor {
       width: 90px;
