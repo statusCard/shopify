@@ -24,23 +24,22 @@
   }
 
   /* --- 1. BASE BACKGROUND LAYER --- */
-  .flavor-section-bg {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: -{{ section.settings.padding_top }}px;
-    bottom: -{{ section.settings.padding_bottom }}px;
-    background-color: #e4e2e2;
-    z-index: 1;
-    
-    /* New Background Image Logic */
-    {% if section.settings.section_bg_image != blank %}
-      background-image: url({{ section.settings.section_bg_image | image_url: width: 2000 }});
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    {% endif %}
-  }
+.flavor-section-bg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(-1 * {{ section.settings.padding_top }}px);
+  bottom: calc(-1 * {{ section.settings.padding_bottom }}px);
+  background-color: #e4e2e2;
+  z-index: 1;
+
+  {% if section.settings.section_bg_image != blank %}
+    background-image: url({{ section.settings.section_bg_image | image_url: width: 2000 }});
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  {% endif %}
+}
 
   .flavor-bg-stack {
     position: absolute;
