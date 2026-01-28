@@ -5,7 +5,7 @@
     position: relative;
     overflow: hidden;
     padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
-    background-color: transparent; /* We handle BG in a separate layer now */
+    background-color: transparent; 
 
     /* Variables */
     --transition-speed: 0.6s;
@@ -24,44 +24,67 @@
   }
 
   /* --- 1. BASE BACKGROUND LAYER (The Gray) --- */
-  .flavor-section-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #e4e2e2; /* Your light gray base */
-    z-index: 1;
-  }
-
-/* --- 2. GLOW/GRADIENT LAYER --- */
-.flavor-bg-stack {
+.flavor-section-bg {
   position: absolute;
-  top: 0;
   left: 0;
-  width: 100%;
-  height: 100%; /* Ensures it fills the section */
-  z-index: 1; 
-  pointer-events: none;
-  overflow: hidden;
+  right: 0;
+  top: -{{ section.settings.padding_top }}px;
+  bottom: -{{ section.settings.padding_bottom }}px;
+  background-color: #e4e2e2;
+  z-index: 1;
 }
 
+.flavor-bg-stack {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -{{ section.settings.padding_top }}px;
+  bottom: -{{ section.settings.padding_bottom }}px;
+  z-index: 2;
+}
+
+  /* --- 2. GLOW GRADIENT LAYER --- */
 .flavor-bg-item {
   position: absolute;
-  top: 0;   /* Changed from 50% for testing */
-  left: 0;  /* Changed from 50% for testing */
-  width: 100%; 
-  height: 100%; 
-  opacity: 1 !important; /* FORCING VISIBILITY FOR DEBUGGING */
-  transition: opacity 1s ease-in-out;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  pointer-events: none;
+}
+
+.flavor-bg-item.is-active {
+  opacity: 1;
+}
+
+.flavor-bg-gradient {
+  position: absolute;
   
-  /* Remove blur for now to see the shape */
-  /* filter: blur(100px); */
-  
-  will-change: opacity;
+
+  /* Hard limit the glow area */
+  top: 20%;
+  left: 10%;
+  width: 80%;
+  height: 60%;
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      color-mix(in srgb, var(--glow-color) 65%, transparent) 0%,
+      color-mix(in srgb, var(--glow-color) 35%, transparent) 45%,
+      transparent 75%
+    );
+
+  filter: blur(90px);
+  opacity: 0.7;
+
+  /* NO blend modes */
+  mix-blend-mode: multiply;
+
+  pointer-events: none;
 }
 
   /* --- 3. CONTENT CONTAINER --- */
+  
   .flavor-card-module {
     position: relative;
     z-index: 5; /* Ensures content is above the glow */
@@ -88,6 +111,13 @@
     position: relative;
     z-index: 10; 
   }
+
+  @media (min-width: 1024px) {
+  .flavor-bg-gradient {
+    left: 30%;   /* move gradient to the right */
+    width: 60%;  /* shrink width so fade still works nicely on the right */
+  }
+}
 
   @media (min-width: 1024px) {
     .flavor-content {
@@ -396,18 +426,26 @@
 
 <div id="FlavorSection-{{ section.id }}">
   
+  <!-- 1. Base Gray Background -->
   <div class="flavor-section-bg"></div>
 
+  <!-- 2. New Glow Layer -->
   <div class="flavor-bg-stack">
     {%- for block in section.blocks -%}
       <div 
-  class="flavor-bg-item {% if forloop.first %}is-active{% endif %}"
-  data-block-id="{{ block.id }}"
-  style="background: radial-gradient(circle at 50% 50%, {{ block.settings.color_accent }} 0%, transparent 80%);"
-  ></div>
+        class="flavor-bg-item {% if forloop.first %}is-active{% endif %}"
+        data-block-id="{{ block.id }}"
+      >
+        <!-- The Actual Glowing Orb -->
+        <div
+  class="flavor-bg-gradient"
+  style="--glow-color: {{ block.settings.color_accent }};">
+</div>
+      </div>
     {%- endfor -%}
   </div>
 
+  <!-- 3. Main Content -->
   <div 
     class="flavor-card-module"
     style="
