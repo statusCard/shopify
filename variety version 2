@@ -132,10 +132,11 @@
     width: 100%;
     order: 1; 
     position: relative;
-    z-index: 1; 
-    /* Increased mobile height to ensure visibility */
-    min-height: 400px; 
-    height: auto;
+    z-index: 2; /* Increased Z-index to ensure it sits above background layers */
+    
+    /* UPDATED: Fixed height on mobile to ensure absolute children are visible */
+    height: 400px;
+    
     display: flex;
     justify-content: center;
     align-items: center;
@@ -276,8 +277,8 @@
     position: relative;
     z-index: 2; 
     width: auto;
-    /* Adjusted mobile height logic */
-    height: 70%; 
+    /* UPDATED: Increased mobile height to 85% for better visibility */
+    height: 85%; 
     max-height: 350px;
     opacity: 0;
     transform: scale(0.9);
@@ -420,10 +421,15 @@
     white-space: nowrap;
     letter-spacing: 0.05em;
     opacity: 0;
-    transform: translateX(-50%) translateY(-20px); 
+    
+    /* UPDATED: Start position is now 20px DOWN (positive Y) so it moves UP */
+    transform: translateX(-50%) translateY(20px); 
+    
+    /* UPDATED: Matched transition curve and speed to the Title (0.4s cubic-bezier) */
     transition: 
-      transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-      opacity 0.3s ease;
+      transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), 
+      opacity 0.4s ease;
+      
     pointer-events: none; 
     transform-origin: center top;
   }
@@ -635,6 +641,7 @@
         const btnHeight = targetBtn.offsetHeight;
 
         const targetX = btnLeft + (btnWidth / 2);
+        // UPDATED: Added more spacing (+45) to move it down further
         const targetY = btnTop + btnHeight + 45; 
 
         const newUrl = targetBtn.dataset.productUrl;
