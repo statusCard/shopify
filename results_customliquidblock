@@ -1,0 +1,311 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&display=swap');
+
+  /* Main Card Container */
+  .vitality-card {
+    background: #none;
+    border: 0px solid #121212;
+    padding: 15px 20px; /* Reduced padding slightly */
+    font-family: 'Anonymous Pro', monospace;
+    color: #121212;
+    max-width: 800px;
+    margin: 20px auto;
+    box-sizing: border-box;
+    overflow: hidden;
+    border-radius: 4px;
+  }
+
+  /* Header Section */
+  .vitality-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px; 
+    flex-wrap: nowrap;
+    gap: 10px;
+    border-bottom: 2px solid #121212;
+    padding-bottom: 8px;
+  }
+
+  .vitality-header h2 {
+    margin: 0;
+    font-size: 18px; /* SCALED DOWN from 22px */
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #000;
+    line-height: 1;
+    letter-spacing: -0.5px;
+  }
+
+  /* Stats Grid */
+  .vitality-stats-grid {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .vitality-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 22%;
+    min-width: 70px;
+  }
+
+  .vitality-stat-top {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    margin-bottom: 3px;
+  }
+
+  .vitality-percent {
+    font-size: 20px; /* SCALED DOWN from 24px */
+    font-weight: 700;
+    font-family: 'Anonymous Pro', monospace;
+    line-height: 1;
+    color: #121212;
+  }
+  
+  .vitality-unit {
+    font-size: 11px; /* SCALED DOWN from 14px */
+    font-weight: 400;
+  }
+
+  .vitality-stat-label {
+    font-size: 10px; /* SCALED DOWN from 11px */
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #444;
+    line-height: 1.2;
+    border-top: 1px solid #ccc;
+    padding-top: 4px;
+    width: 100%;
+    letter-spacing: -0.3px;
+  }
+
+  /* Disclaimer Text */
+  .vitality-disclaimer {
+    font-size: 9px; /* SCALED DOWN from 10px */
+    color: #666;
+    margin-bottom: 10px;
+    line-height: 1.2;
+    margin-top: 10px;
+  }
+
+  /* Accordion / Bottom Section */
+  .vitality-accordion-wrapper {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding-top: 8px;
+  }
+
+  .vitality-bottom-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+    width: 100%;
+  }
+
+  .vitality-accordion-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 11px; /* SCALED DOWN from 13px */
+    text-transform: uppercase;
+    user-select: none;
+    background: none;
+    border: none;
+    padding: 4px 0;
+    color: #000;
+    text-align: right;
+    font-family: 'Anonymous Pro', monospace;
+    width: 100%;
+  }
+
+  .vitality-chevron {
+    width: 10px; /* SCALED DOWN */
+    height: 10px;
+    transition: transform 0.3s ease;
+  }
+
+  .vitality-accordion-trigger.active .vitality-chevron {
+    transform: rotate(180deg);
+  }
+
+  .vitality-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    margin-top: 0;
+    text-align: left;
+  }
+    
+  .vitality-accordion-content.open {
+    margin-top: 8px;
+    border-top: 1px dashed #999;
+    padding-top: 8px;
+  }
+
+  .vitality-accordion-content p {
+    font-size: 11px; /* SCALED DOWN from 13px */
+    line-height: 1.5;
+    color: #333;
+    margin: 0;
+  }
+
+  /* Footer Seals */
+  .vitality-footer-icons {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+    margin-right: 15px;
+  }
+
+  .vitality-footer-icons svg {
+    width: 20px; /* SCALED DOWN from 24px */
+    height: 20px;
+    opacity: 0.8;
+  }
+
+  /* Mobile Tweaks */
+  @media (max-width: 600px) {
+    .vitality-stat-item {
+      width: 45%;
+      margin-bottom: 12px;
+    }
+  }
+</style>
+
+<div class="vitality-card">
+    
+  <div class="vitality-header">
+    <h2></h2>
+  </div>
+
+  <div class="vitality-stats-grid" id="vitality-stats-container">
+    
+    <div class="vitality-stat-item">
+      <div class="vitality-stat-top">
+        <span class="vitality-percent">1.97</span>
+        <span class="vitality-unit">oz</span>
+      </div>
+      <span class="vitality-stat-label">56g Jar Size</span>
+    </div>
+
+    <div class="vitality-stat-item">
+      <div class="vitality-stat-top">
+        <span class="vitality-unit">$</span>
+        <span class="vitality-percent">0.42</span>
+      </div>
+      <span class="vitality-stat-label">Cost Per Session</span>
+    </div>
+
+    <div class="vitality-stat-item">
+      <div class="vitality-stat-top">
+        <span class="vitality-percent" data-target="100">0</span>
+        <span class="vitality-unit">%</span>
+      </div>
+      <span class="vitality-stat-label">Plant-Based</span>
+    </div>
+
+    <div class="vitality-stat-item">
+      <div class="vitality-stat-top">
+        <span class="vitality-percent">0</span>
+        <span class="vitality-unit">%</span>
+      </div>
+      <span class="vitality-stat-label">Nicotine & Tob.</span>
+    </div>
+  </div>
+
+  <div class="vitality-accordion-wrapper">
+      
+    <div class="vitality-bottom-controls">
+        <div class="vitality-footer-icons">
+           <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.5">
+             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+           </svg>
+           <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.5">
+             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+           </svg>
+        </div>
+
+        <div style="flex: 1;">
+            <button class="vitality-accordion-trigger" onclick="toggleVitalityAccordion(this)">
+              Why Nightfall Haze?
+              <svg class="vitality-chevron" viewBox="0 0 10 6" fill="currentColor">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.354.646a.5.5 0 00-.708 0L5 4.293 1.354.646a.5.5 0 00-.708.708l4 4a.5.5 0 00.708 0l4-4a.5.5 0 000-.708z"></path>
+              </svg>
+            </button>
+             
+            <div class="vitality-accordion-content">
+              <p><strong>Unwind without the fog.</strong> Nightfall Haze is a premium herbal blend crafted for relaxation and sleep. Featuring organic Mullein, Lavender, and Mugwort, it delivers a smooth, full-bodied smoke that relaxes the body and enhances dream recall—all while costing 80% less than traditional habits.</p>
+            </div>
+        </div>
+    </div>
+
+  </div>
+    
+  <div class="vitality-disclaimer">
+    *Price per session based on average 0.7g roll usage.
+  </div>
+
+</div>
+
+<script>
+  // Accordion Logic
+  function toggleVitalityAccordion(button) {
+    button.classList.toggle("active");
+    var content = button.nextElementSibling; 
+     
+    if (content.style.maxHeight) {
+      content.style.maxHeight = null;
+      content.classList.remove("open");
+    } else {
+      content.classList.add("open");
+      content.style.maxHeight = content.scrollHeight + "px";
+    }
+  }
+
+  // Count Up Animation Logic
+  document.addEventListener("DOMContentLoaded", () => {
+    const statsContainer = document.getElementById('vitality-stats-container');
+    const counters = document.querySelectorAll('.vitality-percent[data-target]');
+    let hasAnimated = false;
+
+    const runAnimation = () => {
+      counters.forEach(counter => {
+        const target = +counter.getAttribute('data-target');
+        const speed = 25; 
+        
+        const updateCount = () => {
+            const current = +counter.innerText;
+            const increment = target / speed;
+
+            if (current < target) {
+                counter.innerText = Math.ceil(current + increment);
+                setTimeout(updateCount, 30);
+            } else {
+                counter.innerText = target;
+            }
+        };
+        updateCount();
+      });
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        if(entries[0].isIntersecting && !hasAnimated) {
+            runAnimation();
+            hasAnimated = true;
+        }
+    }, { threshold: 0.3 });
+
+    observer.observe(statsContainer);
+  });
+</script>
