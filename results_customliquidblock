@@ -79,9 +79,8 @@
     font-weight: 700;
     text-transform: uppercase;
     color: #444;
-    line-height: 1.2;
-    border-top: 1px solid #ccc;
-    padding-top: 4px;
+    line-height: 1;
+    padding-top: 0px;
     width: 100%;
     letter-spacing: -0.3px;
   }
