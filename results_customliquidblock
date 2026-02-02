@@ -3,9 +3,9 @@
 
   /* Main Card Container */
   .vitality-card {
-    background: #none;
+    background: transparent;
     border: 0px solid #121212;
-    padding: 15px 20px; /* Reduced padding slightly */
+    padding: 0px 0px;
     font-family: 'Anonymous Pro', monospace;
     color: #121212;
     max-width: 800px;
@@ -29,7 +29,7 @@
 
   .vitality-header h2 {
     margin: 0;
-    font-size: 18px; /* SCALED DOWN from 22px */
+    font-size: 18px; 
     text-transform: uppercase;
     font-weight: 700;
     color: #000;
@@ -62,20 +62,20 @@
   }
 
   .vitality-percent {
-    font-size: 20px; /* SCALED DOWN from 24px */
+    font-size: 20px; 
     font-weight: 700;
     font-family: 'Anonymous Pro', monospace;
-    line-height: 1;
+    line-height: ;
     color: #121212;
   }
-  
+   
   .vitality-unit {
-    font-size: 11px; /* SCALED DOWN from 14px */
+    font-size: 11px; 
     font-weight: 400;
   }
 
   .vitality-stat-label {
-    font-size: 10px; /* SCALED DOWN from 11px */
+    font-size: 10px; 
     font-weight: 700;
     text-transform: uppercase;
     color: #444;
@@ -88,7 +88,7 @@
 
   /* Disclaimer Text */
   .vitality-disclaimer {
-    font-size: 9px; /* SCALED DOWN from 10px */
+    font-size: 9px; 
     color: #666;
     margin-bottom: 10px;
     line-height: 1.2;
@@ -117,7 +117,7 @@
     gap: 8px;
     cursor: pointer;
     font-weight: 700;
-    font-size: 11px; /* SCALED DOWN from 13px */
+    font-size: 11px; 
     text-transform: uppercase;
     user-select: none;
     background: none;
@@ -130,7 +130,7 @@
   }
 
   .vitality-chevron {
-    width: 10px; /* SCALED DOWN */
+    width: 10px; 
     height: 10px;
     transition: transform 0.3s ease;
   }
@@ -154,7 +154,7 @@
   }
 
   .vitality-accordion-content p {
-    font-size: 11px; /* SCALED DOWN from 13px */
+    font-size: 11px; 
     line-height: 1.5;
     color: #333;
     margin: 0;
@@ -169,7 +169,7 @@
   }
 
   .vitality-footer-icons svg {
-    width: 20px; /* SCALED DOWN from 24px */
+    width: 20px; 
     height: 20px;
     opacity: 0.8;
   }
@@ -190,7 +190,6 @@
   </div>
 
   <div class="vitality-stats-grid" id="vitality-stats-container">
-    
     <div class="vitality-stat-item">
       <div class="vitality-stat-top">
         <span class="vitality-percent">1.97</span>
@@ -225,7 +224,6 @@
   </div>
 
   <div class="vitality-accordion-wrapper">
-      
     <div class="vitality-bottom-controls">
         <div class="vitality-footer-icons">
            <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.5">
@@ -237,33 +235,28 @@
         </div>
 
         <div style="flex: 1;">
-            <button class="vitality-accordion-trigger" onclick="toggleVitalityAccordion(this)">
-              Why Nightfall Haze?
+            <button class="vitality-accordion-trigger" id="vitality-trigger" onclick="toggleVitalityAccordion(this)">
               <svg class="vitality-chevron" viewBox="0 0 10 6" fill="currentColor">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M9.354.646a.5.5 0 00-.708 0L5 4.293 1.354.646a.5.5 0 00-.708.708l4 4a.5.5 0 00.708 0l4-4a.5.5 0 000-.708z"></path>
               </svg>
             </button>
              
             <div class="vitality-accordion-content">
-              <p><strong>Unwind without the fog.</strong> Nightfall Haze is a premium herbal blend crafted for relaxation and sleep. Featuring organic Mullein, Lavender, and Mugwort, it delivers a smooth, full-bodied smoke that relaxes the body and enhances dream recall—all while costing 80% less than traditional habits.</p>
+              <p id="vitality-desc"></p>
             </div>
         </div>
     </div>
-
   </div>
     
   <div class="vitality-disclaimer">
     *Price per session based on average 0.7g roll usage.
   </div>
-
 </div>
 
 <script>
-  // Accordion Logic
   function toggleVitalityAccordion(button) {
     button.classList.toggle("active");
     var content = button.nextElementSibling; 
-     
     if (content.style.maxHeight) {
       content.style.maxHeight = null;
       content.classList.remove("open");
@@ -273,8 +266,47 @@
     }
   }
 
-  // Count Up Animation Logic
   document.addEventListener("DOMContentLoaded", () => {
+    const currentPath = window.location.href.toLowerCase();
+    const triggerEl = document.getElementById('vitality-trigger');
+    const descEl = document.getElementById('vitality-desc');
+    const chevron = `<svg class="vitality-chevron" viewBox="0 0 10 6" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M9.354.646a.5.5 0 00-.708 0L5 4.293 1.354.646a.5.5 0 00-.708.708l4 4a.5.5 0 00.708 0l4-4a.5.5 0 000-.708z"></path></svg>`;
+
+    const productContent = {
+        'lunardrift': {
+            title: 'Why Lunar Drift?',
+            text: '<strong>Drift into stillness.</strong> Lunar Drift is a calming botanical blend designed for peaceful nights. Featuring Blue Lotus, Chamomile, and Passionflower, it offers a gentle, floral smoke that quietens the mind and supports deep, natural rest.'
+        },
+        'etherbloom': {
+            title: 'Why Ether Bloom?',
+            text: '<strong>Awaken your clarity.</strong> Ether Bloom is a vibrant, aromatic blend created for focus and creative flow. With Rose Petals, Peppermint, and Damiana, it provides a crisp and refreshing experience that clears the mental fog.'
+        },
+        'celestialglow': {
+            title: 'Why Celestial Glow?',
+            text: '<strong>Embrace the warmth.</strong> Celestial Glow is a balanced herbal blend crafted for mood elevation and social ease. Using Calendula, Raspberry Leaf, and Lemon Balm, it delivers a smooth, earthy profile that promotes a bright, grounded state of being.'
+        },
+        'nightfallhaze': {
+            title: 'Why Nightfall Haze?',
+            text: '<strong>Unwind without the fog.</strong> Nightfall Haze is a premium herbal blend crafted for relaxation and sleep. Featuring organic Mullein, Lavender, and Mugwort, it delivers a smooth, full-bodied smoke that relaxes the body and enhances dream recall.'
+        }
+    };
+
+    // Default Fallback
+    let activeData = productContent['nightfallhaze'];
+
+    // Match based on URL
+    for (const key in productContent) {
+        if (currentPath.includes(key)) {
+            activeData = productContent[key];
+            break;
+        }
+    }
+
+    // Immediate Injection
+    if (triggerEl) triggerEl.innerHTML = activeData.title + ' ' + chevron;
+    if (descEl) descEl.innerHTML = activeData.text;
+
+    // Stats Animation
     const statsContainer = document.getElementById('vitality-stats-container');
     const counters = document.querySelectorAll('.vitality-percent[data-target]');
     let hasAnimated = false;
@@ -283,11 +315,9 @@
       counters.forEach(counter => {
         const target = +counter.getAttribute('data-target');
         const speed = 25; 
-        
         const updateCount = () => {
             const current = +counter.innerText;
             const increment = target / speed;
-
             if (current < target) {
                 counter.innerText = Math.ceil(current + increment);
                 setTimeout(updateCount, 30);
@@ -306,6 +336,6 @@
         }
     }, { threshold: 0.3 });
 
-    observer.observe(statsContainer);
+    if(statsContainer) observer.observe(statsContainer);
   });
 </script>
