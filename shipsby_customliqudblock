@@ -1,0 +1,137 @@
+{% assign today_date = 'now' | date: '%s' %}
+{% assign early_delivery = today_date | plus: 604800 | date: '%b %-d' %}
+{% assign free_shipping_cad = 50 %}
+
+{% assign country_code = localization.country.iso_code | default: 'CA' %}
+{% assign country_flag = country_code | downcase %}
+
+<style>
+.shipping-estimate {
+  display: flex;
+  align-items: center; /* vertical alignment across dot + text */
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 4px 0 16px;
+  box-sizing: border-box;
+  flex-wrap: nowrap;
+}
+
+.shipping-estimate__delivery {
+  display: flex;
+  align-items: center; /* align dot with text baseline */
+  gap: 6px;
+}
+
+.shipping-estimate__icon {
+  display: flex;
+  align-items: center; /* center dot vertically with text */
+}
+
+.shipping-estimate__icon .pulse-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #00B67A;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+}
+
+.pulse-dot::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #00B67A;
+  animation: pulse 1.5s infinite;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  70% { transform: scale(2); opacity: 0; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+.shipping-estimate__date {
+  font-weight: 500;
+}
+
+.shipping-estimate__free {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-size: 15px;
+  line-height: 18px;
+  color: #1A1A1A;
+}
+
+.shipping-estimate__flag {
+  width: 14px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.shipping-estimate__free span {
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 15px;
+  text-transform: uppercase;
+  background: linear-gradient(87.03deg, #043515, #115e08, #0d9f07);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+
+
+/* mobile adjustments */
+@media (max-width: 639px) {
+  .shipping-estimate {
+    gap: 6px;
+    padding: 4px 6px 12px;
+    flex-wrap: nowrap;    /* keep delivery + free shipping in a single row */
+    overflow-x: auto;     /* allow horizontal scroll if needed */
+  }
+
+  .shipping-estimate__delivery,
+  .shipping-estimate__free {
+    font-size: 11px;
+    line-height: 13px;
+    white-space: nowrap;  /* prevent wrapping */
+    flex-shrink: 0;       /* prevent flex items from shrinking too much */
+  }
+
+  .shipping-estimate__free span {
+    font-size: 10px;
+  }
+
+  /* hide scrollbar */
+  .shipping-estimate::-webkit-scrollbar { display: none; }
+  .shipping-estimate { -ms-overflow-style: none; scrollbar-width: none; }
+}
+</style>
+
+<div class="shipping-estimate">
+  <div class="shipping-estimate__delivery">
+    <span class="shipping-estimate__icon"><span class="pulse-dot"></span></span>
+    <span>Delivered by <span class="shipping-estimate__date">{{ early_delivery }}</span></span>
+  </div>
+
+  <div class="shipping-estimate__free">
+    <img 
+      src="https://flagcdn.com/w20/{{ country_flag }}.png"
+      alt="{{ country_code }} Flag"
+      class="shipping-estimate__flag"
+      width="14"
+      height="10"
+      loading="lazy"
+    >
+    <span>FREE Shipping over ${{ free_shipping_cad }} CAD to {{ country_code }}</span>
+  </div>
+</div>
