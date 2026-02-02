@@ -1,0 +1,821 @@
+<div class="faq-section" id="faq-section-{{ section.id }}">
+  <div class="faq-container">
+    {% if section.settings.show_title %}
+      <div class="faq-section-image-wrapper">
+        <img 
+          src="https://cdn.shopify.com/s/files/1/0697/1880/2532/files/STICKE32.png?v=1758893210" 
+          alt="FAQ Decorative Image" 
+          class="faq-section-image"
+        >
+      </div>
+      <h2 class="faq-title">{{ section.settings.section_title }}</h2>
+    {% endif %}
+
+    <!-- FAQ Items -->
+    <div class="faq-list">
+      {% for block in section.blocks %}
+        {% if block.type == 'faq_item' %}
+          <div class="faq-item" data-faq-item>
+            <button 
+              class="faq-question" 
+              aria-expanded="false" 
+              aria-controls="faq-answer-{{ forloop.index }}"
+              data-faq-toggle
+              tabindex="0"
+            >
+              <span class="faq-question-text">{{ block.settings.question }}</span>
+              
+              <!-- Icon/Arrow -->
+              <span class="faq-icon">
+                {% if block.settings.custom_icon %}
+                  <img 
+                    src="{{ block.settings.custom_icon | img_url: '24x24' }}" 
+                    alt="Toggle FAQ" 
+                    class="faq-custom-icon"
+                  >
+                {% else %}
+                  <!-- FULL original conditional SVG code -->
+                  {% assign question_lower = block.settings.question | downcase %}
+                  {% if question_lower contains 'cut back' or question_lower contains 'nicotine products' %}
+                    <svg class="faq-arrow" width="24" height="24" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M18 19V22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M18 16C18 15 17 14 15 14C14.6978 14 14.355 14 14.0002 14C12.3434 14 11 12.6569 11 11V8.5C11 7.11929 12.1193 6 13.5 6V6H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M22 16C22 11.5 20 10.5 18 10C20 9.5 22 9 22 6C22 3 19.5 2 18 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M22 19V22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <rect x="2" y="19" width="12" height="3" rx="0.6" stroke="currentColor" stroke-width="1.5"></rect>
+                    </svg>
+                  {% elsif question_lower contains 'nicotine' and question_lower contains 'tobacco' %}
+                    <svg class="faq-arrow" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M15 12V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M15 9C15 8 14.2857 7 12.8571 7V7C11.2792 7 10 5.72081 10 4.14286V3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M18 9L18 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M18 12V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M15 15H6.6C6.26863 15 6 14.7314 6 14.4V12.6C6 12.2686 6.26863 12 6.6 12H12" stroke="currentColor" stroke-width="1.5"></path>
+                      <path d="M5 5L19 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                  {% elsif question_lower contains 'harsh' %}
+                    {% if question_lower contains 'throat' or question_lower contains 'lungs' %}
+                      <svg class="faq-arrow" width="24" height="24" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 15C5.48276 15 7.34483 12 7.34483 12C7.34483 12 9.2069 15 11.6897 15C14.1724 15 16.6552 12 16.6552 12C16.6552 12 19.1379 15 21 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M3 20C5.48276 20 7.34483 17 7.34483 17C7.34483 17 9.2069 20 11.6897 20C14.1724 20 16.6552 17 16.6552 17C16.6552 17 19.1379 20 21 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M19 10C19 6.13401 15.866 3 12 3C8.13401 3 5 6.13401 5 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      </svg>
+                    {% else %}
+                      <svg class="faq-arrow" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 12L2 6h12l-6 6z"/>
+                      </svg>
+                    {% endif %}
+                  {% elsif question_lower contains 'expire' %}
+                    <svg class="faq-arrow" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M21.9999 16C21.9999 10.4772 17.5228 6 11.9999 6C7.89931 6 4.37514 8.46819 2.83203 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 3"></path>
+                      <path d="M2 17C2.55228 17 3 16.5523 3 16C3 15.4477 2.55228 15 2 15C1.44772 15 1 15.4477 1 16C1 16.5523 1.44772 17 2 17Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M2 16H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M12 17C12.5523 17 13 16.5523 13 16C13 15.4477 12.5523 15 12 15C11.4477 15 11 15.4477 11 16C11 16.5523 11.4477 17 12 17Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                  {% elsif question_lower contains 'feel like' %}
+                    <svg class="faq-arrow" width="24" height="24" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M14.5714 15.0036L15.4286 16.8486C15.4286 16.8486 19.2857 17.6678 19.2857 19.6162C19.2857 21 17.5714 21 17.5714 21H13L10.75 19.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M9.42864 15.0036L8.5715 16.8486C8.5715 16.8486 4.71436 17.6678 4.71436 19.6162C4.71436 21 6.42864 21 6.42864 21H8.50007L10.7501 19.75L13.5001 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M3 15.9261C3 15.9261 5.14286 15.4649 6.42857 15.0036C7.71429 8.54595 11.5714 9.00721 12 9.00721C12.4286 9.00721 16.2857 8.54595 17.5714 15.0036C18.8571 15.4649 21 15.9261 21 15.9261" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M12 7C13.1046 7 14 6.10457 14 5C14 3.89543 13.1046 3 12 3C10.8954 3 10 3.89543 10 5C10 6.10457 10.8954 7 12 7Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                  {% elsif question_lower contains 'cannabis' %}
+                    <svg class="faq-arrow" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3 12C3.00015 8.14286 4.28571 3 6.85714 3C10.7143 2.9999 13.2857 21 17.1429 21C19.7143 21 21 15.8571 21 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M3 12H5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M19 12H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M15.5 12H16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M7.5 12H8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                  {% elsif question_lower contains 'why use' or question_lower contains 'how do i use' %}
+                    <svg class="faq-arrow" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M8 12H17M8 12L6 10H2L4 12L2 14H6L8 12ZM17 12L15 10M17 12L15 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M16 22.5C18.7614 22.5 21 17.799 21 12C21 6.20101 18.7614 1.5 16 1.5C13.2386 1.5 11 6.20101 11 12C11 17.799 13.2386 22.5 16 22.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                  {% elsif question_lower contains 'start with' %}
+                    <svg class="faq-arrow" width="24" height="24" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 18L12 12M12 12V3.40992C12 2.97917 12.4404 2.68876 12.8364 2.85844L21.2803 6.47729C21.7549 6.68065 21.7681 7.34854 21.302 7.5705L12 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M12 22C15.866 22 19 20.433 19 18.5C19 16.567 15.866 15 12 15C8.13401 15 5 16.567 5 18.5C5 20.433 8.13401 22 12 22Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                  {% else %}
+                    <!-- Default arrow for non-matching questions -->
+                    <svg class="faq-arrow" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                      <path d="M8 12L2 6h12l-6 6z"/>
+                    </svg>
+                  {% endif %}
+                {% endif %}
+              </span>
+            </button>
+            
+            <div 
+              class="faq-answer" 
+              id="faq-answer-{{ forloop.index }}"
+              data-faq-content
+              aria-hidden="true"
+            >
+              <div class="faq-answer-inner">
+                {{ block.settings.answer }}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<style>
+/* Decorative image above FAQ title */
+#faq-section-{{ section.id }} .faq-section-image-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: -60px;
+  pointer-events: none;
+  z-index: 1;
+}
+#faq-section-{{ section.id }} .faq-section-image {
+  width: auto;
+  height: auto;
+  max-width: 300px;
+  transform: translateY(-50%) scale(1.15);
+  transition: transform 0.3s ease;
+}
+@media (max-width: 768px) {
+  #faq-section-{{ section.id }} .faq-section-image {
+    transform: translateY(-25%) scale(0.9);
+  }
+  #faq-section-{{ section.id }} .faq-section-image-wrapper {
+    margin-bottom: -50px;
+  }
+}
+
+/* FAQ container */
+#faq-section-{{ section.id }} {
+  background-color: {{ section.settings.section_bg_color | default: '#ffffff' }};
+  padding: {{ section.settings.section_padding_top | default: 60 }}px 20px {{ section.settings.section_padding_bottom | default: 60 }}px;
+  font-family: {{ section.settings.font_family | default: 'system-ui' }}, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+#faq-section-{{ section.id }} .faq-container {
+  max-width: {{ section.settings.max_width | default: 1200 }}px;
+  margin: 0 auto;
+}
+#faq-section-{{ section.id }} .faq-title {
+  text-align: center;
+  margin-bottom: {{ section.settings.title_margin_bottom | default: 40 }}px;
+  font-size: {{ section.settings.title_font_size | default: 32 }}px;
+  font-weight: {{ section.settings.title_font_weight | default: 600 }};
+  color: {{ section.settings.title_color | default: '#333333' }};
+  line-height: 1.2;
+}
+
+/* FAQ List Grid */
+#faq-section-{{ section.id }} .faq-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: {{ section.settings.item_spacing | default: 15 }}px {{ section.settings.column_gap | default: 50 }}px;
+}
+
+/* Glassmorphism FAQ Items */
+#faq-section-{{ section.id }} .faq-item {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: {{ section.settings.item_border_radius | default: 12 }}px;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: all {{ section.settings.hover_animation_duration | default: 300 }}ms ease, transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+#faq-section-{{ section.id }} .faq-item:hover {
+  transform: translateY({{ section.settings.hover_lift_distance | default: -2 }}px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* FAQ Questions */
+#faq-section-{{ section.id }} .faq-question {
+  width: 100%;
+  padding: {{ section.settings.question_padding_vertical | default: 20 }}px {{ section.settings.question_padding_horizontal | default: 25 }}px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+/* Rainbow animation on focus */
+@keyframes rgb-pulse {
+  0% { outline-color: rgba(255, 0, 0, 0.55); }
+  16.67% { outline-color: rgba(255, 127, 0, 0.55); }
+  33.33% { outline-color: rgba(255, 255, 0, 0.55); }
+  50% { outline-color: rgba(0, 255, 0, 0.55); }
+  66.67% { outline-color: rgba(0, 0, 255, 0.55); }
+  83.33% { outline-color: rgba(127, 0, 255, 0.55); }
+  100% { outline-color: rgba(255, 0, 255, 0.55); }
+}
+#faq-section-{{ section.id }} .faq-question:focus {
+  outline: 3px solid;
+  outline-offset: 2px;
+  animation: rgb-pulse {{ section.settings.rgb_animation_duration | default: 2 }}s infinite;
+}
+
+/* Question text and icon */
+#faq-section-{{ section.id }} .faq-question-text {
+  font-size: {{ section.settings.question_font_size | default: 18 }}px;
+  font-weight: {{ section.settings.question_font_weight | default: 600 }};
+  color: {{ section.settings.question_color | default: '#333333' }};
+  line-height: 1.4;
+  flex: 1;
+  margin-right: 15px;
+}
+#faq-section-{{ section.id }} .faq-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: {{ section.settings.icon_size | default: 20 }}px;
+  height: {{ section.settings.icon_size | default: 20 }}px;
+  flex-shrink: 0;
+  transition: all {{ section.settings.hover_animation_duration | default: 300 }}ms ease;
+}
+#faq-section-{{ section.id }} .faq-arrow,
+#faq-section-{{ section.id }} .faq-custom-icon {
+  transition: transform {{ section.settings.animation_duration | default: 300 }}ms ease;
+  color: {{ section.settings.icon_color | default: '#666666' }};
+  width: {{ section.settings.icon_size | default: 20 }}px;
+  height: {{ section.settings.icon_size | default: 20 }}px;
+}
+#faq-section-{{ section.id }} .faq-question[aria-expanded="true"] .faq-arrow {
+  transform: rotate(90deg);
+}
+#faq-section-{{ section.id }} .faq-question[aria-expanded="true"] .faq-custom-icon {
+  transform: rotate({{ section.settings.custom_icon_rotation | default: 180 }}deg);
+}
+
+/* FAQ Answer */
+#faq-section-{{ section.id }} .faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height {{ section.settings.animation_duration | default: 300 }}ms ease, opacity {{ section.settings.animation_duration | default: 300 }}ms ease;
+  opacity: 0;
+  transform-origin: top;
+}
+#faq-section-{{ section.id }} .faq-answer.active {
+  max-height: 500px;
+  opacity: 1;
+}
+#faq-section-{{ section.id }} .faq-answer-inner {
+  padding: {{ section.settings.answer_padding_vertical | default: 20 }}px {{ section.settings.answer_padding_horizontal | default: 25 }}px;
+  font-size: {{ section.settings.answer_font_size | default: 16 }}px;
+  font-weight: {{ section.settings.answer_font_weight | default: 400 }};
+  color: {{ section.settings.answer_color | default: '#666666' }};
+  line-height: 1.6;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  #faq-section-{{ section.id }} .faq-list { grid-template-columns: 1fr; gap: {{ section.settings.item_spacing | default: 15 }}px; }
+  #faq-section-{{ section.id }} .faq-question { padding: {{ section.settings.question_padding_vertical | default: 16 }}px {{ section.settings.question_padding_horizontal | default: 20 }}px; }
+  #faq-section-{{ section.id }} .faq-title { font-size: {{ section.settings.title_font_size | default: 32 | times: 0.8 }}px; }
+  #faq-section-{{ section.id }} .faq-answer-inner { font-size: {{ section.settings.answer_font_size | default: 16 | times: 0.9 }}px; }
+}
+</style>
+
+<script>
+(function() {
+  const faqSection = document.getElementById('faq-section-{{ section.id }}');
+  if (!faqSection) return;
+  const accordionMode = {{ section.settings.accordion_mode | default: true }};
+  const faqItems = faqSection.querySelectorAll('[data-faq-item]');
+
+  function toggleFAQ(clickedItem) {
+    const clickedToggle = clickedItem.querySelector('[data-faq-toggle]');
+    const clickedContent = clickedItem.querySelector('[data-faq-content]');
+    if (!clickedToggle || !clickedContent) return;
+    const isExpanded = clickedToggle.getAttribute('aria-expanded') === 'true';
+
+    if (accordionMode) {
+      faqItems.forEach(item => {
+        if (item !== clickedItem) {
+          const toggle = item.querySelector('[data-faq-toggle]');
+          const content = item.querySelector('[data-faq-content]');
+          if (toggle && content) {
+            toggle.setAttribute('aria-expanded', 'false');
+            content.setAttribute('aria-hidden', 'true');
+            content.classList.remove('active');
+          }
+        }
+      });
+    }
+
+    if (isExpanded) {
+      clickedToggle.setAttribute('aria-expanded', 'false');
+      clickedContent.setAttribute('aria-hidden', 'true');
+      clickedContent.classList.remove('active');
+    } else {
+      clickedToggle.setAttribute('aria-expanded', 'true');
+      clickedContent.setAttribute('aria-hidden', 'false');
+      clickedContent.classList.add('active');
+    }
+  }
+
+  faqItems.forEach(item => {
+    const toggle = item.querySelector('[data-faq-toggle]');
+    if (!toggle) return;
+    toggle.addEventListener('click', function(e) {
+      e.preventDefault();
+      toggleFAQ(item);
+    });
+    toggle.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleFAQ(item);
+      }
+    });
+  });
+
+  {% if section.settings.auto_open_first %}
+    if (faqItems.length > 0) {
+      setTimeout(function() { toggleFAQ(faqItems[0]); }, 100);
+    }
+  {% endif %}
+})();
+</script>
+
+                   
+{% schema %}
+{
+  "name": "FAQ Section",
+  "tag": "section",
+  "class": "faq-section-wrapper",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Title"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show section title",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section title",
+      "default": "Frequently Asked Questions"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "Title font size",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "default": 32,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "title_font_weight",
+      "label": "Title font weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "title_margin_bottom",
+      "label": "Title bottom margin",
+      "min": 10,
+      "max": 80,
+      "step": 5,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Section Layout"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Content max width",
+      "min": 800,
+      "max": 1400,
+      "step": 50,
+      "default": 1200,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "label": "Section top padding",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "label": "Section bottom padding",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font family",
+      "options": [
+        { "value": "Arial", "label": "Arial" },
+        { "value": "Helvetica", "label": "Helvetica" },
+        { "value": "Georgia", "label": "Georgia" },
+        { "value": "Times New Roman", "label": "Times New Roman" },
+        { "value": "Verdana", "label": "Verdana" },
+        { "value": "system-ui", "label": "System Default" }
+      ],
+      "default": "system-ui"
+    },
+    {
+      "type": "header",
+      "content": "FAQ Items Styling"
+    },
+    {
+      "type": "color",
+      "id": "item_bg_color",
+      "label": "FAQ item background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "item_border_color",
+      "label": "FAQ item border color",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "range",
+      "id": "item_border_width",
+      "label": "FAQ item border width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "default": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "item_border_radius",
+      "label": "FAQ item border radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "label": "Space between left and right sections",
+      "min": 20,
+      "max": 100,
+      "step": 10,
+      "default": 50,
+      "unit": "px",
+      "info": "Controls the horizontal gap between the left and right FAQ sections"
+    },
+    {
+      "type": "range",
+      "id": "item_spacing",
+      "label": "Space between FAQ items (vertical)",
+      "min": 5,
+      "max": 40,
+      "step": 5,
+      "default": 15,
+      "unit": "px"
+    },
+    {
+      "type": "text",
+      "id": "item_hover_shadow",
+      "label": "FAQ item hover shadow",
+      "default": "0 8px 25px rgba(0,0,0,0.15)"
+    },
+    {
+      "type": "color",
+      "id": "item_hover_border_color",
+      "label": "FAQ item hover border color",
+      "default": "#d0d0d0"
+    },
+    {
+      "type": "header",
+      "content": "Question Styling"
+    },
+    {
+      "type": "color",
+      "id": "question_color",
+      "label": "Question text color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "question_hover_bg",
+      "label": "Question hover background",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "question_hover_color",
+      "label": "Question hover text color",
+      "default": "#222222"
+    },
+    {
+      "type": "range",
+      "id": "question_font_size",
+      "label": "Question font size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "default": 18,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "question_font_weight",
+      "label": "Question font weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "question_padding_vertical",
+      "label": "Question vertical padding",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "question_padding_horizontal",
+      "label": "Question horizontal padding",
+      "min": 15,
+      "max": 50,
+      "step": 5,
+      "default": 25,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Answer Styling"
+    },
+    {
+      "type": "color",
+      "id": "answer_color",
+      "label": "Answer text color",
+      "default": "#666666"
+    },
+    {
+      "type": "range",
+      "id": "answer_font_size",
+      "label": "Answer font size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "answer_font_weight",
+      "label": "Answer font weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "answer_padding_vertical",
+      "label": "Answer vertical padding",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "answer_padding_horizontal",
+      "label": "Answer horizontal padding",
+      "min": 15,
+      "max": 50,
+      "step": 5,
+      "default": 25,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Icon Settings"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Default arrow color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "icon_hover_color",
+      "label": "Icon hover color",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "icon_hover_scale",
+      "label": "Icon hover scale",
+      "min": 1.0,
+      "max": 1.5,
+      "step": 0.1,
+      "default": 1.1,
+      "info": "How much the icon grows on hover (1.0 = no change, 1.2 = 20% larger)"
+    },
+    {
+      "type": "range",
+      "id": "custom_icon_rotation",
+      "label": "Custom icon rotation (when expanded)",
+      "min": 0,
+      "max": 360,
+      "step": 45,
+      "default": 180,
+      "unit": "deg"
+    },
+    {
+      "type": "header",
+      "content": "Animation & Behavior"
+    },
+    {
+      "type": "range",
+      "id": "hover_animation_duration",
+      "label": "Hover animation duration",
+      "min": 150,
+      "max": 600,
+      "step": 50,
+      "default": 300,
+      "unit": "ms",
+      "info": "Speed of hover animations (lower = faster)"
+    },
+    {
+      "type": "range",
+      "id": "hover_lift_distance",
+      "label": "Hover lift distance",
+      "min": -5,
+      "max": 10,
+      "step": 1,
+      "default": -2,
+      "unit": "px",
+      "info": "How much FAQ items lift on hover (negative = up, positive = down)"
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "label": "Expand/collapse animation duration",
+      "min": 100,
+      "max": 800,
+      "step": 50,
+      "default": 300,
+      "unit": "ms"
+    },
+    {
+      "type": "checkbox",
+      "id": "accordion_mode",
+      "label": "Accordion mode (only one open at a time)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_open_first",
+      "label": "Auto-open first FAQ item",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Accessibility"
+    },
+    {
+      "type": "color",
+      "id": "focus_color",
+      "label": "Focus outline color",
+      "default": "#0066cc"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "What is your return policy?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>We offer a 30-day return policy on all items. Please contact our customer service team for more information.</p>"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_icon",
+          "label": "Custom icon (optional)",
+          "info": "Upload a custom icon to replace the default arrow. Recommended size: 24x24px"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ Section",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is your shipping policy?",
+            "answer": "<p>We offer free shipping on orders over $50. Standard shipping takes 3-5 business days, and expedited shipping is available for an additional fee.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How do I track my order?",
+            "answer": "<p>Once your order ships, you'll receive a tracking number via email. You can use this number to track your package on our website or the carrier's website.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is your return policy?",
+            "answer": "<p>We accept returns within 30 days of purchase. Items must be in original condition with tags attached. Please contact our customer service team to initiate a return.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Do you offer international shipping?",
+            "answer": "<p>Yes, we ship to most countries worldwide. International shipping rates and delivery times vary by location. Additional customs fees may apply.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
