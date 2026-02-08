@@ -46,20 +46,23 @@
             </div>
           {%- endif -%}
 
-          {%- if section.settings.show_signature and section.settings.signature_image != blank -%}
-            <div class="human-signature animate-on-scroll" style="--delay: 0.4s;">
-              {{ section.settings.signature_image | image_url: width: 300 | image_tag: loading: 'lazy', alt: section.settings.quote_author }}
-            </div>
-          {%- endif -%}
+          <div class="human-footer-row animate-on-scroll" style="--delay: 0.4s;">
+            {%- if section.settings.show_signature and section.settings.signature_image != blank -%}
+              <div class="human-signature">
+                {{ section.settings.signature_image | image_url: width: 300 | image_tag: loading: 'lazy', alt: section.settings.quote_author }}
+              </div>
+            {%- endif -%}
 
-          {%- if section.settings.cta_text != blank -%}
-            <div class="human-cta-wrapper animate-on-scroll" style="--delay: 0.5s;">
-              <a href="{{ section.settings.cta_url }}" class="human-btn">
-                {{ section.settings.cta_text }}
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </a>
-            </div>
-          {%- endif -%}
+            {%- if section.settings.cta_text != blank -%}
+              <div class="human-cta-wrapper">
+                <a href="{{ section.settings.cta_url }}" class="human-btn">
+                  {{ section.settings.cta_text }}
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              </div>
+            {%- endif -%}
+          </div>
+          
         </div>
       </div>
 
@@ -80,7 +83,7 @@
           
           <div class="hotspot-layer">
             <svg class="hotspot-line-svg">
-              <line x1="0" y1="0" x2="0" y2="0" stroke="{{ section.settings.secret_border_color }}" stroke-width="1" />
+              <line x1="0" y1="0" x2="0" y2="0" stroke="{{ section.settings.secret_border_color }}" stroke-width="1" stroke-linecap="round" />
             </svg>
             
             <div class="hotspot-dot">
@@ -179,7 +182,6 @@
       /* HOTSPOT POS (Dynamic via Schema) */
       --spot-x: {{ section.settings.hotspot_x }}%;
       --spot-y: {{ section.settings.hotspot_y }}%;
-      
       --bubble-x: {{ section.settings.bubble_x }}%;
       --bubble-y: {{ section.settings.bubble_y }}%;
 
@@ -222,7 +224,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 4rem;
-      align-items: center; 
+      align-items: center;
     }
 
     .human-grid--flipped {
@@ -274,7 +276,7 @@
       color: var(--accent-color);
       margin-top: 0;
       margin-bottom: 1rem;
-      line-height: 1; 
+      line-height: 1;
     }
     
     .eyebrow-line {
@@ -323,16 +325,32 @@
       opacity: 0.7;
     }
 
+    /* FOOTER ROW (SIGNATURE + CTA) */
+    .human-footer-row {
+      display: flex;
+      align-items: flex-end; /* Aligns bottoms even on a line */
+      gap: 2.5rem; /* Space between items */
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .human-signature {
+      margin-bottom: 0; /* Handled by row */
+    }
     .human-signature img {
       height: {{ section.settings.sig_size }}px;
       width: auto;
       object-fit: contain;
-      margin-bottom: 1.5rem;
+      margin-bottom: 0; /* Remove bottom margin to align with btn */
       background: transparent;
+      display: block;
     }
 
     /* BUTTON */
-    .human-cta-wrapper { margin-bottom: 0; line-height: 0; }
+    .human-cta-wrapper { 
+      margin-bottom: 0; 
+      line-height: 0; 
+    }
     .human-btn {
       display: inline-flex;
       align-items: center;
@@ -353,7 +371,8 @@
     .human-btn::after {
       content: '';
       position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       background: var(--text-color);
       transform: translateY(100%);
       transition: transform 0.3s ease;
@@ -381,13 +400,11 @@
       aspect-ratio: auto; 
       background: var(--card-bg);
       border-radius: {{ section.settings.border_radius }}px;
-      
       /* CARD MASKING */
       overflow: hidden; 
       -webkit-mask-image: -webkit-radial-gradient(white, black);
       mask-image: radial-gradient(white, black);
       isolation: isolate;
-      
       box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05);
       transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease;
       z-index: 1;
@@ -410,8 +427,8 @@
     img.human-img { background: transparent; }
 
     .human-card:hover .human-img {
-      transform: scale(1.05);
-      filter: contrast(1) saturate(1);
+      transform: scale(1.03);
+      filter: contrast(0.9) saturate(1);
     }
 
     /* BASE BADGE STRUCTURE */
@@ -480,7 +497,8 @@
     .hotspot-layer {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      pointer-events: none; /* Let clicks pass through layer unless hitting bubble */
+      pointer-events: none;
+      /* Let clicks pass through layer unless hitting bubble */
       opacity: 0;
       transition: opacity 0.5s ease;
       z-index: 10;
@@ -506,12 +524,13 @@
       top: var(--spot-y);
       left: var(--spot-x);
       width: 0; height: 0; /* Center point */
-      z-index: 2;
+      z-index: 5; /* FIX: Increased Z-Index to stay above line and bubble */
     }
     
     .dot-center {
       position: absolute;
-      top: -4px; left: -4px;
+      top: -4px;
+      left: -4px;
       width: 8px; height: 8px;
       background: var(--sb-border); /* Matches Secret Border */
       border-radius: 50%;
@@ -519,17 +538,21 @@
     
     .dot-pulse {
       position: absolute;
-      top: -20px; left: -20px;
+      top: -20px;
+      left: -20px;
       width: 40px; height: 40px;
-      border: 1px solid var(--sb-border); /* Matches Secret Border */
+      border: 1px solid var(--sb-border);
+      /* Matches Secret Border */
       border-radius: 50%;
       opacity: 0;
       animation: lowPulse 2.5s infinite ease-out;
     }
     
     @keyframes lowPulse {
-      0% { transform: scale(0.2); opacity: 0.8; }
-      100% { transform: scale(1.5); opacity: 0; }
+      0% { transform: scale(0.2);
+      opacity: 0.8; }
+      100% { transform: scale(1.5); opacity: 0;
+      }
     }
     
     /* The Bubble (Secret Badge) */
@@ -540,7 +563,6 @@
       transform: translate(-50%, -50%) scale(var(--b-scale));
       transform-origin: center center;
       z-index: 3;
-      
       /* Secret Specific Styling */
       background: var(--sb-bg);
       border-width: var(--sb-width);
@@ -562,7 +584,8 @@
       opacity: var(--egg-opacity);
       cursor: pointer;
       color: var(--text-color);
-      z-index: 20; /* Highest z-index */
+      z-index: 20;
+      /* Highest z-index */
       padding: 0;
       width: var(--egg-size);
       height: auto;
@@ -581,7 +604,8 @@
       transform: scale(0.9);
     }
     
-    .egg-static { opacity: 1; }
+    .egg-static { opacity: 1;
+    }
     
     .easter-egg-btn:hover .egg-static {
       opacity: 0; transform: scale(0.9);
@@ -632,10 +656,17 @@
         padding-left: 0;
         padding-top: 1.5rem;
       }
-      .human-signature img { margin: 0 auto 1.5rem auto; }
+      
+      /* Mobile Footer Alignment: Stack them back up */
+      .human-footer-row {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+      }
+      .human-signature img { margin: 0 auto; }
       
       .easter-egg-btn { 
-        display: block; 
+        display: block;
         transform: scale(0.8);
         left: 10px; 
       }
@@ -661,7 +692,7 @@
 
         const isDesignMode = Shopify.designMode;
         wrapper.querySelectorAll('.animate-on-scroll').forEach(el => {
-          if(isDesignMode) { el.classList.add('is-visible'); } 
+           if(isDesignMode) { el.classList.add('is-visible'); } 
           else { observer.observe(el); }
         });
 
@@ -676,12 +707,13 @@
             const line = wrapper.querySelector('.hotspot-line-svg line');
             
             if(!dot || !bubble || !line) return;
-            
+
             const cardRect = card.getBoundingClientRect();
             const dotRect = dot.getBoundingClientRect();
             const bubbleRect = bubble.getBoundingClientRect();
-            
+
             // Calculate center points relative to the card container
+            // For the 0x0 dot, left is the exact center
             const x1 = dotRect.left + (dotRect.width/2) - cardRect.left;
             const y1 = dotRect.top + (dotRect.height/2) - cardRect.top;
             
@@ -700,6 +732,8 @@
             wrapper.classList.toggle('hotspot-mode-active');
             // Recalculate line immediately when shown
             setTimeout(drawLine, 50);
+            // Double check in case of layout shifts
+            setTimeout(drawLine, 300);
           });
         }
         
@@ -707,7 +741,6 @@
         window.addEventListener('resize', drawLine);
         // Initial draw
         setTimeout(drawLine, 500);
-        
         // Update in design mode
         if (isDesignMode) {
             document.addEventListener("shopify:section:select", drawLine);
@@ -1013,6 +1046,7 @@
       "label": "Bubble Radius",
       "default": 0
     },
+    
     {
         "type": "range",
         "id": "hotspot_x",
